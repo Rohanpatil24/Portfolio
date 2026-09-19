@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rohan Patil | Full Stack Developer</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151f32',
+                            900: '#0f172a',
+                        },
+                        teal: {
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // Check initial theme preference before page load to prevent flashing
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            @apply bg-slate-100 dark:bg-slate-900;
+        }
+        ::-webkit-scrollbar-thumb {
+            @apply bg-slate-300 dark:bg-slate-700 rounded-md;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            @apply bg-teal-500;
+        }
+
+        /* Scroll Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glowing effect for cards */
+        .glow-card:hover {
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300">
+
+    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-white">
+                        Rohan<span class="text-teal-600 dark:text-teal-400">.</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#home" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Home</a>
+                    <a href="#about" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">About</a>
+                    <a href="#experience" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Experience</a>
+                    <a href="#projects" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Projects</a>
+                    <a href="#skills" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Skills</a>
+                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/50 hover:bg-teal-500 hover:text-white dark:hover:text-slate-900 transition-all text-sm font-semibold">Contact</a>
+                    
+                    <!-- Theme Toggle Button (Desktop) -->
+                    <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
+                        <i class="ph ph-sun text-2xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
+                        <i class="ph ph-moon text-2xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Buttons -->
+                <div class="md:hidden flex items-center gap-4">
+                    <!-- Theme Toggle Button (Mobile) -->
+                    <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
+                        <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
+                        <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
+                    </button>
+                    
+                    <button id="mobile-menu-btn" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none p-2 transition-colors">
+                        <i class="ph ph-list text-3xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 absolute w-full left-0 top-20 shadow-xl transition-colors duration-300">
+            <div class="px-4 pt-2 pb-6 space-y-2 flex flex-col">
+                <a href="#home" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Home</a>
+                <a href="#about" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">About</a>
+                <a href="#experience" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Experience</a>
+                <a href="#projects" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Projects</a>
+                <a href="#skills" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Skills</a>
+                <a href="#contact" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="min-h-screen flex items-center justify-center pt-20 relative overflow-hidden">
+        <!-- Abstract Background Shapes -->
+        <div class="absolute top-1/4 left-10 w-72 h-72 bg-teal-500/20 dark:bg-teal-500/10 rounded-full blur-3xl -z-10 transition-colors duration-300"></div>
+        <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-blue-600/20 dark:bg-blue-600/10 rounded-full blur-3xl -z-10 transition-colors duration-300"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left flex flex-col md:flex-row items-center justify-between gap-12">
+            <div class="flex-1 reveal">
+                <p class="text-teal-600 dark:text-teal-400 font-mono mb-4 tracking-wide">Hello World, I am</p>
+                <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors">
+                    Rohan Patil.
+                </h1>
+                <h2 class="text-3xl md:text-5xl font-bold text-slate-600 dark:text-slate-400 mb-6 bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500 bg-clip-text text-transparent inline-block">
+                    Results-driven Full Stack & Backend Developer.
+                </h2>
+                <p class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-10 mx-auto sm:mx-0 leading-relaxed transition-colors">
+                    I specialize in designing scalable web applications and building high-performance APIs. With a strong foundation in Python, Django, and database management, I bring robust solutions to life.
+                </p>
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+                    <a href="#projects" class="px-8 py-3 rounded-md bg-teal-500 text-white dark:text-slate-900 font-bold hover:bg-teal-600 dark:hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.4)]">
+                        View My Work
+                    </a>
+                    <a href="#contact" class="px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center gap-2">
+                        <i class="ph ph-download-simple text-xl"></i> Download Resume
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex-1 hidden lg:flex justify-center relative reveal">
+                <!-- Decorative Graphic -->
+                <div class="w-80 h-80 relative">
+                    <div class="absolute inset-0 border-2 border-teal-500/30 dark:border-teal-500/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                    <div class="absolute inset-4 border-2 border-dashed border-blue-500/40 dark:border-blue-500/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl dark:shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <pre class="text-xs text-teal-600 dark:text-teal-400 font-mono text-left">
+<span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-amber-600 dark:text-yellow-300">build_api</span>():
+  <span class="text-slate-500 dark:text-slate-400"># Setting up highly</span>
+  <span class="text-slate-500 dark:text-slate-400"># scalable services</span>
+  framework = <span class="text-green-600 dark:text-green-400">"Django"</span>
+  cache = <span class="text-green-600 dark:text-green-400">"Redis"</span>
+  db = <span class="text-green-600 dark:text-green-400">"MySQL"</span>
+  
+  <span class="text-blue-600 dark:text-blue-400">return</span> {
+    <span class="text-green-600 dark:text-green-400">"status"</span>: <span class="text-orange-600 dark:text-orange-400">200</span>,
+    <span class="text-green-600 dark:text-green-400">"success"</span>: <span class="text-blue-600 dark:text-blue-400">True</span>
+  }
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 bg-white dark:bg-slate-850 relative transition-colors duration-300">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+            <div class="flex items-center gap-4 mb-12">
+                <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">About Me</h2>
+                <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+            </div>
+            
+            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 md:p-12 shadow-lg dark:shadow-xl glow-card transition-all duration-300">
+                <div class="prose prose-lg max-w-none text-slate-600 dark:text-slate-400 space-y-6 transition-colors">
+                    <p>
+                        I am a <span class="text-teal-600 dark:text-teal-400 font-medium">Software Developer with 2 years of experience</span> in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.
+                    </p>
+                    <p>
+                        I specialize in <span class="text-slate-900 dark:text-white font-medium">Django REST Framework, MySQL, and Redis caching</span> to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments.
+                    </p>
+                    <p>
+                        Whether it's debugging complex issues, implementing secure user authentication, or maintaining production deployments, I am passionate about building robust applications that <span class="text-teal-600 dark:text-teal-400 font-medium">enhance business processes and user experiences</span>.
+                    </p>
+                </div>
+                
+                <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center border-t border-slate-200 dark:border-slate-800 pt-8 transition-colors">
+                    <div>
+                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">2+</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wider">Years Exp.</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">10+</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wider">Projects</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">High</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wider">Performance</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">Agile</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wider">Approach</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="py-24 relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-4 mb-16 reveal">
+                <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Experience</h2>
+                <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+            </div>
+
+            <div class="relative border-l border-slate-300 dark:border-slate-700 ml-4 md:ml-0 space-y-12 transition-colors">
+                
+                <!-- Experience Item 1 -->
+                <div class="relative pl-8 md:pl-0 reveal">
+                    <div class="md:grid md:grid-cols-5 md:gap-8 items-start">
+                        <div class="md:col-span-1 md:text-right mb-2 md:mb-0 hidden md:block pt-1">
+                            <span class="text-sm font-mono text-teal-600 dark:text-teal-400">Oct 2024 - Present</span>
+                        </div>
+                        <div class="md:col-span-4 relative">
+                            <!-- Timeline Dot -->
+                            <div class="absolute -left-10 md:-left-[21px] top-1.5 w-4 h-4 rounded-full bg-teal-500 ring-4 ring-slate-50 dark:ring-slate-900 border border-teal-300 transition-colors"></div>
+                            
+                            <div class="md:hidden mb-2">
+                                <span class="text-sm font-mono text-teal-600 dark:text-teal-400">Oct 2024 - Present</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white transition-colors">Junior Software Developer</h3>
+                            <h4 class="text-lg text-slate-600 dark:text-slate-400 mb-4 font-medium flex items-center gap-2 transition-colors">
+                                <i class="ph ph-buildings text-teal-500"></i> Antariksh Softtech Pvt. Ltd.
+                            </h4>
+                            
+                            <ul class="space-y-2 text-slate-600 dark:text-slate-400 text-sm md:text-base list-disc list-inside transition-colors">
+                                <li>Designing and building robust web applications using <span class="text-slate-900 dark:text-white font-medium">Django, RESTful APIs, MySQL</span>, and modern frontend tech like <span class="text-slate-900 dark:text-white font-medium">Tailwind CSS</span>.</li>
+                                <li>Managing full project lifecycles including backend logic, DB optimization, and deployments on Windows IIS.</li>
+                                <li>Implementing secure user authentication and caching via <span class="text-slate-900 dark:text-white font-medium">Redis</span> for faster processing.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience Item 2 -->
+                <div class="relative pl-8 md:pl-0 reveal">
+                    <div class="md:grid md:grid-cols-5 md:gap-8 items-start">
+                        <div class="md:col-span-1 md:text-right mb-2 md:mb-0 hidden md:block pt-1">
+                            <span class="text-sm font-mono text-slate-500">Jul 2023 - Oct 2024</span>
+                        </div>
+                        <div class="md:col-span-4 relative">
+                            <!-- Timeline Dot -->
+                            <div class="absolute -left-10 md:-left-[21px] top-1.5 w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-700 ring-4 ring-slate-50 dark:ring-slate-900 border border-slate-400 dark:border-slate-600 transition-colors"></div>
+                            
+                            <div class="md:hidden mb-2">
+                                <span class="text-sm font-mono text-slate-500">Jul 2023 - Oct 2024</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white transition-colors">Network Engineer L1</h3>
+                            <h4 class="text-lg text-slate-600 dark:text-slate-400 mb-4 font-medium flex items-center gap-2 transition-colors">
+                                <i class="ph ph-buildings text-slate-400 dark:text-slate-500"></i> Antariksh Softtech Pvt. Ltd.
+                            </h4>
+                            
+                            <ul class="space-y-2 text-slate-600 dark:text-slate-400 text-sm md:text-base list-disc list-inside transition-colors">
+                                <li>Administered computer networks, systems software, and hardware configurations.</li>
+                                <li>Implemented network security measures and protected critical corporate data.</li>
+                                <li>Designed, configured, and monitored network routing and operating systems.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience Item 3 -->
+                <div class="relative pl-8 md:pl-0 reveal">
+                    <div class="md:grid md:grid-cols-5 md:gap-8 items-start">
+                        <div class="md:col-span-1 md:text-right mb-2 md:mb-0 hidden md:block pt-1">
+                            <span class="text-sm font-mono text-slate-500">Sep 2021 - Jan 2023</span>
+                        </div>
+                        <div class="md:col-span-4 relative">
+                            <!-- Timeline Dot -->
+                            <div class="absolute -left-10 md:-left-[21px] top-1.5 w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-700 ring-4 ring-slate-50 dark:ring-slate-900 border border-slate-400 dark:border-slate-600 transition-colors"></div>
+                            
+                            <div class="md:hidden mb-2">
+                                <span class="text-sm font-mono text-slate-500">Sep 2021 - Jan 2023</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white transition-colors">Material Officer</h3>
+                            <h4 class="text-lg text-slate-600 dark:text-slate-400 mb-4 font-medium flex items-center gap-2 transition-colors">
+                                <i class="ph ph-buildings text-slate-400 dark:text-slate-500"></i> Reliance Digital Retail LTD
+                            </h4>
+                            
+                            <ul class="space-y-2 text-slate-600 dark:text-slate-400 text-sm md:text-base list-disc list-inside transition-colors">
+                                <li>Managed inventory, handled SAP systems, and conducted data analysis.</li>
+                                <li>Directed production control, storage, and scheduling based on forecasts.</li>
+                                <li>Utilized advanced Excel for tracking and inward/outward logistics.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-24 bg-white dark:bg-slate-850 relative transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-4 mb-16 reveal">
+                <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Featured Projects</h2>
+                <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Project 1 -->
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-lg dark:shadow-lg glow-card flex flex-col reveal">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ph-fill ph-folder text-4xl text-teal-500"></i>
+                            <div class="flex gap-3">
+                                <a href="#" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                                <a href="#" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-arrow-square-out text-2xl"></i></a>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Productivity Portal</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4 transition-colors">
+                            System to track daily staff activities and generate reports. Features include HRMS & MS Teams integration, office hygiene management, incentive calculation, and an internal ticketing system. Built high-performance APIs with Redis caching.
+                        </p>
+                    </div>
+                    <div class="px-6 pb-6 pt-2">
+                        <ul class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                            <li>Django REST</li>
+                            <li>MySQL</li>
+                            <li>Redis</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-lg dark:shadow-lg glow-card flex flex-col reveal">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ph-fill ph-folder text-4xl text-teal-500"></i>
+                            <div class="flex gap-3">
+                                <a href="#" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">New Connection Portal</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4 transition-colors">
+                            Landing page for I-ON customers to register with OTP verification. Users can select plans and personal info. Included a referral system for employee incentives. Optimized using Redis caching for smooth user experience.
+                        </p>
+                    </div>
+                    <div class="px-6 pb-6 pt-2">
+                        <ul class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                            <li>Django REST</li>
+                            <li>MySQL</li>
+                            <li>Redis</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-lg dark:shadow-lg glow-card flex flex-col reveal">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ph-fill ph-folder text-4xl text-teal-500"></i>
+                            <div class="flex gap-3">
+                                <a href="#" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Banquet Booking</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4 transition-colors">
+                            Website for booking banquets and selecting menus. Implemented features for full/partial payments through Razorpay integration. Added secure login, registration, and built a responsive UI.
+                        </p>
+                    </div>
+                    <div class="px-6 pb-6 pt-2">
+                        <ul class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                            <li>Django</li>
+                            <li>Bootstrap</li>
+                            <li>Razorpay</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-lg dark:shadow-lg glow-card flex flex-col reveal">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ph-fill ph-game-controller text-4xl text-teal-500"></i>
+                            <div class="flex gap-3">
+                                <a href="#" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">ConnectFour App</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 transition-colors">
+                            A traditional board game application built with a robust graphical user interface (GUI). Engineered for local two-player interaction using standard object-oriented principles.
+                        </p>
+                    </div>
+                    <div class="px-6 pb-6 pt-2">
+                        <ul class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                            <li>Core Java</li>
+                            <li>Swing/AWT GUI</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-lg dark:shadow-lg glow-card flex flex-col reveal">
+                    <div class="p-6 flex-grow">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="ph-fill ph-chart-line-up text-4xl text-teal-500"></i>
+                            <div class="flex gap-3">
+                                <a href="#" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Stock Prediction App</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 transition-colors">
+                            A machine learning integrated application predicting stock trends. Backend processes large datasets and feeds predictive ML models into a dynamic frontend visualization.
+                        </p>
+                    </div>
+                    <div class="px-6 pb-6 pt-2">
+                        <ul class="flex flex-wrap gap-2 text-xs font-mono text-slate-500">
+                            <li>Django</li>
+                            <li>React</li>
+                            <li>PyTorch</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16">
+                
+                <!-- Technical Skills -->
+                <div class="reveal">
+                    <div class="flex items-center gap-4 mb-10">
+                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Technical Skills</h2>
+                        <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors">
+                                <i class="ph ph-database text-teal-600 dark:text-teal-400"></i> Backend & Databases
+                            </h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">Python</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">Django REST</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">Core Java</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">MySQL</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">SQL Server</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">Redis</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors">
+                                <i class="ph ph-browser text-blue-500 dark:text-blue-400"></i> Frontend
+                            </h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm dark:shadow-none">HTML/CSS</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm dark:shadow-none">JavaScript</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm dark:shadow-none">React</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm dark:shadow-none">Tailwind CSS</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm dark:shadow-none">Bootstrap</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors">
+                                <i class="ph ph-cloud text-purple-500 dark:text-purple-400"></i> Cloud & Tools
+                            </h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shadow-sm dark:shadow-none">AWS</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shadow-sm dark:shadow-none">Git & GitHub</span>
+                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shadow-sm dark:shadow-none">Networking</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education & Certs -->
+                <div class="reveal">
+                    <div class="flex items-center gap-4 mb-10">
+                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Education & Certs</h2>
+                        <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Education items -->
+                        <div class="bg-white dark:bg-slate-850 p-5 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-teal-500 shadow-sm dark:shadow-none transition-colors">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white transition-colors">Master in Full Stack Web Development</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1 transition-colors">With AWS Specialization | IT-Vedant, Thane</p>
+                            <p class="text-xs font-mono text-teal-600 dark:text-teal-400">Dec 2023</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-slate-850 p-5 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-teal-500 shadow-sm dark:shadow-none transition-colors">
+                            <h4 class="text-lg font-bold text-slate-900 dark:text-white transition-colors">Bachelor's Degree in Computer Science</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1 transition-colors">Model College of Science And Commerce</p>
+                            <p class="text-xs font-mono text-teal-600 dark:text-teal-400">Apr 2021</p>
+                        </div>
+
+                        <!-- Certifications list -->
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 transition-colors">Key Certifications</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center gap-3">
+                                    <i class="ph-fill ph-certificate text-teal-500"></i>
+                                    <span class="text-slate-700 dark:text-slate-300 transition-colors">Python for Web Development (IBM)</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="ph-fill ph-certificate text-teal-500"></i>
+                                    <span class="text-slate-700 dark:text-slate-300 transition-colors">Programming Foundation & SQL (IT-Vedant)</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <i class="ph-fill ph-certificate text-teal-500"></i>
+                                    <span class="text-slate-700 dark:text-slate-300 transition-colors">AWS / Core Java (Internshala)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 bg-white dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 text-center relative overflow-hidden transition-colors duration-300">
+        <!-- Abstract gradient for footer -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none transition-colors"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative reveal">
+            <h2 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-6 transition-colors">Let's Connect</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-lg mb-10 max-w-2xl mx-auto transition-colors">
+                Currently looking for new opportunities and collaborations. Whether you have a question, a project proposal, or just want to say hi, I'll try my best to get back to you!
+            </p>
+            
+            <a href="mailto:rohanrpatil24@gmail.com" class="inline-block px-8 py-4 rounded-md bg-transparent border-2 border-teal-500 text-teal-600 dark:text-teal-400 font-bold hover:bg-teal-500 hover:text-white dark:hover:text-slate-900 transition-all shadow-[0_0_15px_rgba(20,184,166,0.1)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)] mb-12">
+                Say Hello
+            </a>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 mb-12">
+                <a href="mailto:rohanrpatil24@gmail.com" class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+                    <i class="ph ph-envelope-simple text-2xl"></i> rohanrpatil24@gmail.com
+                </a>
+                <a href="tel:+919653639991" class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+                    <i class="ph ph-phone text-2xl"></i> +91 9653639991
+                </a>
+                <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300 transition-colors">
+                    <i class="ph ph-map-pin text-2xl text-slate-500 dark:text-slate-400"></i> Mumbai, Maharashtra
+                </span>
+            </div>
+
+            <div class="flex justify-center space-x-6">
+                <a href="#" class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors hover:-translate-y-1 transform inline-block">
+                    <span class="sr-only">GitHub</span>
+                    <i class="ph ph-github-logo text-3xl"></i>
+                </a>
+                <a href="#" class="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors hover:-translate-y-1 transform inline-block">
+                    <span class="sr-only">LinkedIn</span>
+                    <i class="ph ph-linkedin-logo text-3xl"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="mt-20 text-slate-500 dark:text-slate-600 text-sm transition-colors">
+            <p>Designed & Built by Rohan Patil &copy; <span id="year"></span></p>
+        </div>
+    </section>
+
+    <script>
+        // Set Current Year in Footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Theme Toggle Logic
+        const themeToggles = document.querySelectorAll('.theme-toggle');
+        const htmlElement = document.documentElement;
+
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                htmlElement.classList.toggle('dark');
+                if (htmlElement.classList.contains('dark')) {
+                    localStorage.theme = 'dark';
+                } else {
+                    localStorage.theme = 'light';
+                }
+            });
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md', 'py-1');
+                navbar.classList.remove('py-3');
+            } else {
+                navbar.classList.remove('shadow-md', 'py-1');
+                navbar.classList.add('py-3');
+            }
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Scroll Reveal Animations using Intersection Observer
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+</html>
