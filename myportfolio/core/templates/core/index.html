@@ -477,26 +477,14 @@ Whether it's debugging complex issues, implementing secure user authentication, 
         // Mobile Menu Toggle
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
+        
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // Scroll Reveal Animations using Intersection Observer
+        // Scroll Reveal Animations
         const revealElements = document.querySelectorAll('.reveal');
-
-        const revealOptions = {
-            threshold: 0.15,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
         const revealObserver = new IntersectionObserver(function(entries, observer) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -505,9 +493,82 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                 }
             });
         }, revealOptions);
+        revealElements.forEach(el => revealObserver.observe(el));
 
-        revealElements.forEach(el => {
-            revealObserver.observe(el);
+        // --- NEW: Scrollspy & Clean URL Logic ---
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+        // 1. Intercept Nav Clicks (Smooth scroll & Clean URL update)
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetSection) {
+                    // Scroll to section (offset for fixed navbar)
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 75,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update URL cleanly without reloading
+                    const cleanUrl = targetId === 'home' ? '/' : `/${targetId}`;
+                    window.history.pushState(null, null, cleanUrl);
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // 2. Scrollspy (Highlight active link & update URL on scroll)
+        window.addEventListener('scroll', () => {
+            let currentSectionId = '';
+            const scrollY = window.pageYOffset;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    currentSectionId = section.getAttribute('id');
+                }
+            });
+
+            // Toggle active styling
+            navLinks.forEach(link => {
+                link.classList.remove('text-teal-600', 'dark:text-teal-400', 'font-bold');
+                if (link.getAttribute('href') === `#${currentSectionId}`) {
+                    link.classList.add('text-teal-600', 'dark:text-teal-400', 'font-bold');
+                }
+            });
+
+            // Silently update URL as you scroll past sections
+            if (currentSectionId) {
+                const cleanUrl = currentSectionId === 'home' ? '/' : `/${currentSectionId}`;
+                if (window.location.pathname !== cleanUrl && window.location.pathname !== `/admin`) {
+                    window.history.replaceState(null, null, cleanUrl);
+                }
+            }
+        });
+
+        // 3. Handle direct page loads to clean URLs (e.g. refreshing on /skills)
+        window.addEventListener('DOMContentLoaded', () => {
+            const path = window.location.pathname.replace(/\//g, '');
+            if (path && path !== 'home' && path !== 'admin') {
+                const targetSection = document.getElementById(path);
+                if (targetSection) {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: targetSection.offsetTop - 75,
+                            behavior: 'smooth'
+                        });
+                    }, 100); // Slight delay ensures DOM is fully rendered before scrolling
+                }
+            }
         });
     </script>
 </body>
