@@ -78,3 +78,10 @@ class Certification(models.Model):
 
     def __str__(self):
         return self.title
+
+class SiteTraffic(models.Model):
+    date = models.DateField(auto_now_add=True, unique=True)
+    hits = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.date} - {self.hits} hits"

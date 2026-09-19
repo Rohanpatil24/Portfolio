@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login | Rohan Patil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        .glass-box {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+        .dark .glass-box {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-terminal {
+            background: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            box-shadow: 0 0 40px rgba(20, 184, 166, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center relative overflow-hidden font-sans transition-colors duration-300">
+
+    <!-- Theme Toggle Floating Button -->
+    <div class="absolute top-6 right-6 z-20">
+        <button id="theme-toggle" class="relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-850 text-slate-700 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group shadow-md">
+            <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
+            <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
+        </button>
+    </div>
+
+    <!-- Background Glow Blobs -->
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <!-- Login Card -->
+    <div class="glass-box p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md relative z-10 transition-all duration-300">
+        <div class="text-center mb-8">
+            <a href="/" class="text-3xl font-extrabold tracking-tighter text-slate-900 dark:text-white inline-block mb-2">
+                Rohan<span class="text-teal-600 dark:text-teal-400">.</span>
+            </a>
+            <p class="text-sm text-slate-500 dark:text-slate-400 font-mono">Restricted System Access</p>
+        </div>
+
+        <form id="login-form" method="POST" action="{% url 'login' %}" class="space-y-5">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Username</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <i class="ph ph-user text-lg"></i>
+                    </span>
+                    <input type="text" name="username" id="id_username" class="w-full pl-10 pr-4 py-3 bg-white/50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none text-slate-900 dark:text-white text-sm transition-all" placeholder="Enter username" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <i class="ph ph-lock-key text-lg"></i>
+                    </span>
+                    <input type="password" name="password" id="id_password" class="w-full pl-10 pr-4 py-3 bg-white/50 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none text-slate-900 dark:text-white text-sm transition-all" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 mt-2 bg-teal-500 hover:bg-teal-600 text-white dark:text-slate-950 font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(20,184,166,0.3)] hover:shadow-[0_0_25px_rgba(20,184,166,0.5)] flex items-center justify-center gap-2 text-sm tracking-wide">
+                <i class="ph ph-shield-check text-lg"></i> Authenticate
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <a href="/" class="text-xs text-slate-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors font-mono">&larr; Return to Portfolio Website</a>
+        </div>
+    </div>
+
+    <!-- Hacker Terminal Popup Modal -->
+    <div id="hacker-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-md transition-opacity duration-300">
+        <div class="glass-terminal w-11/12 max-w-lg rounded-2xl p-6 font-mono text-xs md:text-sm shadow-2xl relative overflow-hidden text-slate-100">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                    <span class="text-slate-400 ml-2 font-bold tracking-widest text-xs">SECURE_AUTH_DAEMON v4.2</span>
+                </div>
+                <div id="terminal-spinner" class="w-4 h-4 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            
+            <div id="terminal-logs" class="space-y-2 text-teal-400 min-h-[140px] max-h-[200px] overflow-y-auto mb-4">
+                <p class="text-slate-500">> Initializing handshake protocol...</p>
+            </div>
+
+            <div id="terminal-status" class="hidden pt-3 border-t border-slate-800 flex justify-between items-center">
+                <span id="status-text" class="font-bold"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.theme = 'dark';
+            } else {
+                localStorage.theme = 'light';
+            }
+        });
+
+        const form = document.getElementById('login-form');
+        const modal = document.getElementById('hacker-modal');
+        const logsContainer = document.getElementById('terminal-logs');
+        const spinner = document.getElementById('terminal-spinner');
+        const statusBox = document.getElementById('terminal-status');
+        const statusText = document.getElementById('status-text');
+
+        let shouldActuallySubmit = false;
+
+        form.addEventListener('submit', function(e) {
+            if (shouldActuallySubmit) return;
+            e.preventDefault();
+
+            modal.classList.remove('hidden');
+            logsContainer.innerHTML = '<p class="text-slate-400">> Establishing secure pipeline...</p>';
+            statusBox.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            const steps = [
+                { text: "> Encrypting payload with RSA-4096...", delay: 400 },
+                { text: "> Routing through proxy nodes...", delay: 900 },
+                { text: "> Authenticating signature & credentials...", delay: 1400 },
+                { text: "> Authorizing access rights...", delay: 1900 }
+            ];
+
+            steps.forEach((step) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.className = "text-teal-300";
+                    p.textContent = step.text;
+                    logsContainer.appendChild(p);
+                    logsContainer.scrollTop = logsContainer.scrollHeight;
+                }, step.delay);
+            });
+
+            setTimeout(() => {
+                spinner.classList.add('hidden');
+                statusBox.classList.remove('hidden');
+                statusText.className = "text-green-400 font-bold tracking-wide";
+                statusText.textContent = "[ STATUS: ACCESS GRANTED - SUCCESS ]";
+                
+                setTimeout(() => {
+                    shouldActuallySubmit = true;
+                    form.submit();
+                }, 800);
+
+            }, 2500);
+        });
+    </script>
+</body>
+</html>

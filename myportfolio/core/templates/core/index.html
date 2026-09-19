@@ -3,7 +3,7 @@
 <html lang="en" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ info.name|default:"Rohan Patil" }} | Portfolio</title>
     
     <!-- Google Fonts: Inter -->
@@ -41,7 +41,6 @@
     </script>
 
     <script>
-        // Check initial theme preference before page load to prevent flashing
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -80,7 +79,7 @@
             box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
         }
 
-        /* Infinite Carousel Animation */
+        /* Infinite Carousel Animation Container */
         .carousel-container {
             overflow: hidden;
             position: relative;
@@ -93,23 +92,22 @@
             display: flex;
             gap: 2rem;
             width: max-content;
-            animation: scroll 30s linear infinite;
+            animation: scroll 35s linear infinite;
+            transition: transform 0.3s ease-out;
         }
-        .carousel-track:hover {
+        .carousel-track.paused {
             animation-play-state: paused;
         }
+
         @keyframes scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(calc(-50% - 1rem)); } 
         }
 
-        /* Anti-Download/Anti-Screenshot Security */
+        /* Anti-Download / Anti-Screenshot Security */
         .no-select {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }
         @media print {
@@ -131,13 +129,23 @@
                 </div>
                 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8 items-center">
+                <div class="hidden md:flex space-x-6 items-center">
                     <a href="#home" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Home</a>
                     <a href="#about" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">About</a>
                     <a href="#experience" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Experience</a>
                     <a href="#projects" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Projects</a>
                     <a href="#skills" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Skills</a>
                     <a href="#contact" class="px-5 py-2.5 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/50 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white transition-all text-sm font-semibold">Contact</a>
+                    
+                    {% if user.is_staff %}
+                    <a href="{% url 'dashboard' %}" class="px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm font-semibold flex items-center gap-1.5">
+                        <i class="ph ph-gauge text-teal-500"></i> Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm font-semibold flex items-center gap-1.5">
+                        <i class="ph ph-sign-in text-teal-500"></i> Login
+                    </a>
+                    {% endif %}
                     
                     <!-- Theme Toggle Button -->
                     <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
@@ -147,57 +155,61 @@
                 </div>
 
                 <!-- Mobile Menu Buttons -->
-                <div class="md:hidden flex items-center gap-4">
-                    <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
-                        <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
-                        <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
+                <div class="md:hidden flex items-center gap-3">
+                    <button class="theme-toggle relative w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400">
+                        <i class="ph ph-sun text-lg absolute transition-all duration-500 translate-y-8 opacity-0 dark:translate-y-0 dark:opacity-100"></i>
+                        <i class="ph ph-moon text-lg absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-8 dark:opacity-0"></i>
                     </button>
-                    
-                    <button id="mobile-menu-btn" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none p-2 transition-colors">
+                    <button id="mobile-menu-btn" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none p-1">
                         <i class="ph ph-list text-3xl"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 absolute w-full left-0 top-20 shadow-xl transition-colors duration-300">
-            <div class="px-4 pt-2 pb-6 space-y-2 flex flex-col">
+            <div class="px-4 pt-3 pb-6 space-y-2 flex flex-col">
                 <a href="#home" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Home</a>
                 <a href="#about" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">About</a>
                 <a href="#experience" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Experience</a>
                 <a href="#projects" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Projects</a>
                 <a href="#skills" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Skills</a>
-                <a href="#contact" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link hover:text-teal-700 dark:hover:text-teal-300">Contact</a>
+                <a href="#contact" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link">Contact</a>
+                {% if user.is_staff %}
+                <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link">Dashboard</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="block px-3 py-2 text-base font-medium text-slate-600 dark:text-slate-400 mobile-link">Login</a>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    <section id="home" class="min-h-screen flex items-center justify-center pt-20 relative overflow-hidden">
+    <section id="home" class="min-h-screen flex items-center justify-center pt-28 pb-12 relative overflow-hidden">
         <div class="absolute top-1/4 left-10 w-72 h-72 bg-teal-500/20 dark:bg-teal-500/10 rounded-full blur-3xl -z-10 transition-colors duration-300"></div>
         <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-blue-600/20 dark:bg-blue-600/10 rounded-full blur-3xl -z-10 transition-colors duration-300"></div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center sm:text-left flex flex-col md:flex-row items-center justify-between gap-12">
-            <div class="flex-1 reveal">
-                <p class="text-teal-600 dark:text-teal-400 font-mono mb-4 tracking-wide">Hello World, I am</p>
-                <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-12">
+            <div class="flex-1 reveal w-full">
+                <p class="text-teal-600 dark:text-teal-400 font-mono mb-4 tracking-wide text-sm md:text-base">Hello World, I am</p>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors">
                     {{ info.name|default:"Rohan Patil" }}.
                 </h1>
-                <h2 class="text-3xl md:text-5xl font-bold text-slate-600 dark:text-slate-400 mb-6 bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500 bg-clip-text text-transparent inline-block">
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold text-slate-600 dark:text-slate-400 mb-6 bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500 bg-clip-text text-transparent inline-block">
                     {{ info.tagline|default:"Results-driven Full Stack & Backend Developer." }}
                 </h2>
                 
-                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-10">
-                    <a href="#projects" class="px-8 py-3 rounded-md bg-teal-500 text-white dark:text-slate-900 font-bold hover:bg-teal-600 dark:hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.4)]">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-8">
+                    <a href="#projects" class="w-full sm:w-auto text-center px-8 py-3 rounded-md bg-teal-500 text-white dark:text-slate-900 font-bold hover:bg-teal-600 dark:hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.4)]">
                         View My Work
                     </a>
                     
                     {% if info.resume %}
-                    <a href="{{ info.resume.url }}" download class="px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center gap-2">
+                    <a href="{{ info.resume.url }}" download class="w-full sm:w-auto text-center px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center justify-center gap-2">
                         <i class="ph ph-download-simple text-xl"></i> Download Resume
                     </a>
                     {% else %}
-                    <a href="#contact" class="px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center gap-2">
+                    <a href="#contact" class="w-full sm:w-auto text-center px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center justify-center gap-2">
                         <i class="ph ph-envelope-simple text-xl"></i> Contact for Resume
                     </a>
                     {% endif %}
@@ -209,11 +221,9 @@
                     <div class="absolute inset-0 border-2 border-teal-500/30 dark:border-teal-500/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
                     <div class="absolute inset-4 border-2 border-dashed border-blue-500/40 dark:border-blue-500/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
                     <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl dark:shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl rotate-3 hover:rotate-0 transition-transform duration-500">
                             <pre class="text-xs text-teal-600 dark:text-teal-400 font-mono text-left">
 <span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-amber-600 dark:text-yellow-300">build_api</span>():
-  <span class="text-slate-500 dark:text-slate-400"># Setting up highly</span>
-  <span class="text-slate-500 dark:text-slate-400"># scalable services</span>
   framework = <span class="text-green-600 dark:text-green-400">"Django"</span>
   cache = <span class="text-green-600 dark:text-green-400">"Redis"</span>
   db = <span class="text-green-600 dark:text-green-400">"MySQL"</span>
@@ -230,171 +240,159 @@
         </div>
     </section>
 
-    <section id="about" class="py-24 bg-white dark:bg-slate-850 relative transition-colors duration-300">
+    <section id="about" class="py-20 bg-white dark:bg-slate-850 relative transition-colors duration-300">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
-            <div class="flex items-center gap-4 mb-12">
-                <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">About Me</h2>
+            <div class="flex items-center gap-4 mb-10">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">About Me</h2>
                 <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
             </div>
             
-            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 md:p-12 shadow-lg dark:shadow-xl glow-card transition-all duration-300">
-                <div class="prose prose-lg max-w-none text-slate-600 dark:text-slate-400 space-y-6 transition-colors whitespace-pre-line">
-                    {{ info.about_text|default:"I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.
-
-I specialize in Django REST Framework, MySQL, and Redis caching to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments.
-
-Whether it's debugging complex issues, implementing secure user authentication, or maintaining production deployments, I am passionate about building robust applications that enhance business processes and user experiences." }}
+            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-lg glow-card transition-all duration-300">
+                <div class="prose max-w-none text-slate-600 dark:text-slate-400 space-y-4 text-sm sm:text-base whitespace-pre-line">
+                    {{ info.about_text|default:"I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies." }}
                 </div>
                 
-                <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center border-t border-slate-200 dark:border-slate-800 pt-8 transition-colors">
+                <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center border-t border-slate-200 dark:border-slate-800 pt-6">
                     <div>
-                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">2+</div>
-                        <div class="text-sm text-slate-500 uppercase tracking-wider">Years Exp.</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">2+</div>
+                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Years Exp.</div>
                     </div>
                     <div>
-                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">10+</div>
-                        <div class="text-sm text-slate-500 uppercase tracking-wider">Projects</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">10+</div>
+                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Projects</div>
                     </div>
                     <div>
-                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">High</div>
-                        <div class="text-sm text-slate-500 uppercase tracking-wider">Performance</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">High</div>
+                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Performance</div>
                     </div>
                     <div>
-                        <div class="text-3xl font-bold text-slate-900 dark:text-white mb-1 transition-colors">Agile</div>
-                        <div class="text-sm text-slate-500 uppercase tracking-wider">Approach</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">Agile</div>
+                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Approach</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="experience" class="py-24 relative">
+    <section id="experience" class="py-20 relative">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-4 mb-16 reveal">
-                <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Experience</h2>
+            <div class="flex items-center gap-4 mb-12 reveal">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Experience</h2>
                 <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
             </div>
 
-            <div class="relative border-l border-slate-300 dark:border-slate-700 ml-4 md:ml-0 space-y-12 transition-colors">
-                
+            <div class="relative border-l border-slate-300 dark:border-slate-700 ml-4 md:ml-0 space-y-10">
                 {% for exp in experiences %}
-                <div class="relative pl-8 md:pl-0 reveal">
+                <div class="relative pl-6 md:pl-0 reveal">
                     <div class="md:grid md:grid-cols-5 md:gap-8 items-start">
-                        <div class="md:col-span-1 md:text-right mb-2 md:mb-0 hidden md:block pt-1">
+                        <div class="md:col-span-1 md:text-right mb-1 md:mb-0 hidden md:block pt-1">
                             <span class="text-sm font-mono text-teal-600 dark:text-teal-400">{{ exp.duration }}</span>
                         </div>
                         <div class="md:col-span-4 relative">
-                            <!-- Timeline Dot -->
-                            <div class="absolute -left-10 md:-left-[21px] top-1.5 w-4 h-4 rounded-full {% if forloop.first %}bg-teal-500 ring-4 ring-slate-50 dark:ring-slate-900 border border-teal-300{% else %}bg-slate-300 dark:bg-slate-700 ring-4 ring-slate-50 dark:ring-slate-900 border border-slate-400 dark:border-slate-600{% endif %} transition-colors"></div>
+                            <div class="absolute -left-[31px] md:-left-[21px] top-1.5 w-4 h-4 rounded-full {% if forloop.first %}bg-teal-500 ring-4 ring-slate-50 dark:ring-slate-900 border border-teal-300{% else %}bg-slate-300 dark:bg-slate-700 ring-4 ring-slate-50 dark:ring-slate-900 border border-slate-400 dark:border-slate-600{% endif %}"></div>
                             
-                            <div class="md:hidden mb-2">
-                                <span class="text-sm font-mono text-teal-600 dark:text-teal-400">{{ exp.duration }}</span>
+                            <div class="md:hidden mb-1">
+                                <span class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ exp.duration }}</span>
                             </div>
                             
-                            <h3 class="text-xl font-bold text-slate-900 dark:text-white transition-colors">{{ exp.role }}</h3>
-                            <h4 class="text-lg text-slate-600 dark:text-slate-400 mb-4 font-medium flex items-center gap-2 transition-colors">
-                                <i class="ph ph-buildings {% if forloop.first %}text-teal-500{% else %}text-slate-400 dark:text-slate-500{% endif %}"></i> {{ exp.company }}
+                            <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">{{ exp.role }}</h3>
+                            <h4 class="text-base text-slate-600 dark:text-slate-400 mb-3 font-medium flex items-center gap-2">
+                                <i class="ph ph-buildings {% if forloop.first %}text-teal-500{% else %}text-slate-400{% endif %}"></i> {{ exp.company }}
                             </h4>
-                            
-                            <div class="space-y-2 text-slate-600 dark:text-slate-400 text-sm md:text-base whitespace-pre-line transition-colors">
+                            <div class="space-y-2 text-slate-600 dark:text-slate-400 text-sm sm:text-base whitespace-pre-line">
                                 {{ exp.description }}
                             </div>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-slate-500 ml-8 md:ml-0">Experience data will appear here once added in the admin panel.</p>
+                <p class="text-slate-500 ml-6">Experience data will appear here once added in the admin panel.</p>
                 {% endfor %}
-
             </div>
         </div>
     </section>
 
-    <section id="projects" class="py-24 bg-white dark:bg-slate-850 relative transition-colors duration-300">
+    <section id="projects" class="py-20 bg-white dark:bg-slate-850 relative transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-4 mb-16 reveal">
-                <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Featured Projects</h2>
+            <div class="flex items-center gap-4 mb-12 reveal">
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Featured Projects</h2>
                 <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for project in projects %}
-                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-2 transition-all duration-300 shadow-md hover:shadow-lg dark:shadow-lg glow-card flex flex-col reveal">
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-1 transition-all duration-300 shadow-md glow-card flex flex-col reveal">
                     <div class="p-6 flex-grow">
                         <div class="flex justify-between items-start mb-4">
-                            <i class="{{ project.icon_class|default:'ph-fill ph-folder' }} text-4xl text-teal-500"></i>
-                            <div class="flex gap-3">
-                                {% if project.github_link %}
-                                <a href="{{ project.github_link }}" target="_blank" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
-                                {% endif %}
-                            </div>
+                            <i class="{{ project.icon_class|default:'ph-fill ph-folder' }} text-3xl sm:text-4xl text-teal-500"></i>
+                            {% if project.github_link %}
+                            <a href="{{ project.github_link }}" target="_blank" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                            {% endif %}
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{{ project.title }}</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4 transition-colors">
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">{{ project.title }}</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4">
                             {{ project.description }}
                         </p>
                     </div>
                     <div class="px-6 pb-6 pt-2">
                         <p class="text-xs font-mono text-slate-500 font-semibold uppercase tracking-wider mb-2">Tech Stack:</p>
-                        <p class="text-sm font-mono text-teal-600 dark:text-teal-400">{{ project.tech_stack }}</p>
+                        <p class="text-xs sm:text-sm font-mono text-teal-600 dark:text-teal-400">{{ project.tech_stack }}</p>
                     </div>
                 </div>
                 {% empty %}
                 <p class="text-slate-500">Project data will appear here once added in the admin panel.</p>
                 {% endfor %}
-
             </div>
         </div>
     </section>
 
-    <section id="skills" class="py-24 relative">
+    <section id="skills" class="py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-16">
+            <div class="grid lg:grid-cols-2 gap-12">
                 
                 <!-- Technical Skills -->
                 <div class="reveal">
-                    <div class="flex items-center gap-4 mb-10">
-                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Technical Skills</h2>
+                    <div class="flex items-center gap-4 mb-8">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Technical Skills</h2>
                         <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
                     </div>
                     
-                    <div class="space-y-8">
+                    <div class="space-y-6">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors">
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                 <i class="ph ph-database text-teal-600 dark:text-teal-400"></i> Backend & Databases
                             </h3>
-                            <div class="flex flex-wrap gap-3">
+                            <div class="flex flex-wrap gap-2">
                                 {% for skill in backend_skills %}
-                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm dark:shadow-none">{{ skill.name }}</span>
+                                <span class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-700 dark:text-slate-300">{{ skill.name }}</span>
                                 {% empty %}
-                                <span class="text-slate-400 text-sm">Add backend skills in admin panel</span>
+                                <span class="text-slate-400 text-sm">No backend skills found</span>
                                 {% endfor %}
                             </div>
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors">
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                 <i class="ph ph-browser text-blue-500 dark:text-blue-400"></i> Frontend
                             </h3>
-                            <div class="flex flex-wrap gap-3">
+                            <div class="flex flex-wrap gap-2">
                                 {% for skill in frontend_skills %}
-                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-sm dark:shadow-none">{{ skill.name }}</span>
+                                <span class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-700 dark:text-slate-300">{{ skill.name }}</span>
                                 {% empty %}
-                                <span class="text-slate-400 text-sm">Add frontend skills in admin panel</span>
+                                <span class="text-slate-400 text-sm">No frontend skills found</span>
                                 {% endfor %}
                             </div>
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2 transition-colors">
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                 <i class="ph ph-cloud text-purple-500 dark:text-purple-400"></i> Cloud & Tools
                             </h3>
-                            <div class="flex flex-wrap gap-3">
+                            <div class="flex flex-wrap gap-2">
                                 {% for skill in tools_skills %}
-                                <span class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shadow-sm dark:shadow-none">{{ skill.name }}</span>
+                                <span class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-700 dark:text-slate-300">{{ skill.name }}</span>
                                 {% empty %}
-                                <span class="text-slate-400 text-sm">Add tool skills in admin panel</span>
+                                <span class="text-slate-400 text-sm">No tools found</span>
                                 {% endfor %}
                             </div>
                         </div>
@@ -403,35 +401,47 @@ Whether it's debugging complex issues, implementing secure user authentication, 
 
                 <!-- Education -->
                 <div class="reveal">
-                    <div class="flex items-center gap-4 mb-10">
-                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Education</h2>
+                    <div class="flex items-center gap-4 mb-8">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Education</h2>
                         <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
                     </div>
                     
-                    <div class="space-y-6">
+                    <div class="space-y-4">
                         {% for edu in education %}
-                        <div class="bg-white dark:bg-slate-850 p-5 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-teal-500 shadow-sm dark:shadow-none transition-colors">
-                            <h4 class="text-lg font-bold text-slate-900 dark:text-white transition-colors">{{ edu.title }}</h4>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1 transition-colors">{{ edu.institution }}</p>
+                        <div class="bg-white dark:bg-slate-850 p-4 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-teal-500 shadow-sm">
+                            <h4 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{{ edu.title }}</h4>
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">{{ edu.institution }}</p>
                             <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ edu.date_completed }}</p>
                         </div>
                         {% empty %}
-                        <p class="text-slate-400 text-sm">Add education in admin panel</p>
+                        <p class="text-slate-400 text-sm">No education records found</p>
                         {% endfor %}
                     </div>
                 </div>
 
             </div>
 
-            <!-- Certifications Carousel -->
-            <div class="mt-24 reveal">
-                <div class="flex items-center gap-4 mb-10">
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Licenses & Certifications</h2>
-                    <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+            <!-- Certifications Carousel with Manual Navigation Controls -->
+            <div class="mt-20 reveal">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-4 flex-grow">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap">Licenses & Certifications</h2>
+                        <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow hidden sm:block"></div>
+                    </div>
+                    
+                    <!-- Manual Scroll Buttons -->
+                    <div class="flex items-center gap-2 ml-4">
+                        <button onclick="scrollCarousel('left')" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 transition-colors shadow-sm" aria-label="Scroll Left">
+                            <i class="ph ph-caret-left text-xl"></i>
+                        </button>
+                        <button onclick="scrollCarousel('right')" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 transition-colors shadow-sm" aria-label="Scroll Right">
+                            <i class="ph ph-caret-right text-xl"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="carousel-container">
-                    <div class="carousel-track">
+                <div class="carousel-container" id="cert-carousel-container">
+                    <div class="carousel-track" id="cert-carousel-track">
                         <!-- Set 1 -->
                         {% for cert in certifications %}
                         <div class="w-72 flex-shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md group transition-colors cursor-pointer" 
@@ -457,15 +467,15 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                                     <i class="ph ph-certificate text-6xl text-slate-400 dark:text-slate-600"></i>
                                 {% endif %}
                             </div>
-                            <div class="p-5">
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
-                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
+                            <div class="p-4">
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
                                 <p class="text-xs font-mono text-teal-600 dark:text-teal-400 mt-2">{{ cert.date_completed }}</p>
                             </div>
                         </div>
                         {% endfor %}
                         
-                        <!-- Set 2 (Duplicate for infinite seamless loop) -->
+                        <!-- Set 2 (Duplicate for smooth looping) -->
                         {% for cert in certifications %}
                         <div class="w-72 flex-shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md group transition-colors cursor-pointer" 
                              onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
@@ -490,9 +500,9 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                                     <i class="ph ph-certificate text-6xl text-slate-400 dark:text-slate-600"></i>
                                 {% endif %}
                             </div>
-                            <div class="p-5">
-                                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
-                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
+                            <div class="p-4">
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
                                 <p class="text-xs font-mono text-teal-600 dark:text-teal-400 mt-2">{{ cert.date_completed }}</p>
                             </div>
                         </div>
@@ -504,77 +514,67 @@ Whether it's debugging complex issues, implementing secure user authentication, 
         </div>
     </section>
 
-    <section id="contact" class="py-24 bg-white dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 text-center relative overflow-hidden transition-colors duration-300">
-        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none transition-colors"></div>
+    <section id="contact" class="py-20 bg-white dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 text-center relative overflow-hidden transition-colors duration-300">
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative reveal">
-            <h2 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-6 transition-colors">Let's Connect</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-lg mb-10 max-w-2xl mx-auto transition-colors">
-                Currently looking for new opportunities and collaborations. Whether you have a question, a project proposal, or just want to say hi, I'll try my best to get back to you!
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Let's Connect</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
+                Currently looking for new opportunities and collaborations. Feel free to reach out!
             </p>
             
-            <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="inline-block px-8 py-4 rounded-md bg-transparent border-2 border-teal-500 text-teal-600 dark:text-teal-400 font-bold hover:bg-teal-500 hover:text-white dark:hover:text-slate-900 transition-all shadow-[0_0_15px_rgba(20,184,166,0.1)] hover:shadow-[0_0_20px_rgba(20,184,166,0.5)] mb-12">
+            <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="inline-block px-8 py-3.5 rounded-md bg-transparent border-2 border-teal-500 text-teal-600 dark:text-teal-400 font-bold hover:bg-teal-500 hover:text-white dark:hover:text-slate-900 transition-all shadow-sm mb-10">
                 Say Hello
             </a>
             
-            <div class="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 mb-12">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-10 text-sm sm:text-base">
                 <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                    <i class="ph ph-envelope-simple text-2xl"></i> {{ info.email|default:'rohanrpatil24@gmail.com' }}
+                    <i class="ph ph-envelope-simple text-xl"></i> {{ info.email|default:'rohanrpatil24@gmail.com' }}
                 </a>
                 <a href="tel:{{ info.phone|default:'+919653639991' }}" class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                    <i class="ph ph-phone text-2xl"></i> {{ info.phone|default:'+91 9653639991' }}
+                    <i class="ph ph-phone text-xl"></i> {{ info.phone|default:'+91 9653639991' }}
                 </a>
-                <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300 transition-colors">
-                    <i class="ph ph-map-pin text-2xl text-slate-500 dark:text-slate-400"></i> {{ info.location|default:'Mumbai, Maharashtra' }}
+                <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                    <i class="ph ph-map-pin text-xl text-slate-500"></i> {{ info.location|default:'Mumbai, Maharashtra' }}
                 </span>
             </div>
 
             <div class="flex justify-center space-x-6">
                 {% if info.github_url %}
-                <a href="{{ info.github_url }}" target="_blank" class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors hover:-translate-y-1 transform inline-block">
-                    <span class="sr-only">GitHub</span>
+                <a href="{{ info.github_url }}" target="_blank" class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                     <i class="ph ph-github-logo text-3xl"></i>
                 </a>
                 {% endif %}
                 {% if info.linkedin_url %}
-                <a href="{{ info.linkedin_url }}" target="_blank" class="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors hover:-translate-y-1 transform inline-block">
-                    <span class="sr-only">LinkedIn</span>
+                <a href="{{ info.linkedin_url }}" target="_blank" class="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
                     <i class="ph ph-linkedin-logo text-3xl"></i>
                 </a>
                 {% endif %}
             </div>
         </div>
         
-        <div class="mt-20 text-slate-500 dark:text-slate-600 text-sm transition-colors">
+        <div class="mt-16 text-slate-500 dark:text-slate-600 text-xs sm:text-sm">
             <p>Designed & Built by {{ info.name|default:"Rohan Patil" }} &copy; <span id="year"></span></p>
         </div>
     </section>
 
-    <!-- Certificate Secure Modal -->
-    <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-900/95 backdrop-blur-sm transition-opacity duration-300 opacity-0 no-select" oncontextmenu="return false;">
+    <!-- Secure Certificate Preview Modal -->
+    <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-950/90 backdrop-blur-sm transition-opacity duration-300 opacity-0 no-select" oncontextmenu="return false;">
         <div class="relative w-11/12 md:w-3/4 max-w-5xl bg-white dark:bg-slate-850 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all transform scale-95" id="cert-modal-card">
-            
-            <!-- Header -->
             <div class="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
                 <div class="flex items-center gap-2">
                     <i class="ph-fill ph-lock-key text-teal-500"></i>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Secure Preview</h3>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Secure Preview</h3>
                 </div>
-                <button onclick="closeCertModal()" class="text-slate-500 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800">
+                <button onclick="closeCertModal()" class="text-slate-500 hover:text-red-500 transition-colors p-1 rounded-md">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
-            
-            <!-- Dynamic Content -->
-            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-200 dark:bg-slate-800 flex items-center justify-center min-h-[50vh] p-2 sm:p-6 transition-all duration-300">
-                <!-- Injected via JS -->
-            </div>
-            
+            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-200 dark:bg-slate-800 flex items-center justify-center min-h-[50vh] p-2 sm:p-6"></div>
         </div>
     </div>
 
     <script>
-        // Set Current Year in Footer
         document.getElementById('year').textContent = new Date().getFullYear();
 
         // Theme Toggle Logic
@@ -596,11 +596,9 @@ Whether it's debugging complex issues, implementing secure user authentication, 
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
-                navbar.classList.add('shadow-md', 'py-1');
-                navbar.classList.remove('py-3');
+                navbar.classList.add('shadow-md');
             } else {
-                navbar.classList.remove('shadow-md', 'py-1');
-                navbar.classList.add('py-3');
+                navbar.classList.remove('shadow-md');
             }
         });
 
@@ -614,78 +612,28 @@ Whether it's debugging complex issues, implementing secure user authentication, 
 
         // Scroll Reveal Animations
         const revealElements = document.querySelectorAll('.reveal');
-        const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
-        const revealObserver = new IntersectionObserver(function(entries, observer) {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
                     observer.unobserve(entry.target);
                 }
             });
-        }, revealOptions);
+        }, { threshold: 0.1 });
         revealElements.forEach(el => revealObserver.observe(el));
 
-        // --- SPA Scrollspy & Clean URL Logic ---
-        const sections = document.querySelectorAll('section');
-        const navLinks = document.querySelectorAll('nav a[href^="#"]');
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetSection = document.getElementById(targetId);
-                
-                if (targetSection) {
-                    window.scrollTo({ top: targetSection.offsetTop - 75, behavior: 'smooth' });
-                    const cleanUrl = targetId === 'home' ? '/' : `/${targetId}`;
-                    window.history.pushState(null, null, cleanUrl);
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                }
-            });
-        });
-
-        window.addEventListener('scroll', () => {
-            let currentSectionId = '';
-            const scrollY = window.pageYOffset;
-
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                const sectionHeight = section.clientHeight;
-                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                    currentSectionId = section.getAttribute('id');
-                }
-            });
-
-            navLinks.forEach(link => {
-                link.classList.remove('text-teal-600', 'dark:text-teal-400', 'font-bold');
-                if (link.getAttribute('href') === `#${currentSectionId}`) {
-                    link.classList.add('text-teal-600', 'dark:text-teal-400', 'font-bold');
-                }
-            });
-
-            if (currentSectionId) {
-                const cleanUrl = currentSectionId === 'home' ? '/' : `/${currentSectionId}`;
-                if (window.location.pathname !== cleanUrl && window.location.pathname !== `/admin`) {
-                    window.history.replaceState(null, null, cleanUrl);
-                }
+        // --- Manual Carousel Controls ---
+        const carouselTrack = document.getElementById('cert-carousel-track');
+        function scrollCarousel(direction) {
+            const scrollAmount = 300;
+            if (direction === 'left') {
+                carouselTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                carouselTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             }
-        });
+        }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const path = window.location.pathname.replace(/\//g, '');
-            if (path && path !== 'home' && path !== 'admin') {
-                const targetSection = document.getElementById(path);
-                if (targetSection) {
-                    setTimeout(() => {
-                        window.scrollTo({ top: targetSection.offsetTop - 75, behavior: 'smooth' });
-                    }, 100);
-                }
-            }
-        });
-
-        // --- SECURE MODAL LOGIC ---
+        // --- Secure Modal Logic ---
         const certModal = document.getElementById('cert-modal');
         const certModalCard = document.getElementById('cert-modal-card');
         const certModalContent = document.getElementById('cert-modal-content');
@@ -693,8 +641,6 @@ Whether it's debugging complex issues, implementing secure user authentication, 
         function openCertModal(url, isPdf) {
             certModal.classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
-            
-            // Allow display block to apply before fading in
             setTimeout(() => {
                 certModal.classList.remove('opacity-0');
                 certModalCard.classList.remove('scale-95');
@@ -702,15 +648,13 @@ Whether it's debugging complex issues, implementing secure user authentication, 
             }, 10);
 
             if (isPdf) {
-                // PDF: Overlay a transparent div to block interacting with native PDF tools
                 certModalContent.innerHTML = `
                     <div class="relative w-full h-[70vh] shadow-lg">
                         <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full border-none rounded-lg" scrolling="no"></iframe>
-                        <div class="absolute inset-0 z-10 bg-transparent cursor-default" oncontextmenu="return false;"></div>
+                        <div class="absolute inset-0 z-10 bg-transparent" oncontextmenu="return false;"></div>
                     </div>
                 `;
             } else {
-                // Image: Pointer events none and draggable false to prevent dragging/long-press save
                 certModalContent.innerHTML = `
                     <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg pointer-events-none" draggable="false" oncontextmenu="return false;">
                 `;
@@ -721,29 +665,23 @@ Whether it's debugging complex issues, implementing secure user authentication, 
             certModal.classList.add('opacity-0');
             certModalCard.classList.remove('scale-100');
             certModalCard.classList.add('scale-95');
-            
             setTimeout(() => {
                 certModal.classList.add('hidden');
-                certModalContent.innerHTML = ''; // Clear to stop loading
+                certModalContent.innerHTML = '';
                 document.body.classList.remove('overflow-hidden');
             }, 300);
         }
 
-        // Close Modal on clicking the outside overlay
         certModal.addEventListener('click', (e) => {
-            if (e.target === certModal) {
-                closeCertModal();
-            }
+            if (e.target === certModal) closeCertModal();
         });
 
-        // Close on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !certModal.classList.contains('hidden')) {
                 closeCertModal();
             }
         });
 
-        // Anti-Screenshot (Blur trick): Blurs the modal content if the user clicks away or opens snipping tool
         window.addEventListener('blur', () => {
             if (!certModal.classList.contains('hidden')) {
                 certModalContent.style.filter = 'blur(15px)';
@@ -752,7 +690,6 @@ Whether it's debugging complex issues, implementing secure user authentication, 
         window.addEventListener('focus', () => {
             certModalContent.style.filter = 'none';
         });
-
     </script>
 </body>
 </html>
