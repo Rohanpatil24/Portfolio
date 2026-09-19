@@ -79,6 +79,44 @@
         .glow-card:hover {
             box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
         }
+
+        /* Infinite Carousel Animation */
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            padding: 20px 0;
+        }
+        .carousel-track {
+            display: flex;
+            gap: 2rem;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+        }
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-50% - 1rem)); } 
+        }
+
+        /* Anti-Download/Anti-Screenshot Security */
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300">
@@ -87,8 +125,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex-shrink-0">
-                    <a href="#" class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-white">
-                        {{ info.name|default:"Rohan"|truncatechars:10 }}<span class="text-teal-600 dark:text-teal-400">.</span>
+                    <a href="#home" class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-white">
+                        Rohan<span class="text-teal-600 dark:text-teal-400">.</span>
                     </a>
                 </div>
                 
@@ -99,7 +137,7 @@
                     <a href="#experience" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Experience</a>
                     <a href="#projects" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Projects</a>
                     <a href="#skills" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Skills</a>
-                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/50 hover:bg-teal-500 hover:text-white dark:hover:text-slate-900 transition-all text-sm font-semibold">Contact</a>
+                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/50 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white transition-all text-sm font-semibold">Contact</a>
                     
                     <!-- Theme Toggle Button -->
                     <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
@@ -130,7 +168,7 @@
                 <a href="#experience" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Experience</a>
                 <a href="#projects" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Projects</a>
                 <a href="#skills" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Skills</a>
-                <a href="#contact" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link">Contact</a>
+                <a href="#contact" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link hover:text-teal-700 dark:hover:text-teal-300">Contact</a>
             </div>
         </div>
     </nav>
@@ -153,9 +191,16 @@
                     <a href="#projects" class="px-8 py-3 rounded-md bg-teal-500 text-white dark:text-slate-900 font-bold hover:bg-teal-600 dark:hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.4)]">
                         View My Work
                     </a>
-                    <a href="#contact" class="px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center gap-2">
+                    
+                    {% if info.resume %}
+                    <a href="{{ info.resume.url }}" download class="px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center gap-2">
                         <i class="ph ph-download-simple text-xl"></i> Download Resume
                     </a>
+                    {% else %}
+                    <a href="#contact" class="px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center gap-2">
+                        <i class="ph ph-envelope-simple text-xl"></i> Contact for Resume
+                    </a>
+                    {% endif %}
                 </div>
             </div>
             
@@ -258,7 +303,6 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                     </div>
                 </div>
                 {% empty %}
-                <!-- Fallback if database is empty -->
                 <p class="text-slate-500 ml-8 md:ml-0">Experience data will appear here once added in the admin panel.</p>
                 {% endfor %}
 
@@ -357,15 +401,14 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                     </div>
                 </div>
 
-                <!-- Education & Certs -->
+                <!-- Education -->
                 <div class="reveal">
                     <div class="flex items-center gap-4 mb-10">
-                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Education & Certs</h2>
+                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Education</h2>
                         <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
                     </div>
                     
                     <div class="space-y-6">
-                        <!-- Education items -->
                         {% for edu in education %}
                         <div class="bg-white dark:bg-slate-850 p-5 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-teal-500 shadow-sm dark:shadow-none transition-colors">
                             <h4 class="text-lg font-bold text-slate-900 dark:text-white transition-colors">{{ edu.title }}</h4>
@@ -375,25 +418,89 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                         {% empty %}
                         <p class="text-slate-400 text-sm">Add education in admin panel</p>
                         {% endfor %}
-
-                        <!-- Certifications list -->
-                        <div class="mt-8">
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 transition-colors">Key Certifications</h3>
-                            <ul class="space-y-3">
-                                {% for cert in certifications %}
-                                <li class="flex items-center gap-3">
-                                    <i class="ph-fill ph-certificate text-teal-500"></i>
-                                    <span class="text-slate-700 dark:text-slate-300 transition-colors">{{ cert.title }} ({{ cert.institution }})</span>
-                                </li>
-                                {% empty %}
-                                <p class="text-slate-400 text-sm">Add certifications in admin panel</p>
-                                {% endfor %}
-                            </ul>
-                        </div>
                     </div>
                 </div>
 
             </div>
+
+            <!-- Certifications Carousel -->
+            <div class="mt-24 reveal">
+                <div class="flex items-center gap-4 mb-10">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Licenses & Certifications</h2>
+                    <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+                </div>
+
+                <div class="carousel-container">
+                    <div class="carousel-track">
+                        <!-- Set 1 -->
+                        {% for cert in certifications %}
+                        <div class="w-72 flex-shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md group transition-colors cursor-pointer" 
+                             onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
+                            <div class="h-40 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden relative">
+                                {% if cert.file %}
+                                    {% if '.pdf' in cert.file.url|lower %}
+                                        <div class="relative w-full h-full group/pdf">
+                                            <iframe src="{{ cert.file.url }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full pointer-events-none border-none overflow-hidden" scrolling="no"></iframe>
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="relative w-full h-full">
+                                            <img src="{{ cert.file.url }}" alt="{{ cert.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="ph ph-certificate text-6xl text-slate-400 dark:text-slate-600"></i>
+                                {% endif %}
+                            </div>
+                            <div class="p-5">
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
+                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400 mt-2">{{ cert.date_completed }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Set 2 (Duplicate for infinite seamless loop) -->
+                        {% for cert in certifications %}
+                        <div class="w-72 flex-shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md group transition-colors cursor-pointer" 
+                             onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
+                            <div class="h-40 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden relative">
+                                {% if cert.file %}
+                                    {% if '.pdf' in cert.file.url|lower %}
+                                        <div class="relative w-full h-full group/pdf">
+                                            <iframe src="{{ cert.file.url }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full pointer-events-none border-none overflow-hidden" scrolling="no"></iframe>
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="relative w-full h-full">
+                                            <img src="{{ cert.file.url }}" alt="{{ cert.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="ph ph-certificate text-6xl text-slate-400 dark:text-slate-600"></i>
+                                {% endif %}
+                            </div>
+                            <div class="p-5">
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
+                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400 mt-2">{{ cert.date_completed }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -442,6 +549,29 @@ Whether it's debugging complex issues, implementing secure user authentication, 
             <p>Designed & Built by {{ info.name|default:"Rohan Patil" }} &copy; <span id="year"></span></p>
         </div>
     </section>
+
+    <!-- Certificate Secure Modal -->
+    <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-900/95 backdrop-blur-sm transition-opacity duration-300 opacity-0 no-select" oncontextmenu="return false;">
+        <div class="relative w-11/12 md:w-3/4 max-w-5xl bg-white dark:bg-slate-850 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all transform scale-95" id="cert-modal-card">
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                <div class="flex items-center gap-2">
+                    <i class="ph-fill ph-lock-key text-teal-500"></i>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Secure Preview</h3>
+                </div>
+                <button onclick="closeCertModal()" class="text-slate-500 hover:text-red-500 transition-colors p-1 rounded-md hover:bg-slate-200 dark:hover:bg-slate-800">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Dynamic Content -->
+            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-200 dark:bg-slate-800 flex items-center justify-center min-h-[50vh] p-2 sm:p-6 transition-all duration-300">
+                <!-- Injected via JS -->
+            </div>
+            
+        </div>
+    </div>
 
     <script>
         // Set Current Year in Footer
@@ -495,11 +625,10 @@ Whether it's debugging complex issues, implementing secure user authentication, 
         }, revealOptions);
         revealElements.forEach(el => revealObserver.observe(el));
 
-        // --- NEW: Scrollspy & Clean URL Logic ---
+        // --- SPA Scrollspy & Clean URL Logic ---
         const sections = document.querySelectorAll('section');
         const navLinks = document.querySelectorAll('nav a[href^="#"]');
 
-        // 1. Intercept Nav Clicks (Smooth scroll & Clean URL update)
         navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -507,17 +636,9 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                 const targetSection = document.getElementById(targetId);
                 
                 if (targetSection) {
-                    // Scroll to section (offset for fixed navbar)
-                    window.scrollTo({
-                        top: targetSection.offsetTop - 75,
-                        behavior: 'smooth'
-                    });
-                    
-                    // Update URL cleanly without reloading
+                    window.scrollTo({ top: targetSection.offsetTop - 75, behavior: 'smooth' });
                     const cleanUrl = targetId === 'home' ? '/' : `/${targetId}`;
                     window.history.pushState(null, null, cleanUrl);
-                    
-                    // Close mobile menu if open
                     if (!mobileMenu.classList.contains('hidden')) {
                         mobileMenu.classList.add('hidden');
                     }
@@ -525,7 +646,6 @@ Whether it's debugging complex issues, implementing secure user authentication, 
             });
         });
 
-        // 2. Scrollspy (Highlight active link & update URL on scroll)
         window.addEventListener('scroll', () => {
             let currentSectionId = '';
             const scrollY = window.pageYOffset;
@@ -538,7 +658,6 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                 }
             });
 
-            // Toggle active styling
             navLinks.forEach(link => {
                 link.classList.remove('text-teal-600', 'dark:text-teal-400', 'font-bold');
                 if (link.getAttribute('href') === `#${currentSectionId}`) {
@@ -546,7 +665,6 @@ Whether it's debugging complex issues, implementing secure user authentication, 
                 }
             });
 
-            // Silently update URL as you scroll past sections
             if (currentSectionId) {
                 const cleanUrl = currentSectionId === 'home' ? '/' : `/${currentSectionId}`;
                 if (window.location.pathname !== cleanUrl && window.location.pathname !== `/admin`) {
@@ -555,21 +673,86 @@ Whether it's debugging complex issues, implementing secure user authentication, 
             }
         });
 
-        // 3. Handle direct page loads to clean URLs (e.g. refreshing on /skills)
         window.addEventListener('DOMContentLoaded', () => {
             const path = window.location.pathname.replace(/\//g, '');
             if (path && path !== 'home' && path !== 'admin') {
                 const targetSection = document.getElementById(path);
                 if (targetSection) {
                     setTimeout(() => {
-                        window.scrollTo({
-                            top: targetSection.offsetTop - 75,
-                            behavior: 'smooth'
-                        });
-                    }, 100); // Slight delay ensures DOM is fully rendered before scrolling
+                        window.scrollTo({ top: targetSection.offsetTop - 75, behavior: 'smooth' });
+                    }, 100);
                 }
             }
         });
+
+        // --- SECURE MODAL LOGIC ---
+        const certModal = document.getElementById('cert-modal');
+        const certModalCard = document.getElementById('cert-modal-card');
+        const certModalContent = document.getElementById('cert-modal-content');
+
+        function openCertModal(url, isPdf) {
+            certModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            
+            // Allow display block to apply before fading in
+            setTimeout(() => {
+                certModal.classList.remove('opacity-0');
+                certModalCard.classList.remove('scale-95');
+                certModalCard.classList.add('scale-100');
+            }, 10);
+
+            if (isPdf) {
+                // PDF: Overlay a transparent div to block interacting with native PDF tools
+                certModalContent.innerHTML = `
+                    <div class="relative w-full h-[70vh] shadow-lg">
+                        <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full border-none rounded-lg" scrolling="no"></iframe>
+                        <div class="absolute inset-0 z-10 bg-transparent cursor-default" oncontextmenu="return false;"></div>
+                    </div>
+                `;
+            } else {
+                // Image: Pointer events none and draggable false to prevent dragging/long-press save
+                certModalContent.innerHTML = `
+                    <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg pointer-events-none" draggable="false" oncontextmenu="return false;">
+                `;
+            }
+        }
+
+        function closeCertModal() {
+            certModal.classList.add('opacity-0');
+            certModalCard.classList.remove('scale-100');
+            certModalCard.classList.add('scale-95');
+            
+            setTimeout(() => {
+                certModal.classList.add('hidden');
+                certModalContent.innerHTML = ''; // Clear to stop loading
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
+        // Close Modal on clicking the outside overlay
+        certModal.addEventListener('click', (e) => {
+            if (e.target === certModal) {
+                closeCertModal();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !certModal.classList.contains('hidden')) {
+                closeCertModal();
+            }
+        });
+
+        // Anti-Screenshot (Blur trick): Blurs the modal content if the user clicks away or opens snipping tool
+        window.addEventListener('blur', () => {
+            if (!certModal.classList.contains('hidden')) {
+                certModalContent.style.filter = 'blur(15px)';
+            }
+        });
+        window.addEventListener('focus', () => {
+            certModalContent.style.filter = 'none';
+        });
+
     </script>
 </body>
 </html>

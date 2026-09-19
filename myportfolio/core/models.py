@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 
 class PersonalInfo(models.Model):
@@ -9,6 +11,7 @@ class PersonalInfo(models.Model):
     location = models.CharField(max_length=100)
     github_url = models.URLField(blank=True)
     linkedin_url = models.URLField(blank=True)
+    resume = models.FileField(upload_to='resumes/', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -56,7 +59,22 @@ class Education(models.Model):
     title = models.CharField(max_length=150)
     institution = models.CharField(max_length=150)
     date_completed = models.CharField(max_length=50)
-    is_certification = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+class Certification(models.Model):
+    title = models.CharField(max_length=150)
+    institution = models.CharField(max_length=150)
+    date_completed = models.CharField(max_length=50)
+    file = models.FileField(upload_to='certificates/', blank=True, null=True, help_text="Upload an image or PDF")
+
+    @property
+    def is_pdf(self):
+        # Bulletproof check for PDF files
+        if self.file and self.file.name:
+            return self.file.name.lower().endswith('.pdf')
+        return False
 
     def __str__(self):
         return self.title
