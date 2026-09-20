@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- High-Tech Quantum "R" SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b0f19'/><rect x='1' y='1' width='30' height='30' rx='7' fill='none' stroke='%2314b8a6' stroke-width='1.5' stroke-opacity='0.4'/><text x='50%25' y='65%25' font-family='monospace' font-weight='900' font-size='20' fill='%232dd4bf' text-anchor='middle' dominant-baseline='middle'>R</text><circle cx='24' cy='8' r='2' fill='%232dd4bf'/></svg>">
+    
     <title>{{ info.name|default:"Rohan Patil" }} | Quantum Portfolio</title>
     
     <!-- Google Fonts: Inter & Space Grotesk -->
@@ -89,7 +93,7 @@
             box-shadow: 0 0 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        /* Active Scroll Tilt Animation for Cards */
+        /* Active Scroll Elevation Effect */
         .card-stream-active {
             transform: translateY(-8px) scale(1.02);
             border-color: rgba(20, 184, 166, 0.6) !important;
@@ -114,7 +118,7 @@
             transform: translateY(0) scale(1);
         }
 
-        /* Career Matrix Timeline Pulse Classes */
+        /* Career Matrix Timeline Pulse */
         .timeline-ball {
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -250,11 +254,11 @@
         </div>
     </nav>
 
-    <!-- DYNAMIC FIXED VERTICAL GLASSMORPHIC SLIDESHOW CONTROL DOCK -->
-    <div id="slideshow-dock" class="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2.5 p-2 rounded-2xl glass-dock shadow-2xl transition-all duration-500">
+    <!-- FIXED SLIDESHOW DOCK AT BOTTOM-RIGHT (SQUARE ORIGIN) -->
+    <div id="slideshow-dock" class="fixed right-4 md:right-8 bottom-6 md:bottom-8 z-40 flex flex-col-reverse items-center p-2 rounded-2xl glass-dock shadow-2xl transition-all duration-500 w-15 h-15">
         
         <!-- Start / Pause Button Container -->
-        <div id="play-pause-container" class="transition-all duration-500 origin-center overflow-hidden">
+        <div id="play-pause-container" class="transition-all duration-500 origin-center overflow-hidden flex items-center justify-center">
             <button id="slideshow-toggle-btn" onclick="togglePresentationMode()" title="Start Auto-Scroll Slideshow" class="w-11 h-11 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
                 <span id="slideshow-icon" class="flex items-center justify-center">
                     <!-- Play SVG Icon -->
@@ -266,17 +270,17 @@
         </div>
 
         <!-- Speed Selector Button -->
-        <div id="speed-container" class="transition-all duration-500 max-h-0 opacity-0 pointer-events-none scale-90 overflow-hidden">
+        <div id="speed-container" class="hidden transition-all duration-500 scale-90 overflow-hidden mb-2">
             <button id="slideshow-speed-btn" onclick="cycleScrollSpeed()" title="Cycle Scroll Speed" class="w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-xs text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 border border-teal-500/30 transition-all duration-300 shadow-sm">
                 <span id="speed-indicator">1x</span>
             </button>
         </div>
 
         <!-- Divider Line -->
-        <div id="dock-divider" class="transition-all duration-500 max-h-0 opacity-0 overflow-hidden w-6 h-px bg-slate-300/80 dark:bg-teal-500/20"></div>
+        <div id="dock-divider" class="hidden transition-all duration-500 overflow-hidden w-6 h-px bg-slate-300/80 dark:bg-teal-500/20 mb-2"></div>
 
         <!-- Restart Button Container -->
-        <div id="restart-container" class="transition-all duration-500 max-h-0 opacity-0 pointer-events-none scale-90 overflow-hidden">
+        <div id="restart-container" class="hidden transition-all duration-500 scale-90 overflow-hidden mb-2">
             <button id="slideshow-restart-btn" onclick="restartPresentationMode()" title="Restart from Beginning (3s Hold)" class="w-11 h-11 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
                 <!-- Restart SVG Icon -->
                 <svg class="w-5 h-5 fill-current transition-transform group-hover:-rotate-180 duration-500" viewBox="0 0 24 24">
@@ -351,13 +355,13 @@
             
             <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden group">
                 <div class="prose max-w-none text-slate-600 dark:text-slate-300 space-y-6 text-base md:text-lg leading-relaxed font-light">
-                {% if info.about_text %}
-                    <div class="whitespace-pre-line">{{ info.about_text }}</div>
-                {% else %}
-                    <p>I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.</p>
-                    <p>I specialize in Django REST Framework, MySQL, and Redis caching to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments.</p>
-                {% endif %}
-            </div>
+                    {% if info.about_text %}
+                        <div class="whitespace-pre-line">{{ info.about_text }}</div>
+                    {% else %}
+                        <p>I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.</p>
+                        <p>I specialize in Django REST Framework, MySQL, and Redis caching to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments.</p>
+                    {% endif %}
+                </div>
                 
                 <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center border-t border-teal-500/20 pt-8">
                     <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
@@ -927,27 +931,25 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // --- FULLY FIXED RESPONSIVE CAROUSEL ENGINE (SWIPE, DESKTOP BUTTONS & AUTO-RETURN) ---
+        // --- CAROUSEL ENGINE (SWIPE, BUTTONS & 3-SECOND INACTIVITY AUTO-START) ---
         const carouselContainer = document.getElementById('cert-carousel-container');
         const carouselTrack = document.getElementById('cert-carousel-track');
         const btnLeft = document.getElementById('carousel-left-btn');
         const btnRight = document.getElementById('carousel-right-btn');
 
-        let isCarouseInteracting = false;
+        let isCarouselInteracting = false;
         let carouselAutoLoopId = null;
         let carouselIdleTimeout = null;
         const cardWidthOffset = 352; // 320px width + 32px gap
-        const driftVelocity = 0.8; // Smooth sub-pixel drift per frame
+        const driftVelocity = 0.8; // Smooth sub-pixel drift
 
-        // Smooth Auto-Drift Loop (Right to Left)
         function startCarouselAutoDrift() {
             if (carouselAutoLoopId) cancelAnimationFrame(carouselAutoLoopId);
 
             function driftStep() {
-                if (!isCarouseInteracting) {
+                if (!isCarouselInteracting) {
                     carouselContainer.scrollLeft += driftVelocity;
 
-                    // Infinite seamless wrap when reaching half-track
                     if (carouselContainer.scrollLeft >= carouselTrack.scrollWidth / 2) {
                         carouselContainer.scrollLeft -= carouselTrack.scrollWidth / 2;
                     }
@@ -957,17 +959,15 @@
             carouselAutoLoopId = requestAnimationFrame(driftStep);
         }
 
-        // Pause drift, and start 3-second recovery countdown
         function registerCarouselInteraction() {
-            isCarouseInteracting = true;
+            isCarouselInteracting = true;
             if (carouselIdleTimeout) clearTimeout(carouselIdleTimeout);
 
             carouselIdleTimeout = setTimeout(() => {
-                isCarouseInteracting = false;
+                isCarouselInteracting = false;
             }, 3000);
         }
 
-        // Desktop Button Click Controls
         if (btnLeft && btnRight) {
             btnLeft.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -982,7 +982,6 @@
             });
         }
 
-        // Touch & Swipe Listeners for Mobile & Desktop Drag
         let startTouchX = 0;
         let startScrollLeft = 0;
 
@@ -1001,7 +1000,6 @@
 
         carouselContainer.addEventListener('touchend', registerCarouselInteraction, { passive: true });
 
-        // Desktop Mouse Drag Support
         let isMouseDown = false;
         let mouseStartX = 0;
         carouselContainer.addEventListener('mousedown', (e) => {
@@ -1027,10 +1025,9 @@
             carouselContainer.scrollLeft = startScrollLeft - walk;
         });
 
-        // Initialize Carousel Auto-Drift
         startCarouselAutoDrift();
 
-        // --- REFINED SUB-PIXEL SLIDESHOW & REAL-TIME INTERACTIVE EFFECTS ENGINE ---
+        // --- SUB-PIXEL CONTINUOUS KINEMATIC GLIDE ENGINE ---
         let isAutoScrolling = false;
         let scrollAnimationId = null;
         let lastTimestamp = null;
@@ -1050,6 +1047,7 @@
                 <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
             </svg>`;
 
+        const slideshowDock = document.getElementById('slideshow-dock');
         const playPauseContainer = document.getElementById('play-pause-container');
         const speedContainer = document.getElementById('speed-container');
         const dockDivider = document.getElementById('dock-divider');
@@ -1058,47 +1056,42 @@
         const iconSpan = document.getElementById('slideshow-icon');
         const speedIndicator = document.getElementById('speed-indicator');
 
-        // Dynamic Elements for Real-time Glow & Animations
         const timelineSteps = document.querySelectorAll('.experience-step-node');
         const interactiveCards = document.querySelectorAll('.glass-panel');
 
         function revealDockControls() {
-            speedContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-90');
-            speedContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+            slideshowDock.classList.remove('w-15', 'h-15');
+            
+            speedContainer.classList.remove('hidden');
+            dockDivider.classList.remove('hidden');
+            restartContainer.classList.remove('hidden');
 
-            dockDivider.classList.remove('max-h-0', 'opacity-0');
-            dockDivider.classList.add('max-h-4', 'opacity-100');
-
-            restartContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-90');
-            restartContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+            setTimeout(() => {
+                speedContainer.classList.remove('scale-90');
+                speedContainer.classList.add('scale-100');
+                restartContainer.classList.remove('scale-90');
+                restartContainer.classList.add('scale-100');
+            }, 20);
         }
 
         function hideActiveControlsAtEnd() {
-            playPauseContainer.classList.add('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
-            playPauseContainer.classList.remove('opacity-100', 'scale-100');
-
-            speedContainer.classList.add('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
-            speedContainer.classList.remove('max-h-12', 'opacity-100', 'scale-100');
-
-            dockDivider.classList.remove('max-h-0', 'opacity-0');
-            dockDivider.classList.add('max-h-4', 'opacity-100');
-            restartContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-90');
-            restartContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+            playPauseContainer.classList.add('hidden');
+            speedContainer.classList.add('hidden');
+            dockDivider.classList.add('hidden');
+            restartContainer.classList.remove('hidden', 'mb-2');
         }
 
         function unhideAllControls() {
-            playPauseContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
-            playPauseContainer.classList.add('opacity-100', 'scale-100');
-
-            speedContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
-            speedContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+            playPauseContainer.classList.remove('hidden');
+            speedContainer.classList.remove('hidden');
+            dockDivider.classList.remove('hidden');
+            restartContainer.classList.remove('hidden');
+            restartContainer.classList.add('mb-2');
         }
 
-        // Real-Time Card Tilt Animations & Timeline Step Indicator Glow
         function updateLiveScrollVisuals() {
             const viewportCenter = window.innerHeight * 0.52;
 
-            // 1. Timeline Nodes Dynamic Highlighting
             timelineSteps.forEach(stepNode => {
                 const rect = stepNode.getBoundingClientRect();
                 const ball = stepNode.querySelector('.timeline-ball');
@@ -1111,7 +1104,6 @@
                 }
             });
 
-            // 2. Active Card Elevation when Auto-Scrolling
             if (isAutoScrolling) {
                 interactiveCards.forEach(card => {
                     const rect = card.getBoundingClientRect();
@@ -1202,13 +1194,11 @@
             speedIndicator.textContent = `${currentSpeed}x`;
         }
 
-        // Restart with smooth return to origin and precise 3-second hold
         function restartPresentationMode() {
             stopAutoScroll();
             hasReachedEnd = false;
             unhideAllControls();
 
-            // Smooth scroll back to top of page
             window.scrollTo({ top: 0, behavior: 'smooth' });
             preciseScrollY = 0;
 
@@ -1217,11 +1207,8 @@
                 window.history.pushState(null, null, cleanPath);
             }
 
-            // Visual indicator showing 3-second hold countdown
             toggleBtn.classList.add('ring-2', 'ring-teal-400');
-            iconSpan.innerHTML = `
-                <span class="font-mono text-xs font-bold text-teal-400 animate-pulse">3s</span>
-            `;
+            iconSpan.innerHTML = `<span class="font-mono text-xs font-bold text-teal-400 animate-pulse">3s</span>`;
 
             let countdown = 3;
             const countdownInterval = setInterval(() => {
@@ -1235,7 +1222,6 @@
             }, 1000);
         }
 
-        // Cancel slideshow and change button state if user interacts manually
         function handleUserManualScroll() {
             if (isAutoScrolling) {
                 stopAutoScroll();
