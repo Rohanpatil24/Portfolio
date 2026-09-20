@@ -350,11 +350,14 @@
             </div>
             
             <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden group">
-                <div class="prose max-w-none text-slate-600 dark:text-slate-300 space-y-6 text-base md:text-lg leading-relaxed whitespace-pre-line font-light">
-                    {{ info.about_text|default:"I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.
-
-I specialize in Django REST Framework, MySQL, and Redis caching to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments." }}
-                </div>
+                <div class="prose max-w-none text-slate-600 dark:text-slate-300 space-y-6 text-base md:text-lg leading-relaxed font-light">
+                {% if info.about_text %}
+                    <div class="whitespace-pre-line">{{ info.about_text }}</div>
+                {% else %}
+                    <p>I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.</p>
+                    <p>I specialize in Django REST Framework, MySQL, and Redis caching to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments.</p>
+                {% endif %}
+            </div>
                 
                 <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center border-t border-teal-500/20 pt-8">
                     <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
