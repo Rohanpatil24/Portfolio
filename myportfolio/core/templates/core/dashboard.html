@@ -2,13 +2,31 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Dashboard | Rohan Patil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quantum Analytics Dashboard | Rohan Patil</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#0f172a',
+                            900: '#07090e',
+                            950: '#030406',
+                        },
+                        teal: {
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                        }
+                    }
+                }
+            }
         }
     </script>
     <script>
@@ -20,112 +38,199 @@
     </script>
     <style>
         .glass-box {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
         }
         .dark .glass-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(11, 15, 25, 0.75);
+            border: 1px solid rgba(20, 184, 166, 0.18);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.6);
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.65);
             border: 1px solid rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(12px);
         }
         .dark .glass-card {
-            background: rgba(30, 41, 59, 0.4);
+            background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 min-h-screen font-sans selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 relative overflow-x-hidden transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 min-h-screen font-sans antialiased relative overflow-x-hidden transition-colors duration-300 selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200">
 
-    <!-- Ambient Glow Background Elements -->
-    <div class="absolute top-0 left-1/3 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[150px] pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-10 w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"></div>
+    <!-- Glowing Background Atmosphere -->
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[160px] pointer-events-none"></div>
+    <div class="absolute bottom-1/3 right-10 w-[450px] h-[450px] bg-blue-600/10 rounded-full blur-[160px] pointer-events-none"></div>
 
-    <!-- Main Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         
         <!-- Header Navigation Bar -->
-        <div class="glass-box rounded-2xl px-6 py-4 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-xl transition-colors duration-300">
+        <div class="glass-box rounded-2xl px-6 py-4 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4 transition-colors">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 font-bold">
+                <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 font-bold font-mono">
                     RP
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Command Center</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">System Status: <span class="text-green-500 dark:text-green-400 font-bold">● Optimal</span></p>
+                    <h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                        Quantum Command Console
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-300 dark:border-teal-500/20 font-mono">v3.0</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">System Integrity: <span class="text-green-500 dark:text-green-400 font-bold">● Operational</span></p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <!-- Theme Toggle Button -->
-                <button id="theme-toggle" class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
+                <button id="theme-toggle" class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-teal-400 border border-slate-200 dark:border-slate-800 hover:border-teal-500 transition-all overflow-hidden group shadow-sm">
                     <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
                     <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
                 </button>
 
-                <a href="/" target="_blank" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800/80 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition-all border border-slate-200 dark:border-slate-700/50 flex items-center gap-2 shadow-sm">
-                    <i class="ph ph-globe text-base text-teal-500 dark:text-teal-400"></i> View Live Site
+                <a href="/" target="_blank" class="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-mono font-medium transition-all border border-slate-200 dark:border-slate-800 flex items-center gap-2 shadow-sm">
+                    <i class="ph ph-globe text-base text-teal-500"></i> Live Site
                 </a>
+                
                 <form action="{% url 'logout' %}" method="post" class="inline">
                     {% csrf_token %}
-                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 dark:text-red-400 hover:text-white text-xs font-medium transition-all border border-red-500/20 flex items-center gap-2">
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-500 dark:text-red-400 hover:text-white text-xs font-mono font-medium transition-all border border-red-500/20 flex items-center gap-2">
                         <i class="ph ph-sign-out text-base"></i> Logout
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Analytical Overview Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Total Hits Metric Card -->
-            <div class="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-teal-500/30 transition-all shadow-sm">
-                <div class="absolute top-0 right-0 p-6 text-slate-300 dark:text-slate-700 group-hover:text-teal-500/10 transition-colors">
-                    <i class="ph ph-chart-line-up text-6xl"></i>
+        <!-- TOP ANALYTICS GRID: Graphs & Profile Score -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- 1. Linear Graph (7-Day Traffic Velocity) -->
+            <div class="glass-box p-6 rounded-2xl lg:col-span-2">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">Traffic Velocity (Linear)</h3>
+                        <p class="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{{ total_hits }} <span class="text-xs font-mono font-normal text-teal-600 dark:text-teal-400">Total Encounters</span></p>
+                    </div>
+                    <span class="text-xs px-3 py-1 bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/30 rounded-full font-mono flex items-center gap-1.5">
+                        <i class="ph ph-trend-up"></i> Real-time Line
+                    </span>
                 </div>
-                <h3 class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Total Traffic Reach</h3>
-                <p class="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">{{ total_hits }}</p>
-                <div class="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 font-medium">
-                    <i class="ph ph-trend-up"></i> Accumulated unique request hits
+                <div class="h-64 w-full">
+                    <canvas id="trafficLinearChart"></canvas>
                 </div>
             </div>
 
-            <!-- Recent Activity Block -->
-            <div class="glass-card p-6 rounded-2xl md:col-span-2 shadow-sm">
-                <h3 class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center justify-between">
-                    <span>Traffic Matrix (Last 7 Days)</span>
-                    <span class="text-teal-600 dark:text-teal-400"><i class="ph ph-activity"></i> Real-time</span>
-                </h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-                    {% for day in recent_traffic %}
-                    <div class="bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-xl p-3 text-center shadow-sm">
-                        <span class="block text-[10px] font-mono text-slate-400 mb-1">{{ day.date|date:"M d" }}</span>
-                        <span class="block text-lg font-bold text-slate-900 dark:text-white">{{ day.hits }}</span>
-                        <span class="block text-[10px] text-teal-600 dark:text-teal-400 font-mono">hits</span>
+            <!-- 2. Profile Score Radial Gauge & Analysis -->
+            <div class="glass-box p-6 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">Profile Completeness</h3>
+                        <i class="ph ph-gauge text-xl text-teal-500"></i>
                     </div>
-                    {% empty %}
-                    <p class="text-xs text-slate-500 col-span-full">No traffic matrices recorded yet.</p>
+
+                    <div class="flex items-center gap-6 my-4">
+                        <div class="relative w-28 h-28 flex items-center justify-center">
+                            <!-- Circular SVG Metric -->
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-slate-200 dark:text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path class="text-teal-500" stroke-dasharray="{{ profile_score }}, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span class="text-2xl font-black font-mono text-slate-900 dark:text-white">{{ profile_score }}%</span>
+                                <span class="text-[9px] font-mono text-slate-400 uppercase">Integrity</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 space-y-1 text-xs font-mono">
+                            <p class="font-bold text-slate-900 dark:text-white">
+                                {% if profile_score >= 85 %}
+                                    <span class="text-green-500">OPTIMAL TIER</span>
+                                {% elif profile_score >= 60 %}
+                                    <span class="text-yellow-500">BALANCED TIER</span>
+                                {% else %}
+                                    <span class="text-red-500">NEEDS DATA</span>
+                                {% endif %}
+                            </p>
+                            <p class="text-slate-500 text-[11px]">Database model weights measured across 6 categories.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Point Breakdown -->
+                <div class="space-y-2 border-t border-slate-200 dark:border-slate-800 pt-3 text-[11px] font-mono">
+                    {% for item in score_breakdown %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500">{{ item.0 }}</span>
+                        <span class="font-bold {% if item.1 == item.2 %}text-teal-600 dark:text-teal-400{% else %}text-slate-400{% endif %}">
+                            {{ item.1 }}/{{ item.2 }} pts
+                        </span>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
+
         </div>
 
-        <!-- Database Tables Section -->
+        <!-- SECOND ROW: Pie Chart & Received Signals -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Pie/Doughnut Chart (Skill Classification) -->
+            <div class="glass-box p-6 rounded-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">Skill Distribution</h3>
+                    <i class="ph ph-chart-pie-slice text-xl text-teal-500"></i>
+                </div>
+                <div class="h-60 flex items-center justify-center relative">
+                    <canvas id="skillsPieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Incoming Contact Messages Feed -->
+            <div class="glass-box p-6 rounded-2xl lg:col-span-2 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="ph ph-envelope-open text-teal-500 text-lg"></i>
+                            <h3 class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">Incoming Transmissions</h3>
+                        </div>
+                        <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">{{ contact_messages.count }} Messages</span>
+                    </div>
+
+                    <div class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                        {% for msg in contact_messages %}
+                        <div class="p-3.5 rounded-xl bg-slate-100/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 hover:border-teal-500/30 transition-all">
+                            <div class="flex justify-between items-start mb-1 text-xs">
+                                <span class="font-bold text-slate-900 dark:text-white font-mono flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>{{ msg.name }}
+                                    <span class="font-normal text-slate-400">({{ msg.email }})</span>
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400">{{ msg.created_at|date:"M d, H:i" }}</span>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-300 font-light">{{ msg.message }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-xs text-slate-500 font-mono py-8 text-center">No incoming contact messages logged.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- DATABASE TABLES CONTROLS -->
         <div class="space-y-6">
             
             <!-- Projects Table -->
-            <div class="glass-box rounded-2xl overflow-hidden shadow-xl transition-colors duration-300">
+            <div class="glass-box rounded-2xl overflow-hidden shadow-xl transition-colors">
                 <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center bg-white/40 dark:bg-slate-900/40">
                     <div class="flex items-center gap-2">
                         <i class="ph ph-folder-open text-teal-600 dark:text-teal-400 text-lg"></i>
-                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Projects Management</h2>
+                        <h2 class="text-sm font-bold font-mono text-slate-900 dark:text-white">Projects Repository</h2>
                         <span class="text-xs px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full font-mono">{{ projects.count }}</span>
                     </div>
-                    <a href="{% url 'admin:core_project_add' %}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500 text-teal-600 dark:text-teal-400 hover:text-white text-xs font-bold transition-all border border-teal-500/30 flex items-center gap-1.5">
+                    <a href="{% url 'admin:core_project_add' %}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500 text-teal-600 dark:text-teal-400 hover:text-white text-xs font-bold transition-all border border-teal-500/30 flex items-center gap-1.5 font-mono">
                         <i class="ph ph-plus font-bold"></i> Add Project
                     </a>
                 </div>
@@ -135,7 +240,7 @@
                             <tr>
                                 <th class="px-6 py-3 font-medium">Title</th>
                                 <th class="px-6 py-3 font-medium">Tech Stack</th>
-                                <th class="px-6 py-3 font-medium">Sequence</th>
+                                <th class="px-6 py-3 font-medium">Ordering</th>
                                 <th class="px-6 py-3 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
@@ -146,7 +251,7 @@
                                 <td class="px-6 py-4 font-mono text-xs text-teal-600 dark:text-teal-400">{{ project.tech_stack }}</td>
                                 <td class="px-6 py-4 font-mono text-xs text-slate-500 dark:text-slate-400">{{ project.order }}</td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="{% url 'admin:core_project_change' project.id %}" target="_blank" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-1 shadow-sm">
+                                    <a href="{% url 'admin:core_project_change' project.id %}" target="_blank" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 rounded-lg text-xs font-mono transition-all inline-flex items-center gap-1 shadow-sm">
                                         <i class="ph ph-pencil-simple"></i> Edit
                                     </a>
                                 </td>
@@ -158,14 +263,14 @@
             </div>
 
             <!-- Experience Table -->
-            <div class="glass-box rounded-2xl overflow-hidden shadow-xl transition-colors duration-300">
+            <div class="glass-box rounded-2xl overflow-hidden shadow-xl transition-colors">
                 <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center bg-white/40 dark:bg-slate-900/40">
                     <div class="flex items-center gap-2">
                         <i class="ph ph-briefcase text-teal-600 dark:text-teal-400 text-lg"></i>
-                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Experience Records</h2>
+                        <h2 class="text-sm font-bold font-mono text-slate-900 dark:text-white">Career Experience Records</h2>
                         <span class="text-xs px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full font-mono">{{ experiences.count }}</span>
                     </div>
-                    <a href="{% url 'admin:core_experience_add' %}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500 text-teal-600 dark:text-teal-400 hover:text-white text-xs font-bold transition-all border border-teal-500/30 flex items-center gap-1.5">
+                    <a href="{% url 'admin:core_experience_add' %}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500 text-teal-600 dark:text-teal-400 hover:text-white text-xs font-bold transition-all border border-teal-500/30 flex items-center gap-1.5 font-mono">
                         <i class="ph ph-plus font-bold"></i> Add Experience
                     </a>
                 </div>
@@ -174,8 +279,8 @@
                         <thead class="text-slate-500 dark:text-slate-400 text-xs font-mono uppercase bg-slate-50 dark:bg-slate-950/40 border-b border-slate-200 dark:border-slate-800/50">
                             <tr>
                                 <th class="px-6 py-3 font-medium">Role</th>
-                                <th class="px-6 py-3 font-medium">Company</th>
-                                <th class="px-6 py-3 font-medium">Duration</th>
+                                <th class="px-6 py-3 font-medium">Organization</th>
+                                <th class="px-6 py-3 font-medium">Timeline</th>
                                 <th class="px-6 py-3 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
@@ -186,7 +291,7 @@
                                 <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ exp.company }}</td>
                                 <td class="px-6 py-4 font-mono text-xs text-teal-600 dark:text-teal-400">{{ exp.duration }}</td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="{% url 'admin:core_experience_change' exp.id %}" target="_blank" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-1 shadow-sm">
+                                    <a href="{% url 'admin:core_experience_change' exp.id %}" target="_blank" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 rounded-lg text-xs font-mono transition-all inline-flex items-center gap-1 shadow-sm">
                                         <i class="ph ph-pencil-simple"></i> Edit
                                     </a>
                                 </td>
@@ -198,15 +303,15 @@
             </div>
 
             <!-- Certifications Table -->
-            <div class="glass-box rounded-2xl overflow-hidden shadow-xl transition-colors duration-300">
+            <div class="glass-box rounded-2xl overflow-hidden shadow-xl transition-colors">
                 <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center bg-white/40 dark:bg-slate-900/40">
                     <div class="flex items-center gap-2">
                         <i class="ph ph-certificate text-teal-600 dark:text-teal-400 text-lg"></i>
-                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Certifications Matrix</h2>
+                        <h2 class="text-sm font-bold font-mono text-slate-900 dark:text-white">Credentials & Accreditations</h2>
                         <span class="text-xs px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full font-mono">{{ certifications.count }}</span>
                     </div>
-                    <a href="{% url 'admin:core_certification_add' %}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500 text-teal-600 dark:text-teal-400 hover:text-white text-xs font-bold transition-all border border-teal-500/30 flex items-center gap-1.5">
-                        <i class="ph ph-plus font-bold"></i> Add Certification
+                    <a href="{% url 'admin:core_certification_add' %}" target="_blank" class="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500 text-teal-600 dark:text-teal-400 hover:text-white text-xs font-bold transition-all border border-teal-500/30 flex items-center gap-1.5 font-mono">
+                        <i class="ph ph-plus font-bold"></i> Add Credential
                     </a>
                 </div>
                 <div class="overflow-x-auto">
@@ -214,7 +319,7 @@
                         <thead class="text-slate-500 dark:text-slate-400 text-xs font-mono uppercase bg-slate-50 dark:bg-slate-950/40 border-b border-slate-200 dark:border-slate-800/50">
                             <tr>
                                 <th class="px-6 py-3 font-medium">Title</th>
-                                <th class="px-6 py-3 font-medium">Institution</th>
+                                <th class="px-6 py-3 font-medium">Issuer</th>
                                 <th class="px-6 py-3 font-medium">Asset Status</th>
                                 <th class="px-6 py-3 font-medium text-right">Actions</th>
                             </tr>
@@ -226,17 +331,17 @@
                                 <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ cert.institution }}</td>
                                 <td class="px-6 py-4">
                                     {% if cert.file %}
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
-                                            <i class="ph-fill ph-check-circle"></i> Uploaded
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
+                                            <i class="ph-fill ph-check-circle"></i> Active File
                                         </span>
                                     {% else %}
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
-                                            <i class="ph-fill ph-x-circle"></i> Missing Asset
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono font-medium bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                                            <i class="ph-fill ph-x-circle"></i> Unlinked
                                         </span>
                                     {% endif %}
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <a href="{% url 'admin:core_certification_change' cert.id %}" target="_blank" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-1 shadow-sm">
+                                    <a href="{% url 'admin:core_certification_change' cert.id %}" target="_blank" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 rounded-lg text-xs font-mono transition-all inline-flex items-center gap-1 shadow-sm">
                                         <i class="ph ph-pencil-simple"></i> Edit
                                     </a>
                                 </td>
@@ -251,7 +356,9 @@
 
     </div>
 
+    <!-- Chart.js Graph Initialization Script -->
     <script>
+        // Theme Engine
         const themeToggleBtn = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
 
@@ -261,6 +368,94 @@
                 localStorage.theme = 'dark';
             } else {
                 localStorage.theme = 'light';
+            }
+            // Re-render chart text colors dynamically
+            setTimeout(() => {
+                location.reload();
+            }, 100);
+        });
+
+        const isDark = htmlElement.classList.contains('dark');
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+
+        // 1. LINEAR TRAFFIC GRAPH
+        const trafficLabels = JSON.parse('{{ traffic_labels_json|safe }}');
+        const trafficData = JSON.parse('{{ traffic_data_json|safe }}');
+
+        const ctxLinear = document.getElementById('trafficLinearChart').getContext('2d');
+        new Chart(ctxLinear, {
+            type: 'line',
+            data: {
+                labels: trafficLabels.length ? trafficLabels : ['No Data'],
+                datasets: [{
+                    label: 'Page Encounters',
+                    data: trafficData.length ? trafficData : [0],
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#14b8a6',
+                    pointBorderColor: '#07090e',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, font: { family: 'Space Grotesk', size: 11 } }
+                    },
+                    y: {
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, font: { family: 'Space Grotesk', size: 11 }, precision: 0 }
+                    }
+                }
+            }
+        });
+
+        // 2. PIE / DOUGHNUT SKILL DISTRIBUTION GRAPH
+        const skillLabels = JSON.parse('{{ skill_labels_json|safe }}');
+        const skillData = JSON.parse('{{ skill_data_json|safe }}');
+
+        const ctxPie = document.getElementById('skillsPieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: skillLabels,
+                datasets: [{
+                    data: skillData,
+                    backgroundColor: [
+                        '#14b8a6', // Teal (Backend)
+                        '#3b82f6', // Blue (Frontend)
+                        '#a855f7'  // Purple (Tools)
+                    ],
+                    borderColor: isDark ? '#07090e' : '#ffffff',
+                    borderWidth: 3,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: textColor,
+                            font: { family: 'Space Grotesk', size: 11 },
+                            padding: 14
+                        }
+                    }
+                },
+                cutout: '70%'
             }
         });
     </script>

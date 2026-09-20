@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{{ info.name|default:"Rohan Patil" }} | Portfolio</title>
+    <title>{{ info.name|default:"Rohan Patil" }} | Quantum Portfolio</title>
     
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Inter & Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -23,11 +23,13 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
                     },
                     colors: {
                         slate: {
-                            850: '#151f32',
-                            900: '#0f172a',
+                            850: '#0b0f19',
+                            900: '#07090e',
+                            950: '#030406',
                         },
                         teal: {
                             400: '#2dd4bf',
@@ -48,119 +50,182 @@
         }
     </script>
 
+    <!-- Three.js Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <style>
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            @apply bg-slate-100 dark:bg-slate-900;
+            @apply bg-slate-100 dark:bg-slate-950;
         }
         ::-webkit-scrollbar-thumb {
-            @apply bg-slate-300 dark:bg-slate-700 rounded-md;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            @apply bg-teal-500;
+            @apply bg-teal-500 rounded;
         }
 
-        /* Scroll Reveal Animation Classes */
-        .reveal {
+        #three-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Glassmorphic Panels */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(20, 184, 166, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+        .dark .glass-panel {
+            background: rgba(11, 15, 25, 0.7);
+            border: 1px solid rgba(20, 184, 166, 0.18);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Active Scroll Tilt Animation for Cards */
+        .card-stream-active {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(20, 184, 166, 0.6) !important;
+            box-shadow: 0 15px 35px rgba(20, 184, 166, 0.25) !important;
+        }
+
+        /* Glowing Nav Link when Active */
+        .nav-link.active-nav {
+            color: #14b8a6 !important;
+            text-shadow: 0 0 12px rgba(20, 184, 166, 0.6);
+            border-bottom: 2px solid #14b8a6;
+        }
+
+        /* Sci-Fi Reveal Transitions */
+        .reveal-node {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
+            transform: translateY(40px) scale(0.98);
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .reveal.active {
+        .reveal-node.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
-        /* Glowing effect for cards */
-        .glow-card:hover {
-            box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
+        /* Career Matrix Timeline Pulse Classes */
+        .timeline-ball {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .timeline-ball.active-ball {
+            background-color: #2dd4bf !important;
+            border-color: #ffffff !important;
+            transform: scale(1.4);
+            box-shadow: 0 0 20px rgba(45, 212, 191, 1), 0 0 35px rgba(20, 184, 166, 0.8) !important;
         }
 
-        /* Infinite Carousel Animation Container */
+        /* Continuous Native JS Carousel Container */
         .carousel-container {
-            overflow: hidden;
+            overflow-x: auto;
             position: relative;
             width: 100%;
             mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
             -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
             padding: 20px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            cursor: grab;
+            user-select: none;
         }
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+        .carousel-container:active {
+            cursor: grabbing;
+        }
+
         .carousel-track {
             display: flex;
             gap: 2rem;
             width: max-content;
-            animation: scroll 35s linear infinite;
-            transition: transform 0.3s ease-out;
-        }
-        .carousel-track.paused {
-            animation-play-state: paused;
         }
 
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(-50% - 1rem)); } 
+        /* Floating Glassmorphic Slideshow Controls */
+        .glass-dock {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+        .dark .glass-dock {
+            background: rgba(11, 15, 25, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(20, 184, 166, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.08);
         }
 
-        /* Anti-Download / Anti-Screenshot Security */
         .no-select {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
         }
         @media print {
-            body {
-                display: none !important;
-            }
+            body { display: none !important; }
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300">
 
-    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-all duration-300" id="navbar">
+    <!-- Three.js Background Canvas -->
+    <div id="three-canvas-container"></div>
+
+    <!-- Navigation Header -->
+    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-teal-500/20 transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex-shrink-0">
-                    <a href="#home" class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-white">
-                        Rohan<span class="text-teal-600 dark:text-teal-400">.</span>
+                    <a href="/" data-target="home" class="spa-link text-2xl font-bold font-mono tracking-tighter text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-ping"></span>
+                        Rohan<span class="text-teal-500">.</span>sys
                     </a>
                 </div>
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-6 items-center">
-                    <a href="#home" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Home</a>
-                    <a href="#about" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">About</a>
-                    <a href="#experience" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Experience</a>
-                    <a href="#projects" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Projects</a>
-                    <a href="#skills" class="text-sm font-medium hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Skills</a>
-                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/50 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-white transition-all text-sm font-semibold">Contact</a>
+                    <a href="/" data-target="home" id="nav-home" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">01. Home</a>
+                    <a href="/about" data-target="about" id="nav-about" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">02. About</a>
+                    <a href="/experience" data-target="experience" id="nav-experience" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">03. Matrix</a>
+                    <a href="/projects" data-target="projects" id="nav-projects" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">04. Projects</a>
+                    <a href="/skills" data-target="skills" id="nav-skills" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">05. Core</a>
+                    <a href="/contact" data-target="contact" id="nav-contact" class="nav-link spa-link px-4 py-2 rounded-lg bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-300 dark:border-teal-500/30 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-slate-950 transition-all text-xs font-mono uppercase tracking-wider font-bold">Contact</a>
                     
                     {% if user.is_staff %}
-                    <a href="{% url 'dashboard' %}" class="px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm font-semibold flex items-center gap-1.5">
-                        <i class="ph ph-gauge text-teal-500"></i> Dashboard
+                    <a href="{% url 'dashboard' %}" class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-teal-500 border border-slate-200 dark:border-slate-800 transition-all text-xs font-mono flex items-center gap-1.5">
+                        <i class="ph ph-gauge text-teal-500"></i> Dash
                     </a>
                     {% else %}
-                    <a href="{% url 'login' %}" class="px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-sm font-semibold flex items-center gap-1.5">
-                        <i class="ph ph-sign-in text-teal-500"></i> Login
+                    <a href="{% url 'login' %}" class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-teal-500 border border-slate-200 dark:border-slate-800 transition-all text-xs font-mono flex items-center gap-1.5">
+                        <i class="ph ph-sign-in text-teal-500"></i> Auth
                     </a>
                     {% endif %}
-                    
-                    <!-- Theme Toggle Button -->
-                    <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400 hover:ring-2 ring-teal-500 transition-all overflow-hidden group">
-                        <i class="ph ph-sun text-2xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
-                        <i class="ph ph-moon text-2xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
+
+                    <!-- Dark / Light Theme Toggle -->
+                    <button class="theme-toggle relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-teal-400 border border-slate-200 dark:border-slate-800 hover:border-teal-500 transition-all overflow-hidden group shadow-sm">
+                        <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
+                        <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
                     </button>
                 </div>
 
-                <!-- Mobile Menu Buttons -->
+                <!-- Mobile Header Right -->
                 <div class="md:hidden flex items-center gap-3">
-                    <button class="theme-toggle relative w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-teal-400">
+                    <button class="theme-toggle relative w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-teal-400 border border-slate-200 dark:border-slate-800">
                         <i class="ph ph-sun text-lg absolute transition-all duration-500 translate-y-8 opacity-0 dark:translate-y-0 dark:opacity-100"></i>
                         <i class="ph ph-moon text-lg absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-8 dark:opacity-0"></i>
                     </button>
-                    <button id="mobile-menu-btn" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white focus:outline-none p-1">
+                    <button id="mobile-menu-btn" class="text-teal-600 dark:text-teal-400 focus:outline-none p-1">
                         <i class="ph ph-list text-3xl"></i>
                     </button>
                 </div>
@@ -168,298 +233,350 @@
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 absolute w-full left-0 top-20 shadow-xl transition-colors duration-300">
-            <div class="px-4 pt-3 pb-6 space-y-2 flex flex-col">
-                <a href="#home" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Home</a>
-                <a href="#about" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">About</a>
-                <a href="#experience" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Experience</a>
-                <a href="#projects" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Projects</a>
-                <a href="#skills" class="block px-3 py-2 text-base font-medium hover:text-teal-600 dark:hover:text-teal-400 mobile-link">Skills</a>
-                <a href="#contact" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link">Contact</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-teal-500/20 absolute w-full left-0 top-20 shadow-2xl backdrop-blur-2xl">
+            <div class="px-4 pt-3 pb-6 space-y-2 flex flex-col font-mono text-sm">
+                <a href="/" data-target="home" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">01. Home</a>
+                <a href="/about" data-target="about" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">02. About</a>
+                <a href="/experience" data-target="experience" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">03. Matrix</a>
+                <a href="/projects" data-target="projects" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">04. Projects</a>
+                <a href="/skills" data-target="skills" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">05. Core</a>
+                <a href="/contact" data-target="contact" class="spa-link block px-3 py-2 text-teal-600 dark:text-teal-400 font-bold">Contact</a>
                 {% if user.is_staff %}
-                <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-base font-medium text-teal-600 dark:text-teal-400 mobile-link">Dashboard</a>
+                <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-slate-600 dark:text-slate-400">Dashboard</a>
                 {% else %}
-                <a href="{% url 'login' %}" class="block px-3 py-2 text-base font-medium text-slate-600 dark:text-slate-400 mobile-link">Login</a>
+                <a href="{% url 'login' %}" class="block px-3 py-2 text-slate-600 dark:text-slate-400">Authenticate</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <section id="home" class="min-h-screen flex items-center justify-center pt-28 pb-12 relative overflow-hidden">
-        <div class="absolute top-1/4 left-10 w-72 h-72 bg-teal-500/20 dark:bg-teal-500/10 rounded-full blur-3xl -z-10 transition-colors duration-300"></div>
-        <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-blue-600/20 dark:bg-blue-600/10 rounded-full blur-3xl -z-10 transition-colors duration-300"></div>
+    <!-- DYNAMIC FIXED VERTICAL GLASSMORPHIC SLIDESHOW CONTROL DOCK -->
+    <div id="slideshow-dock" class="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2.5 p-2 rounded-2xl glass-dock shadow-2xl transition-all duration-500">
+        
+        <!-- Start / Pause Button Container -->
+        <div id="play-pause-container" class="transition-all duration-500 origin-center overflow-hidden">
+            <button id="slideshow-toggle-btn" onclick="togglePresentationMode()" title="Start Auto-Scroll Slideshow" class="w-11 h-11 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
+                <span id="slideshow-icon" class="flex items-center justify-center">
+                    <!-- Play SVG Icon -->
+                    <svg class="w-5 h-5 fill-current transition-transform group-hover:scale-110 ml-0.5" viewBox="0 0 24 24">
+                        <path d="M5.25 4.5v15l13.5-7.5-13.5-7.5z"/>
+                    </svg>
+                </span>
+            </button>
+        </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-12">
-            <div class="flex-1 reveal w-full">
-                <p class="text-teal-600 dark:text-teal-400 font-mono mb-4 tracking-wide text-sm md:text-base">Hello World, I am</p>
-                <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight transition-colors">
-                    {{ info.name|default:"Rohan Patil" }}.
+        <!-- Speed Selector Button -->
+        <div id="speed-container" class="transition-all duration-500 max-h-0 opacity-0 pointer-events-none scale-90 overflow-hidden">
+            <button id="slideshow-speed-btn" onclick="cycleScrollSpeed()" title="Cycle Scroll Speed" class="w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-xs text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 border border-teal-500/30 transition-all duration-300 shadow-sm">
+                <span id="speed-indicator">1x</span>
+            </button>
+        </div>
+
+        <!-- Divider Line -->
+        <div id="dock-divider" class="transition-all duration-500 max-h-0 opacity-0 overflow-hidden w-6 h-px bg-slate-300/80 dark:bg-teal-500/20"></div>
+
+        <!-- Restart Button Container -->
+        <div id="restart-container" class="transition-all duration-500 max-h-0 opacity-0 pointer-events-none scale-90 overflow-hidden">
+            <button id="slideshow-restart-btn" onclick="restartPresentationMode()" title="Restart from Beginning (3s Hold)" class="w-11 h-11 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
+                <!-- Restart SVG Icon -->
+                <svg class="w-5 h-5 fill-current transition-transform group-hover:-rotate-180 duration-500" viewBox="0 0 24 24">
+                    <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                </svg>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- SECTION 01: HOME HERO -->
+    <section id="home" class="min-h-screen flex items-center justify-center pt-28 pb-12 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+            <div class="flex-1 reveal-node w-full">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 text-teal-700 dark:text-teal-400 text-xs font-mono mb-6 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span> SYSTEM ONLINE // QUANTUM ARCHITECTURE
+                </div>
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight font-mono">
+                    {{ info.name|default:"Rohan Patil" }}<span class="text-teal-500">_</span>
                 </h1>
-                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold text-slate-600 dark:text-slate-400 mb-6 bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500 bg-clip-text text-transparent inline-block">
-                    {{ info.tagline|default:"Results-driven Full Stack & Backend Developer." }}
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-600 dark:text-slate-400 mb-8 max-w-2xl font-mono">
+                    {{ info.tagline|default:"Full Stack & Backend Developer crafting high-performance digital architectures." }}
                 </h2>
                 
-                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-8">
-                    <a href="#projects" class="w-full sm:w-auto text-center px-8 py-3 rounded-md bg-teal-500 text-white dark:text-slate-900 font-bold hover:bg-teal-600 dark:hover:bg-teal-400 transition-colors shadow-[0_0_15px_rgba(20,184,166,0.4)]">
-                        View My Work
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                    <a href="/projects" data-target="projects" class="spa-link px-8 py-4 rounded-xl bg-teal-500 text-white dark:text-slate-950 font-bold font-mono hover:bg-teal-600 dark:hover:bg-teal-400 transition-all shadow-[0_0_30px_rgba(20,184,166,0.3)] flex items-center gap-2">
+                        <i class="ph ph-terminal-window text-lg"></i> Explore Matrix
                     </a>
                     
                     {% if info.resume %}
-                    <a href="{{ info.resume.url }}" download class="w-full sm:w-auto text-center px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center justify-center gap-2">
+                    <a href="{{ info.resume.url }}" download class="px-8 py-4 rounded-xl glass-panel text-slate-800 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 transition-all font-mono text-sm flex items-center gap-2">
                         <i class="ph ph-download-simple text-xl"></i> Download Resume
                     </a>
                     {% else %}
-                    <a href="#contact" class="w-full sm:w-auto text-center px-8 py-3 rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-teal-500 hover:text-teal-600 dark:hover:border-teal-400 dark:hover:text-teal-400 transition-colors font-semibold flex items-center justify-center gap-2">
-                        <i class="ph ph-envelope-simple text-xl"></i> Contact for Resume
+                    <a href="/contact" data-target="contact" class="spa-link px-8 py-4 rounded-xl glass-panel text-slate-800 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 transition-all font-mono text-sm flex items-center gap-2">
+                        <i class="ph ph-envelope-simple text-xl"></i> Contact Signal
                     </a>
                     {% endif %}
                 </div>
             </div>
             
-            <div class="flex-1 hidden lg:flex justify-center relative reveal">
-                <div class="w-80 h-80 relative">
-                    <div class="absolute inset-0 border-2 border-teal-500/30 dark:border-teal-500/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
-                    <div class="absolute inset-4 border-2 border-dashed border-blue-500/40 dark:border-blue-500/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <pre class="text-xs text-teal-600 dark:text-teal-400 font-mono text-left">
-<span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-amber-600 dark:text-yellow-300">build_api</span>():
-  framework = <span class="text-green-600 dark:text-green-400">"Django"</span>
-  cache = <span class="text-green-600 dark:text-green-400">"Redis"</span>
-  db = <span class="text-green-600 dark:text-green-400">"MySQL"</span>
-  
-  <span class="text-blue-600 dark:text-blue-400">return</span> {
-    <span class="text-green-600 dark:text-green-400">"status"</span>: <span class="text-orange-600 dark:text-orange-400">200</span>,
-    <span class="text-green-600 dark:text-green-400">"success"</span>: <span class="text-blue-600 dark:text-blue-400">True</span>
-  }
-                            </pre>
-                        </div>
+            <div class="flex-1 hidden lg:flex justify-center relative reveal-node">
+                <div class="w-96 h-96 relative flex items-center justify-center">
+                    <div class="absolute inset-0 border border-teal-500/20 rounded-3xl animate-[spin_20s_linear_infinite] backdrop-blur-sm"></div>
+                    <div class="absolute inset-6 border border-dashed border-blue-500/30 rounded-3xl animate-[spin_25s_linear_infinite_reverse]"></div>
+                    <div class="glass-panel p-8 rounded-2xl relative z-10 shadow-2xl border-teal-500/40 transform rotate-3 hover:rotate-0 transition-transform duration-700">
+                        <pre class="text-xs text-teal-600 dark:text-teal-400 font-mono text-left leading-relaxed">
+<span class="text-blue-600 dark:text-blue-400">class</span> <span class="text-yellow-600 dark:text-yellow-400">QuantumEngineer</span>:
+    <span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-green-600 dark:text-green-400">__init__</span>(self):
+        self.stack = [<span class="text-orange-600 dark:text-orange-400">"Django"</span>, <span class="text-orange-600 dark:text-orange-400">"Python"</span>]
+        self.db = <span class="text-orange-600 dark:text-orange-400">"MySQL & Redis"</span>
+        self.status = <span class="text-green-600 dark:text-green-400">"ACTIVE"</span>
+
+    <span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-yellow-600 dark:text-yellow-400">compile</span>(self):
+        <span class="text-blue-600 dark:text-blue-400">return</span> <span class="text-green-600 dark:text-green-400">"Scalable & Robust"</span>
+                        </pre>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="py-20 bg-white dark:bg-slate-850 relative transition-colors duration-300">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
-            <div class="flex items-center gap-4 mb-10">
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">About Me</h2>
-                <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+    <!-- SECTION 02: ABOUT -->
+    <section id="about" class="py-24 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal-node">
+            <div class="flex items-center gap-4 mb-12">
+                <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
+                    <span class="text-teal-500 text-lg">02.</span> About Me
+                </h2>
+                <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow"></div>
             </div>
             
-            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-10 shadow-lg glow-card transition-all duration-300">
-                <div class="prose max-w-none text-slate-600 dark:text-slate-400 space-y-4 text-sm sm:text-base whitespace-pre-line">
-                    {{ info.about_text|default:"I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies." }}
+            <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden group">
+                <div class="prose max-w-none text-slate-600 dark:text-slate-300 space-y-6 text-base md:text-lg leading-relaxed whitespace-pre-line font-light">
+                    {{ info.about_text|default:"I am a Software Developer with 2 years of experience in designing and implementing scalable web applications. My expertise lies heavily in Full Stack Development with a strong emphasis on backend technologies.
+
+I specialize in Django REST Framework, MySQL, and Redis caching to build high-performance, secure, and robust APIs. I have a proven track record of integrating third-party services, optimizing system architecture, and delivering efficient solutions within agile environments." }}
                 </div>
                 
-                <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center border-t border-slate-200 dark:border-slate-800 pt-6">
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">2+</div>
-                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Years Exp.</div>
+                <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center border-t border-teal-500/20 pt-8">
+                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                        <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">2+</div>
+                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Years Exp.</div>
                     </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">10+</div>
-                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Projects</div>
+                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                        <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">10+</div>
+                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Projects</div>
                     </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">High</div>
-                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Performance</div>
+                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                        <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">High</div>
+                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Performance</div>
                     </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-1">Agile</div>
-                        <div class="text-xs sm:text-sm text-slate-500 uppercase tracking-wider">Approach</div>
+                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                        <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">Agile</div>
+                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Approach</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="experience" class="py-20 relative">
+    <!-- SECTION 03: EXPERIENCE MATRIX -->
+    <section id="experience" class="py-24 relative">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-4 mb-12 reveal">
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Experience</h2>
-                <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+            <div class="flex items-center gap-4 mb-16 reveal-node">
+                <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
+                    <span class="text-teal-500 text-lg">03.</span> Career Matrix
+                </h2>
+                <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow"></div>
             </div>
 
-            <div class="relative border-l border-slate-300 dark:border-slate-700 ml-4 md:ml-0 space-y-10">
+            <div class="relative border-l-2 border-teal-500/30 ml-4 md:ml-0 space-y-12">
                 {% for exp in experiences %}
-                <div class="relative pl-6 md:pl-0 reveal">
-                    <div class="md:grid md:grid-cols-5 md:gap-8 items-start">
-                        <div class="md:col-span-1 md:text-right mb-1 md:mb-0 hidden md:block pt-1">
-                            <span class="text-sm font-mono text-teal-600 dark:text-teal-400">{{ exp.duration }}</span>
+                <div class="relative pl-6 md:pl-10 reveal-node experience-step-node">
+                    <!-- Left Pulsing Indicator Ball -->
+                    <div class="timeline-ball absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white dark:bg-slate-950 border-2 border-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.8)]"></div>
+                    
+                    <div class="glass-panel p-6 sm:p-8 rounded-2xl relative group hover:border-teal-500/50 transition-all duration-300">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                            <h3 class="text-xl font-bold font-mono text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{{ exp.role }}</h3>
+                            <span class="text-xs font-mono text-teal-700 dark:text-teal-400 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 w-max">{{ exp.duration }}</span>
                         </div>
-                        <div class="md:col-span-4 relative">
-                            <div class="absolute -left-[31px] md:-left-[21px] top-1.5 w-4 h-4 rounded-full {% if forloop.first %}bg-teal-500 ring-4 ring-slate-50 dark:ring-slate-900 border border-teal-300{% else %}bg-slate-300 dark:bg-slate-700 ring-4 ring-slate-50 dark:ring-slate-900 border border-slate-400 dark:border-slate-600{% endif %}"></div>
-                            
-                            <div class="md:hidden mb-1">
-                                <span class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ exp.duration }}</span>
-                            </div>
-                            
-                            <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">{{ exp.role }}</h3>
-                            <h4 class="text-base text-slate-600 dark:text-slate-400 mb-3 font-medium flex items-center gap-2">
-                                <i class="ph ph-buildings {% if forloop.first %}text-teal-500{% else %}text-slate-400{% endif %}"></i> {{ exp.company }}
-                            </h4>
-                            <div class="space-y-2 text-slate-600 dark:text-slate-400 text-sm sm:text-base whitespace-pre-line">
-                                {{ exp.description }}
-                            </div>
+                        <h4 class="text-sm font-mono text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                            <i class="ph ph-buildings text-teal-500"></i> {{ exp.company }}
+                        </h4>
+                        <div class="space-y-2 text-slate-600 dark:text-slate-300 text-sm sm:text-base whitespace-pre-line leading-relaxed font-light">
+                            {{ exp.description }}
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-slate-500 ml-6">Experience data will appear here once added in the admin panel.</p>
+                <p class="text-slate-500 ml-6 font-mono">No experience records recorded.</p>
                 {% endfor %}
             </div>
         </div>
     </section>
 
-    <section id="projects" class="py-20 bg-white dark:bg-slate-850 relative transition-colors duration-300">
+    <!-- SECTION 04: PROJECTS -->
+    <section id="projects" class="py-24 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-4 mb-12 reveal">
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Featured Projects</h2>
-                <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+            <div class="flex items-center gap-4 mb-16 reveal-node">
+                <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
+                    <span class="text-teal-500 text-lg">04.</span> Featured Projects
+                </h2>
+                <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for project in projects %}
-                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden group hover:-translate-y-1 transition-all duration-300 shadow-md glow-card flex flex-col reveal">
-                    <div class="p-6 flex-grow">
-                        <div class="flex justify-between items-start mb-4">
-                            <i class="{{ project.icon_class|default:'ph-fill ph-folder' }} text-3xl sm:text-4xl text-teal-500"></i>
+                <div class="glass-panel rounded-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-500 flex flex-col reveal-node">
+                    <div class="p-6 sm:p-8 flex-grow">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-14 h-14 rounded-xl bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 text-2xl group-hover:scale-110 transition-transform">
+                                <i class="{{ project.icon_class|default:'ph-fill ph-folder' }}"></i>
+                            </div>
                             {% if project.github_link %}
-                            <a href="{{ project.github_link }}" target="_blank" class="text-slate-400 hover:text-teal-500 transition-colors"><i class="ph ph-github-logo text-2xl"></i></a>
+                            <a href="{{ project.github_link }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 transition-colors">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                                </svg>
+                            </a>
                             {% endif %}
                         </div>
-                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">{{ project.title }}</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4">
+                        <h3 class="text-xl font-bold font-mono text-slate-900 dark:text-white mb-3 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{{ project.title }}</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4 leading-relaxed font-light">
                             {{ project.description }}
                         </p>
                     </div>
-                    <div class="px-6 pb-6 pt-2">
-                        <p class="text-xs font-mono text-slate-500 font-semibold uppercase tracking-wider mb-2">Tech Stack:</p>
-                        <p class="text-xs sm:text-sm font-mono text-teal-600 dark:text-teal-400">{{ project.tech_stack }}</p>
+                    <div class="px-6 sm:px-8 pb-8 pt-2 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
+                        <p class="text-[10px] font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Tech Stack:</p>
+                        <p class="text-xs font-mono text-teal-600 dark:text-teal-400 font-semibold">{{ project.tech_stack }}</p>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-slate-500">Project data will appear here once added in the admin panel.</p>
+                <p class="text-slate-500 font-mono">No projects detected in the matrix.</p>
                 {% endfor %}
             </div>
         </div>
     </section>
 
-    <section id="skills" class="py-20 relative">
+    <!-- SECTION 05: SKILLS, EDUCATION & CERTIFICATIONS -->
+    <section id="skills" class="py-24 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12">
+            <div class="grid lg:grid-cols-2 gap-16 mb-24">
                 
-                <!-- Technical Skills -->
-                <div class="reveal">
-                    <div class="flex items-center gap-4 mb-8">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Technical Skills</h2>
-                        <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+                <!-- Technical Core Skills -->
+                <div class="reveal-node">
+                    <div class="flex items-center gap-4 mb-10">
+                        <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
+                            <span class="text-teal-500 text-lg">05.</span> Technical Core
+                        </h2>
+                        <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow"></div>
                     </div>
                     
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                                <i class="ph ph-database text-teal-600 dark:text-teal-400"></i> Backend & Databases
+                    <div class="space-y-8">
+                        <div class="glass-panel p-6 rounded-2xl">
+                            <h3 class="text-base font-mono font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <i class="ph ph-database text-teal-500"></i> Backend & Databases
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 {% for skill in backend_skills %}
-                                <span class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-700 dark:text-slate-300">{{ skill.name }}</span>
+                                <span class="px-3.5 py-1.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-teal-500/20 rounded-xl text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-colors">{{ skill.name }}</span>
                                 {% empty %}
-                                <span class="text-slate-400 text-sm">No backend skills found</span>
+                                <span class="text-slate-400 text-xs font-mono">No records</span>
                                 {% endfor %}
                             </div>
                         </div>
 
-                        <div>
-                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                                <i class="ph ph-browser text-blue-500 dark:text-blue-400"></i> Frontend
+                        <div class="glass-panel p-6 rounded-2xl">
+                            <h3 class="text-base font-mono font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <i class="ph ph-browser text-blue-500"></i> Frontend Interface
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 {% for skill in frontend_skills %}
-                                <span class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-700 dark:text-slate-300">{{ skill.name }}</span>
+                                <span class="px-3.5 py-1.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-blue-500/20 rounded-xl text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-blue-500 transition-colors">{{ skill.name }}</span>
                                 {% empty %}
-                                <span class="text-slate-400 text-sm">No frontend skills found</span>
+                                <span class="text-slate-400 text-xs font-mono">No records</span>
                                 {% endfor %}
                             </div>
                         </div>
 
-                        <div>
-                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                                <i class="ph ph-cloud text-purple-500 dark:text-purple-400"></i> Cloud & Tools
+                        <div class="glass-panel p-6 rounded-2xl">
+                            <h3 class="text-base font-mono font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <i class="ph ph-cloud text-purple-500"></i> Cloud & Infrastructure
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 {% for skill in tools_skills %}
-                                <span class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-700 dark:text-slate-300">{{ skill.name }}</span>
+                                <span class="px-3.5 py-1.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-purple-500/20 rounded-xl text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-purple-500 transition-colors">{{ skill.name }}</span>
                                 {% empty %}
-                                <span class="text-slate-400 text-sm">No tools found</span>
+                                <span class="text-slate-400 text-xs font-mono">No records</span>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Education -->
-                <div class="reveal">
-                    <div class="flex items-center gap-4 mb-8">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap transition-colors">Education</h2>
-                        <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow transition-colors"></div>
+                <!-- Education Matrix -->
+                <div class="reveal-node">
+                    <div class="flex items-center gap-4 mb-10">
+                        <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
+                            <span class="text-teal-500 text-lg">06.</span> Education
+                        </h2>
+                        <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow"></div>
                     </div>
                     
                     <div class="space-y-4">
                         {% for edu in education %}
-                        <div class="bg-white dark:bg-slate-850 p-4 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-teal-500 shadow-sm">
-                            <h4 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{{ edu.title }}</h4>
-                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">{{ edu.institution }}</p>
+                        <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-teal-500">
+                            <h4 class="text-lg font-bold font-mono text-slate-900 dark:text-white mb-1">{{ edu.title }}</h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2 font-light">{{ edu.institution }}</p>
                             <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ edu.date_completed }}</p>
                         </div>
                         {% empty %}
-                        <p class="text-slate-400 text-sm">No education records found</p>
+                        <p class="text-slate-400 font-mono">No education data found.</p>
                         {% endfor %}
                     </div>
                 </div>
 
             </div>
 
-            <!-- Certifications Carousel with Manual Navigation Controls -->
-            <div class="mt-20 reveal">
+            <!-- Certifications Carousel -->
+            <div class="reveal-node">
                 <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center gap-4 flex-grow">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white whitespace-nowrap">Licenses & Certifications</h2>
-                        <div class="h-px bg-slate-200 dark:bg-slate-700 w-full flex-grow hidden sm:block"></div>
+                        <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white whitespace-nowrap">Licenses & Certifications</h2>
+                        <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow hidden sm:block"></div>
                     </div>
                     
-                    <!-- Manual Scroll Buttons -->
-                    <div class="flex items-center gap-2 ml-4">
-                        <button onclick="scrollCarousel('left')" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 transition-colors shadow-sm" aria-label="Scroll Left">
+                    <!-- Desktop Carousel Buttons (Hidden on mobile) -->
+                    <div class="hidden md:flex items-center gap-2 ml-4">
+                        <button id="carousel-left-btn" class="p-3 rounded-xl glass-panel hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-colors shadow-sm" aria-label="Scroll Left">
                             <i class="ph ph-caret-left text-xl"></i>
                         </button>
-                        <button onclick="scrollCarousel('right')" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-teal-500 hover:text-white text-slate-700 dark:text-slate-300 transition-colors shadow-sm" aria-label="Scroll Right">
+                        <button id="carousel-right-btn" class="p-3 rounded-xl glass-panel hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-colors shadow-sm" aria-label="Scroll Right">
                             <i class="ph ph-caret-right text-xl"></i>
                         </button>
                     </div>
                 </div>
 
+                <!-- Touch & Click Scroll Carousel Container -->
                 <div class="carousel-container" id="cert-carousel-container">
                     <div class="carousel-track" id="cert-carousel-track">
                         <!-- Set 1 -->
                         {% for cert in certifications %}
-                        <div class="w-72 flex-shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md group transition-colors cursor-pointer" 
+                        <div class="w-80 flex-shrink-0 glass-panel rounded-2xl overflow-hidden shadow-xl group transition-all duration-300 cursor-pointer" 
                              onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
-                            <div class="h-40 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <div class="h-44 bg-slate-200 dark:bg-slate-900/80 flex items-center justify-center overflow-hidden relative">
                                 {% if cert.file %}
                                     {% if '.pdf' in cert.file.url|lower %}
                                         <div class="relative w-full h-full group/pdf">
                                             <iframe src="{{ cert.file.url }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full pointer-events-none border-none overflow-hidden" scrolling="no"></iframe>
-                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
-                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/0 group-hover:bg-slate-950/50 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity"></i>
                                             </div>
                                         </div>
                                     {% else %}
                                         <div class="relative w-full h-full">
                                             <img src="{{ cert.file.url }}" alt="{{ cert.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
-                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/0 group-hover:bg-slate-950/50 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity"></i>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -467,32 +584,32 @@
                                     <i class="ph ph-certificate text-6xl text-slate-400 dark:text-slate-600"></i>
                                 {% endif %}
                             </div>
-                            <div class="p-4">
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
-                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
-                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400 mt-2">{{ cert.date_completed }}</p>
+                            <div class="p-6">
+                                <h3 class="text-base font-bold font-mono text-slate-900 dark:text-white line-clamp-1 mb-1" title="{{ cert.title }}">{{ cert.title }}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-light mb-3">{{ cert.institution }}</p>
+                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ cert.date_completed }}</p>
                             </div>
                         </div>
                         {% endfor %}
                         
-                        <!-- Set 2 (Duplicate for smooth looping) -->
+                        <!-- Set 2 (Duplicate for Seamless Infinite Drift) -->
                         {% for cert in certifications %}
-                        <div class="w-72 flex-shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-md group transition-colors cursor-pointer" 
+                        <div class="w-80 flex-shrink-0 glass-panel rounded-2xl overflow-hidden shadow-xl group transition-all duration-300 cursor-pointer" 
                              onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
-                            <div class="h-40 bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden relative">
+                            <div class="h-44 bg-slate-200 dark:bg-slate-900/80 flex items-center justify-center overflow-hidden relative">
                                 {% if cert.file %}
                                     {% if '.pdf' in cert.file.url|lower %}
                                         <div class="relative w-full h-full group/pdf">
                                             <iframe src="{{ cert.file.url }}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full pointer-events-none border-none overflow-hidden" scrolling="no"></iframe>
-                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
-                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/0 group-hover:bg-slate-950/50 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity"></i>
                                             </div>
                                         </div>
                                     {% else %}
                                         <div class="relative w-full h-full">
                                             <img src="{{ cert.file.url }}" alt="{{ cert.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors">
-                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity drop-shadow-md"></i>
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/0 group-hover:bg-slate-950/50 transition-colors">
+                                                <i class="ph ph-magnifying-glass-plus text-white opacity-0 group-hover:opacity-100 text-3xl transition-opacity"></i>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -500,10 +617,10 @@
                                     <i class="ph ph-certificate text-6xl text-slate-400 dark:text-slate-600"></i>
                                 {% endif %}
                             </div>
-                            <div class="p-4">
-                                <h3 class="text-base font-bold text-slate-900 dark:text-white line-clamp-1" title="{{ cert.title }}">{{ cert.title }}</h3>
-                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">{{ cert.institution }}</p>
-                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400 mt-2">{{ cert.date_completed }}</p>
+                            <div class="p-6">
+                                <h3 class="text-base font-bold font-mono text-slate-900 dark:text-white line-clamp-1 mb-1" title="{{ cert.title }}">{{ cert.title }}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-light mb-3">{{ cert.institution }}</p>
+                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ cert.date_completed }}</p>
                             </div>
                         </div>
                         {% endfor %}
@@ -514,70 +631,129 @@
         </div>
     </section>
 
-    <section id="contact" class="py-20 bg-white dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 text-center relative overflow-hidden transition-colors duration-300">
-        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-teal-500/5 dark:bg-teal-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+    <!-- SECTION 06: CONTACT -->
+    <section id="contact" class="py-24 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 reveal-node">
+            <div class="glass-panel p-8 sm:p-14 rounded-3xl relative overflow-hidden shadow-2xl">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold font-mono text-slate-900 dark:text-white mb-3">Initiate Contact</h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-lg mx-auto font-light">
+                        Leave a direct message below or contact through traditional channels.
+                    </p>
+                </div>
 
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative reveal">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Let's Connect</h2>
-            <p class="text-slate-600 dark:text-slate-400 text-base sm:text-lg mb-8 max-w-2xl mx-auto">
-                Currently looking for new opportunities and collaborations. Feel free to reach out!
-            </p>
-            
-            <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="inline-block px-8 py-3.5 rounded-md bg-transparent border-2 border-teal-500 text-teal-600 dark:text-teal-400 font-bold hover:bg-teal-500 hover:text-white dark:hover:text-slate-900 transition-all shadow-sm mb-10">
-                Say Hello
-            </a>
-            
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-10 text-sm sm:text-base">
-                <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                    <i class="ph ph-envelope-simple text-xl"></i> {{ info.email|default:'rohanrpatil24@gmail.com' }}
-                </a>
-                <a href="tel:{{ info.phone|default:'+919653639991' }}" class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                    <i class="ph ph-phone text-xl"></i> {{ info.phone|default:'+91 9653639991' }}
-                </a>
-                <span class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
-                    <i class="ph ph-map-pin text-xl text-slate-500"></i> {{ info.location|default:'Mumbai, Maharashtra' }}
-                </span>
-            </div>
+                <!-- Interactive Contact Form -->
+                <form id="contact-form" method="POST" action="{% url 'home' %}" class="space-y-6 max-w-xl mx-auto text-left">
+                    {% csrf_token %}
+                    <input type="hidden" name="contact_submit" value="1">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Sender Name</label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="e.g. John Doe">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Email Address</label>
+                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="name@domain.com">
+                        </div>
+                    </div>
 
-            <div class="flex justify-center space-x-6">
-                {% if info.github_url %}
-                <a href="{{ info.github_url }}" target="_blank" class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                    <i class="ph ph-github-logo text-3xl"></i>
-                </a>
-                {% endif %}
-                {% if info.linkedin_url %}
-                <a href="{{ info.linkedin_url }}" target="_blank" class="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                    <i class="ph ph-linkedin-logo text-3xl"></i>
-                </a>
-                {% endif %}
+                    <div>
+                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Transmission Message</label>
+                        <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="Write your message here..."></textarea>
+                    </div>
+
+                    <div id="contact-status-msg" class="hidden text-xs font-mono text-center p-3 rounded-lg"></div>
+
+                    <button type="submit" id="contact-submit-btn" class="w-full py-4 rounded-xl bg-teal-500 hover:bg-teal-600 dark:hover:bg-teal-400 text-white dark:text-slate-950 font-mono font-bold transition-all shadow-[0_0_20px_rgba(20,184,166,0.3)] flex items-center justify-center gap-2">
+                        <i class="ph ph-paper-plane-tilt text-lg"></i> Dispatch Message
+                    </button>
+                </form>
+
+                <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-center items-center gap-6 text-xs sm:text-sm font-mono text-slate-600 dark:text-slate-300">
+                    <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="flex items-center gap-2 hover:text-teal-500 transition-colors">
+                        <i class="ph ph-envelope-simple text-lg text-teal-500"></i> {{ info.email|default:'rohanrpatil24@gmail.com' }}
+                    </a>
+                    <a href="tel:{{ info.phone|default:'+919653639991' }}" class="flex items-center gap-2 hover:text-teal-500 transition-colors">
+                        <i class="ph ph-phone text-lg text-teal-500"></i> {{ info.phone|default:'+91 9653639991' }}
+                    </a>
+                    <span class="flex items-center gap-2 text-slate-500">
+                        <i class="ph ph-map-pin text-lg text-teal-500"></i> {{ info.location|default:'Mumbai, Maharashtra' }}
+                    </span>
+                </div>
+
+                <!-- GitHub & LinkedIn Inline SVGs -->
+                <div class="flex justify-center space-x-6 mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+                    {% if info.github_url %}
+                    <a href="{{ info.github_url }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" class="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 hover:border-teal-500 transition-all">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                    {% if info.linkedin_url %}
+                    <a href="{{ info.linkedin_url }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" class="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 hover:border-teal-500 transition-all">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
         
-        <div class="mt-16 text-slate-500 dark:text-slate-600 text-xs sm:text-sm">
-            <p>Designed & Built by {{ info.name|default:"Rohan Patil" }} &copy; <span id="year"></span></p>
+        <!-- FOOTER & THEME ARCHITECTURE SWITCHER -->
+        <div class="mt-20 text-center font-mono text-xs text-slate-500 dark:text-slate-500">
+            <div class="inline-flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 mb-6 shadow-inner">
+                <button type="button" onclick="switchThemePreset(1)" id="theme-btn-1" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-teal-500">
+                    Theme 1 (Classic Glass)
+                </button>
+                <button type="button" onclick="switchThemePreset(2)" id="theme-btn-2" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm">
+                    Theme 2 (Sci-Fi Quantum 3D)
+                </button>
+            </div>
+            <p>Designed & Engineered by {{ info.name|default:"Rohan Patil" }} &copy; <span id="year"></span></p>
         </div>
     </section>
 
-    <!-- Secure Certificate Preview Modal -->
-    <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-950/90 backdrop-blur-sm transition-opacity duration-300 opacity-0 no-select" oncontextmenu="return false;">
-        <div class="relative w-11/12 md:w-3/4 max-w-5xl bg-white dark:bg-slate-850 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all transform scale-95" id="cert-modal-card">
-            <div class="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                <div class="flex items-center gap-2">
-                    <i class="ph-fill ph-lock-key text-teal-500"></i>
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Secure Preview</h3>
+    <!-- Secure Modal -->
+    <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-950/90 backdrop-blur-md transition-opacity duration-300 opacity-0 no-select" oncontextmenu="return false;">
+        <div class="relative w-11/12 md:w-3/4 max-w-5xl glass-panel rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all transform scale-95 border-teal-500/40" id="cert-modal-card">
+            <div class="flex justify-between items-center p-4 border-b border-teal-500/20 bg-slate-900/60">
+                <div class="flex items-center gap-2 font-mono text-xs">
+                    <i class="ph-fill ph-lock-key text-teal-400"></i>
+                    <span class="text-white uppercase tracking-widest">Secure Quantum Previewer</span>
                 </div>
-                <button onclick="closeCertModal()" class="text-slate-500 hover:text-red-500 transition-colors p-1 rounded-md">
+                <button onclick="closeCertModal()" class="text-slate-400 hover:text-red-400 transition-colors p-1 rounded-md">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
-            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-200 dark:bg-slate-800 flex items-center justify-center min-h-[50vh] p-2 sm:p-6"></div>
+            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-950/80 flex items-center justify-center min-h-[50vh] p-2 sm:p-6"></div>
         </div>
     </div>
 
+    <!-- Script Engine -->
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Theme Toggle Logic
+        // --- THEME SWITCHER (THEME 1 vs THEME 2 PRESETS) ---
+        function switchThemePreset(themeNum) {
+            localStorage.setItem('portfolio_theme_preset', themeNum);
+            if (themeNum === 1) {
+                document.getElementById('three-canvas-container').style.display = 'none';
+                document.getElementById('theme-btn-1').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm";
+                document.getElementById('theme-btn-2').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-teal-500";
+            } else {
+                document.getElementById('three-canvas-container').style.display = 'block';
+                document.getElementById('theme-btn-2').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm";
+                document.getElementById('theme-btn-1').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-teal-500";
+            }
+        }
+        if (localStorage.getItem('portfolio_theme_preset') === '1') {
+            switchThemePreset(1);
+        }
+
+        // --- DARK/LIGHT TOGGLE ENGINE ---
         const themeToggles = document.querySelectorAll('.theme-toggle');
         const htmlElement = document.documentElement;
 
@@ -592,26 +768,145 @@
             });
         });
 
-        // Navbar Scroll Effect
-        const navbar = document.getElementById('navbar');
+        // --- THREE.JS QUANTUM BACKGROUND ENGINE ---
+        const container = document.getElementById('three-canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const particleCount = 700;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 40;
+        }
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ size: 0.08, color: 0x14b8a6, transparent: true, opacity: 0.65 });
+        const particleSystem = new THREE.Points(geometry, material);
+        scene.add(particleSystem);
+
+        const torusGeometry = new THREE.TorusGeometry(3.5, 0.03, 16, 100);
+        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x14b8a6, wireframe: true, transparent: true, opacity: 0.18 });
+        const quantumRing = new THREE.Mesh(torusGeometry, torusMaterial);
+        scene.add(quantumRing);
+
+        camera.position.z = 15;
+
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
+        });
+
+        let clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            let elapsedTime = clock.getElapsedTime();
+            particleSystem.rotation.y = elapsedTime * 0.03;
+            quantumRing.rotation.x = elapsedTime * 0.1;
+            quantumRing.rotation.y = elapsedTime * 0.15;
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- CLEAN SPA NAVIGATION (NO /# HASHES) ---
+        const sections = document.querySelectorAll('section');
+        const navItems = {
+            'home': document.getElementById('nav-home'),
+            'about': document.getElementById('nav-about'),
+            'experience': document.getElementById('nav-experience'),
+            'projects': document.getElementById('nav-projects'),
+            'skills': document.getElementById('nav-skills'),
+            'contact': document.getElementById('nav-contact')
+        };
+
+        // Handle Click Interception
+        document.querySelectorAll('.spa-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetId === 'home' ? 0 : targetElement.offsetTop - 75,
+                        behavior: 'smooth'
+                    });
+
+                    const cleanPath = targetId === 'home' ? '/' : `/${targetId}`;
+                    if (window.location.pathname !== cleanPath) {
+                        window.history.pushState(null, null, cleanPath);
+                    }
+
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Update URL & Glowing nav item dynamically on scroll
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('shadow-md');
-            } else {
-                navbar.classList.remove('shadow-md');
+            let currentId = '';
+            const scrollPosition = window.pageYOffset + 150;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    currentId = section.getAttribute('id');
+                }
+            });
+
+            Object.keys(navItems).forEach(key => {
+                if (navItems[key]) {
+                    if (key === currentId) {
+                        navItems[key].classList.add('active-nav');
+                    } else {
+                        navItems[key].classList.remove('active-nav');
+                    }
+                }
+            });
+
+            if (currentId) {
+                const cleanUrl = currentId === 'home' ? '/' : `/${currentId}`;
+                if (window.location.pathname !== cleanUrl && window.location.pathname !== '/admin') {
+                    window.history.replaceState(null, null, cleanUrl);
+                }
             }
         });
 
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // Direct landing via clean URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const path = window.location.pathname.replace(/\//g, '');
+            if (path && path !== 'admin') {
+                const targetElement = document.getElementById(path);
+                if (targetElement) {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 75,
+                            behavior: 'smooth'
+                        });
+                    }, 150);
+                }
+            }
         });
 
-        // Scroll Reveal Animations
-        const revealElements = document.querySelectorAll('.reveal');
+        // --- REVEAL ANIMATIONS ON SCROLL ---
+        const revealNodes = document.querySelectorAll('.reveal-node');
         const revealObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -620,20 +915,383 @@
                 }
             });
         }, { threshold: 0.1 });
-        revealElements.forEach(el => revealObserver.observe(el));
+        revealNodes.forEach(el => revealObserver.observe(el));
 
-        // --- Manual Carousel Controls ---
+        // --- MOBILE MENU TOGGLE ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- FULLY FIXED RESPONSIVE CAROUSEL ENGINE (SWIPE, DESKTOP BUTTONS & AUTO-RETURN) ---
+        const carouselContainer = document.getElementById('cert-carousel-container');
         const carouselTrack = document.getElementById('cert-carousel-track');
-        function scrollCarousel(direction) {
-            const scrollAmount = 300;
-            if (direction === 'left') {
-                carouselTrack.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        const btnLeft = document.getElementById('carousel-left-btn');
+        const btnRight = document.getElementById('carousel-right-btn');
+
+        let isCarouseInteracting = false;
+        let carouselAutoLoopId = null;
+        let carouselIdleTimeout = null;
+        const cardWidthOffset = 352; // 320px width + 32px gap
+        const driftVelocity = 0.8; // Smooth sub-pixel drift per frame
+
+        // Smooth Auto-Drift Loop (Right to Left)
+        function startCarouselAutoDrift() {
+            if (carouselAutoLoopId) cancelAnimationFrame(carouselAutoLoopId);
+
+            function driftStep() {
+                if (!isCarouseInteracting) {
+                    carouselContainer.scrollLeft += driftVelocity;
+
+                    // Infinite seamless wrap when reaching half-track
+                    if (carouselContainer.scrollLeft >= carouselTrack.scrollWidth / 2) {
+                        carouselContainer.scrollLeft -= carouselTrack.scrollWidth / 2;
+                    }
+                }
+                carouselAutoLoopId = requestAnimationFrame(driftStep);
+            }
+            carouselAutoLoopId = requestAnimationFrame(driftStep);
+        }
+
+        // Pause drift, and start 3-second recovery countdown
+        function registerCarouselInteraction() {
+            isCarouseInteracting = true;
+            if (carouselIdleTimeout) clearTimeout(carouselIdleTimeout);
+
+            carouselIdleTimeout = setTimeout(() => {
+                isCarouseInteracting = false;
+            }, 3000);
+        }
+
+        // Desktop Button Click Controls
+        if (btnLeft && btnRight) {
+            btnLeft.addEventListener('click', (e) => {
+                e.stopPropagation();
+                registerCarouselInteraction();
+                carouselContainer.scrollBy({ left: -cardWidthOffset, behavior: 'smooth' });
+            });
+
+            btnRight.addEventListener('click', (e) => {
+                e.stopPropagation();
+                registerCarouselInteraction();
+                carouselContainer.scrollBy({ left: cardWidthOffset, behavior: 'smooth' });
+            });
+        }
+
+        // Touch & Swipe Listeners for Mobile & Desktop Drag
+        let startTouchX = 0;
+        let startScrollLeft = 0;
+
+        carouselContainer.addEventListener('touchstart', (e) => {
+            registerCarouselInteraction();
+            startTouchX = e.touches[0].pageX;
+            startScrollLeft = carouselContainer.scrollLeft;
+        }, { passive: true });
+
+        carouselContainer.addEventListener('touchmove', (e) => {
+            registerCarouselInteraction();
+            const x = e.touches[0].pageX;
+            const walk = (x - startTouchX) * 1.5;
+            carouselContainer.scrollLeft = startScrollLeft - walk;
+        }, { passive: true });
+
+        carouselContainer.addEventListener('touchend', registerCarouselInteraction, { passive: true });
+
+        // Desktop Mouse Drag Support
+        let isMouseDown = false;
+        let mouseStartX = 0;
+        carouselContainer.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            registerCarouselInteraction();
+            mouseStartX = e.pageX - carouselContainer.offsetLeft;
+            startScrollLeft = carouselContainer.scrollLeft;
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isMouseDown) {
+                isMouseDown = false;
+                registerCarouselInteraction();
+            }
+        });
+
+        carouselContainer.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+            e.preventDefault();
+            registerCarouselInteraction();
+            const x = e.pageX - carouselContainer.offsetLeft;
+            const walk = (x - mouseStartX) * 1.8;
+            carouselContainer.scrollLeft = startScrollLeft - walk;
+        });
+
+        // Initialize Carousel Auto-Drift
+        startCarouselAutoDrift();
+
+        // --- REFINED SUB-PIXEL SLIDESHOW & REAL-TIME INTERACTIVE EFFECTS ENGINE ---
+        let isAutoScrolling = false;
+        let scrollAnimationId = null;
+        let lastTimestamp = null;
+        let preciseScrollY = window.pageYOffset;
+        let hasReachedEnd = false;
+
+        const baseVelocity = 45;
+        const speedMultipliers = [1, 2, 3];
+        let currentSpeedIndex = 0;
+
+        const playSvg = `
+            <svg class="w-5 h-5 fill-current transition-transform group-hover:scale-110 ml-0.5" viewBox="0 0 24 24">
+                <path d="M5.25 4.5v15l13.5-7.5-13.5-7.5z"/>
+            </svg>`;
+        const pauseSvg = `
+            <svg class="w-5 h-5 fill-current transition-transform group-hover:scale-110" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>`;
+
+        const playPauseContainer = document.getElementById('play-pause-container');
+        const speedContainer = document.getElementById('speed-container');
+        const dockDivider = document.getElementById('dock-divider');
+        const restartContainer = document.getElementById('restart-container');
+        const toggleBtn = document.getElementById('slideshow-toggle-btn');
+        const iconSpan = document.getElementById('slideshow-icon');
+        const speedIndicator = document.getElementById('speed-indicator');
+
+        // Dynamic Elements for Real-time Glow & Animations
+        const timelineSteps = document.querySelectorAll('.experience-step-node');
+        const interactiveCards = document.querySelectorAll('.glass-panel');
+
+        function revealDockControls() {
+            speedContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-90');
+            speedContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+
+            dockDivider.classList.remove('max-h-0', 'opacity-0');
+            dockDivider.classList.add('max-h-4', 'opacity-100');
+
+            restartContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-90');
+            restartContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+        }
+
+        function hideActiveControlsAtEnd() {
+            playPauseContainer.classList.add('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
+            playPauseContainer.classList.remove('opacity-100', 'scale-100');
+
+            speedContainer.classList.add('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
+            speedContainer.classList.remove('max-h-12', 'opacity-100', 'scale-100');
+
+            dockDivider.classList.remove('max-h-0', 'opacity-0');
+            dockDivider.classList.add('max-h-4', 'opacity-100');
+            restartContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-90');
+            restartContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+        }
+
+        function unhideAllControls() {
+            playPauseContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
+            playPauseContainer.classList.add('opacity-100', 'scale-100');
+
+            speedContainer.classList.remove('max-h-0', 'opacity-0', 'pointer-events-none', 'scale-75');
+            speedContainer.classList.add('max-h-12', 'opacity-100', 'scale-100');
+        }
+
+        // Real-Time Card Tilt Animations & Timeline Step Indicator Glow
+        function updateLiveScrollVisuals() {
+            const viewportCenter = window.innerHeight * 0.52;
+
+            // 1. Timeline Nodes Dynamic Highlighting
+            timelineSteps.forEach(stepNode => {
+                const rect = stepNode.getBoundingClientRect();
+                const ball = stepNode.querySelector('.timeline-ball');
+                if (ball) {
+                    if (rect.top <= viewportCenter + 60 && rect.bottom >= viewportCenter - 60) {
+                        ball.classList.add('active-ball');
+                    } else {
+                        ball.classList.remove('active-ball');
+                    }
+                }
+            });
+
+            // 2. Active Card Elevation when Auto-Scrolling
+            if (isAutoScrolling) {
+                interactiveCards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    if (rect.top <= viewportCenter + 100 && rect.bottom >= viewportCenter - 100) {
+                        card.classList.add('card-stream-active');
+                    } else {
+                        card.classList.remove('card-stream-active');
+                    }
+                });
             } else {
-                carouselTrack.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                interactiveCards.forEach(card => card.classList.remove('card-stream-active'));
             }
         }
 
-        // --- Secure Modal Logic ---
+        function smoothGlideStep(timestamp) {
+            if (!isAutoScrolling) return;
+
+            if (lastTimestamp !== null) {
+                const deltaTime = Math.min((timestamp - lastTimestamp) / 1000, 0.05);
+                const velocity = baseVelocity * speedMultipliers[currentSpeedIndex];
+
+                preciseScrollY += velocity * deltaTime;
+                window.scrollTo(0, preciseScrollY);
+
+                updateLiveScrollVisuals();
+
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                if (window.pageYOffset >= maxScroll - 2) {
+                    stopAutoScroll();
+                    hasReachedEnd = true;
+                    hideActiveControlsAtEnd();
+                    return;
+                }
+            }
+
+            lastTimestamp = timestamp;
+            scrollAnimationId = requestAnimationFrame(smoothGlideStep);
+        }
+
+        function startAutoScroll() {
+            if (hasReachedEnd) {
+                hasReachedEnd = false;
+                unhideAllControls();
+            }
+
+            revealDockControls();
+            isAutoScrolling = true;
+            preciseScrollY = window.pageYOffset;
+            lastTimestamp = null;
+
+            document.documentElement.classList.remove('scroll-smooth');
+
+            iconSpan.innerHTML = pauseSvg;
+            toggleBtn.title = "Pause Slideshow";
+            toggleBtn.classList.add('ring-2', 'ring-teal-500');
+
+            scrollAnimationId = requestAnimationFrame(smoothGlideStep);
+        }
+
+        function stopAutoScroll() {
+            isAutoScrolling = false;
+            if (scrollAnimationId) {
+                cancelAnimationFrame(scrollAnimationId);
+                scrollAnimationId = null;
+            }
+            lastTimestamp = null;
+
+            document.documentElement.classList.add('scroll-smooth');
+
+            iconSpan.innerHTML = playSvg;
+            toggleBtn.title = "Start Auto-Scroll Slideshow";
+            toggleBtn.classList.remove('ring-2', 'ring-teal-500');
+
+            updateLiveScrollVisuals();
+        }
+
+        function togglePresentationMode() {
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            } else {
+                startAutoScroll();
+            }
+        }
+
+        function cycleScrollSpeed() {
+            currentSpeedIndex = (currentSpeedIndex + 1) % speedMultipliers.length;
+            const currentSpeed = speedMultipliers[currentSpeedIndex];
+            speedIndicator.textContent = `${currentSpeed}x`;
+        }
+
+        // Restart with smooth return to origin and precise 3-second hold
+        function restartPresentationMode() {
+            stopAutoScroll();
+            hasReachedEnd = false;
+            unhideAllControls();
+
+            // Smooth scroll back to top of page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            preciseScrollY = 0;
+
+            const cleanPath = '/';
+            if (window.location.pathname !== cleanPath) {
+                window.history.pushState(null, null, cleanPath);
+            }
+
+            // Visual indicator showing 3-second hold countdown
+            toggleBtn.classList.add('ring-2', 'ring-teal-400');
+            iconSpan.innerHTML = `
+                <span class="font-mono text-xs font-bold text-teal-400 animate-pulse">3s</span>
+            `;
+
+            let countdown = 3;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    iconSpan.innerHTML = `<span class="font-mono text-xs font-bold text-teal-400 animate-pulse">${countdown}s</span>`;
+                } else {
+                    clearInterval(countdownInterval);
+                    startAutoScroll();
+                }
+            }, 1000);
+        }
+
+        // Cancel slideshow and change button state if user interacts manually
+        function handleUserManualScroll() {
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            }
+            updateLiveScrollVisuals();
+        }
+
+        window.addEventListener('wheel', handleUserManualScroll, { passive: true });
+        window.addEventListener('touchmove', handleUserManualScroll, { passive: true });
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Space', 'Home', 'End'].includes(e.code)) {
+                handleUserManualScroll();
+            }
+        });
+
+        // --- ASYNC CONTACT FORM SUBMISSION ---
+        const contactForm = document.getElementById('contact-form');
+        const statusMsg = document.getElementById('contact-status-msg');
+        const submitBtn = document.getElementById('contact-submit-btn');
+
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Transmitting...`;
+
+            const formData = new FormData(contactForm);
+
+            fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                statusMsg.classList.remove('hidden');
+                if (data.status === 'success') {
+                    statusMsg.className = "text-xs font-mono text-center p-3 rounded-lg bg-green-500/10 text-green-500 border border-green-500/30";
+                    statusMsg.textContent = data.msg;
+                    contactForm.reset();
+                } else {
+                    statusMsg.className = "text-xs font-mono text-center p-3 rounded-lg bg-red-500/10 text-red-500 border border-red-500/30";
+                    statusMsg.textContent = data.msg;
+                }
+            })
+            .catch(() => {
+                statusMsg.classList.remove('hidden');
+                statusMsg.className = "text-xs font-mono text-center p-3 rounded-lg bg-green-500/10 text-green-500 border border-green-500/30";
+                statusMsg.textContent = "Signal recorded. Thank you for connecting!";
+                contactForm.reset();
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="ph ph-paper-plane-tilt text-lg"></i> Dispatch Message`;
+            });
+        });
+
+        // --- SECURE MODAL ENGINE ---
         const certModal = document.getElementById('cert-modal');
         const certModalCard = document.getElementById('cert-modal-card');
         const certModalContent = document.getElementById('cert-modal-content');
@@ -649,14 +1307,14 @@
 
             if (isPdf) {
                 certModalContent.innerHTML = `
-                    <div class="relative w-full h-[70vh] shadow-lg">
-                        <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full border-none rounded-lg" scrolling="no"></iframe>
+                    <div class="relative w-full h-[70vh] shadow-2xl">
+                        <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full border-none rounded-xl" scrolling="no"></iframe>
                         <div class="absolute inset-0 z-10 bg-transparent" oncontextmenu="return false;"></div>
                     </div>
                 `;
             } else {
                 certModalContent.innerHTML = `
-                    <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-lg pointer-events-none" draggable="false" oncontextmenu="return false;">
+                    <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl pointer-events-none" draggable="false" oncontextmenu="return false;">
                 `;
             }
         }
@@ -684,7 +1342,7 @@
 
         window.addEventListener('blur', () => {
             if (!certModal.classList.contains('hidden')) {
-                certModalContent.style.filter = 'blur(15px)';
+                certModalContent.style.filter = 'blur(20px)';
             }
         });
         window.addEventListener('focus', () => {
