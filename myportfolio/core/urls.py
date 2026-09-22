@@ -9,6 +9,7 @@ urlpatterns = [
     path('login/', views.custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('accounts/profile/', RedirectView.as_view(url='/dashboard/', permanent=True)),
+    path('tech-stack/', views.tech_stack, name='tech_stack'),
     
     # Clean URL handling
     path('home', views.home),

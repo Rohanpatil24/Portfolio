@@ -159,3 +159,6 @@ def custom_login(request):
                 }, status=401)
 
     return render(request, 'core/login.html')
+
+def tech_stack(request):
+    return render(request, 'core/tech_stack.html')
