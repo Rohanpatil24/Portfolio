@@ -1,0 +1,4 @@
+workon portfolio-env
+cd /home/rohanrp24/Portfolio/myportfolio
+python manage.py makemigrations
+python manage.py migrate
