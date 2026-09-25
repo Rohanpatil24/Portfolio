@@ -10,10 +10,10 @@
     
     <title>{{ info.name|default:"Rohan Patil" }} | Quantum Portfolio</title>
     
-    <!-- Google Fonts: Inter & Space Grotesk -->
+    <!-- Google Fonts: Inter, Space Grotesk, Orbitron -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -28,6 +28,7 @@
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['Space Grotesk', 'monospace'],
+                        astro: ['Orbitron', 'sans-serif'],
                     },
                     colors: {
                         slate: {
@@ -54,7 +55,7 @@
         }
     </script>
 
-    <!-- Three.js Engine -->
+    <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -78,33 +79,78 @@
             pointer-events: none;
         }
 
-        /* Glassmorphic Panels */
+        /* --- THEME 2 & BASE GLASSMORPHIC CARDS --- */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(20, 184, 166, 0.25);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease, opacity 0.5s ease;
         }
         .dark .glass-panel {
-            background: rgba(11, 15, 25, 0.7);
-            border: 1px solid rgba(20, 184, 166, 0.18);
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            background: rgba(11, 15, 25, 0.42);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(20, 184, 166, 0.22);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- THEME 3: HIGH CONTRAST LIGHT & COSMIC DARK --- */
+        body[data-theme-preset="3"] .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(147, 197, 253, 0.6);
+            box-shadow: 0 18px 40px rgba(30, 58, 138, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+        }
+        .dark body[data-theme-preset="3"] .glass-panel {
+            background: rgba(8, 12, 28, 0.52);
+            border: 1px solid rgba(96, 165, 250, 0.25);
+            box-shadow: 0 20px 45px rgba(2, 6, 23, 0.8), inset 0 1px 1px rgba(147, 197, 253, 0.15);
         }
 
         /* Active Scroll Elevation Effect */
         .card-stream-active {
             transform: translateY(-8px) scale(1.02);
-            border-color: rgba(20, 184, 166, 0.6) !important;
-            box-shadow: 0 15px 35px rgba(20, 184, 166, 0.25) !important;
+            border-color: rgba(20, 184, 166, 0.7) !important;
+            box-shadow: 0 20px 40px rgba(20, 184, 166, 0.28) !important;
         }
 
-        /* Glowing Nav Link when Active */
+        /* Active Navbar Link */
         .nav-link.active-nav {
             color: #14b8a6 !important;
-            text-shadow: 0 0 12px rgba(20, 184, 166, 0.6);
+            text-shadow: 0 0 14px rgba(20, 184, 166, 0.8);
             border-bottom: 2px solid #14b8a6;
+        }
+
+        /* --- ROTATING COLOR GLOW BUTTON FOR AI ASH --- */
+        .ai-glow-border {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .ai-glow-border::before {
+            content: '';
+            position: absolute;
+            z-index: -2;
+            left: -50%;
+            top: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, #2dd4bf, #06b6d4, #3b82f6, #8b5cf6, #ec4899, #2dd4bf);
+            animation: rotateConic 3.2s linear infinite;
+        }
+        .ai-glow-border::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: 2px;
+            background: inherit;
+            border-radius: inherit;
+        }
+        @keyframes rotateConic {
+            100% { transform: rotate(360deg); }
         }
 
         /* Sci-Fi Reveal Transitions */
@@ -148,27 +194,66 @@
         .carousel-container:active {
             cursor: grabbing;
         }
-
         .carousel-track {
             display: flex;
             gap: 2rem;
             width: max-content;
         }
 
-        /* Floating Glassmorphic Slideshow Controls */
+        /* Glassmorphic Controls Dock */
         .glass-dock {
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.9);
         }
         .dark .glass-dock {
             background: rgba(11, 15, 25, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(20, 184, 166, 0.25);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .orbit-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 110px;
+            height: 5px;
+            border-radius: 9999px;
+            background: rgba(20, 184, 166, 0.35);
+            outline: none;
+            transition: all 0.3s;
+        }
+        .orbit-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2dd4bf;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(45, 212, 191, 0.9);
+            border: 2px solid #ffffff;
+        }
+        .orbit-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #2dd4bf;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(45, 212, 191, 0.9);
+            border: 2px solid #ffffff;
+        }
+
+        /* Anti-Capture Security Privacy Shield */
+        .secure-censored {
+            filter: blur(35px) brightness(0.2) grayscale(1) !important;
+            opacity: 0.05 !important;
+            transition: filter 0.05s ease, opacity 0.05s ease !important;
+            user-select: none !important;
+            pointer-events: none !important;
         }
 
         .no-select {
@@ -181,13 +266,13 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300" data-theme-preset="2">
 
-    <!-- Three.js Background Canvas -->
+    <!-- Three.js Background Canvas Container -->
     <div id="three-canvas-container"></div>
 
     <!-- Navigation Header -->
-    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-teal-500/20 transition-all duration-300" id="navbar">
+    <nav class="fixed w-full z-50 top-0 bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-teal-500/20 transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex-shrink-0">
@@ -198,20 +283,26 @@
                 </div>
                 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-6 items-center">
-                    <a href="/" data-target="home" id="nav-home" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">01. Home</a>
-                    <a href="/about" data-target="about" id="nav-about" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">02. About</a>
-                    <a href="/experience" data-target="experience" id="nav-experience" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">03. Matrix</a>
-                    <a href="/projects" data-target="projects" id="nav-projects" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">04. Projects</a>
-                    <a href="/skills" data-target="skills" id="nav-skills" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:text-teal-500 transition-all">05. Core</a>
-                    <a href="/contact" data-target="contact" id="nav-contact" class="nav-link spa-link px-4 py-2 rounded-lg bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-300 dark:border-teal-500/30 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-slate-950 transition-all text-xs font-mono uppercase tracking-wider font-bold">Contact</a>
+                <div class="hidden md:flex space-x-5 items-center">
+                    <a href="/" data-target="home" id="nav-home" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-all">01. Home</a>
+                    <a href="/about" data-target="about" id="nav-about" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-all">02. About</a>
+                    <a href="/experience" data-target="experience" id="nav-experience" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-all">03. Matrix</a>
+                    <a href="/projects" data-target="projects" id="nav-projects" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-all">04. Projects</a>
+                    <a href="/skills" data-target="skills" id="nav-skills" class="nav-link spa-link py-1 text-xs font-mono uppercase tracking-widest text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-all">05. Core</a>
+                    <a href="/contact" data-target="contact" id="nav-contact" class="nav-link spa-link px-3.5 py-1.5 rounded-lg bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-300 dark:border-teal-500/30 hover:bg-teal-500 hover:text-white dark:hover:bg-teal-500 dark:hover:text-slate-950 transition-all text-xs font-mono uppercase tracking-wider font-bold">Contact</a>
                     
+                    <!-- ROTATING GLOW AI ASH BUTTON -->
+                    <a href="{% url 'ai_chat' %}" class="ai-glow-border px-3.5 py-1.5 rounded-xl bg-slate-900/90 dark:bg-slate-950 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(45,212,191,0.5)] hover:scale-105 transition-transform">
+                        <i class="ph-fill ph-sparkle text-teal-400 animate-pulse"></i>
+                        <span>AI Ash</span>
+                    </a>
+
                     {% if user.is_staff %}
-                    <a href="{% url 'dashboard' %}" class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-teal-500 border border-slate-200 dark:border-slate-800 transition-all text-xs font-mono flex items-center gap-1.5">
+                    <a href="{% url 'dashboard' %}" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-teal-500 border border-slate-200 dark:border-slate-800 transition-all text-xs font-mono flex items-center gap-1.5">
                         <i class="ph ph-gauge text-teal-500"></i> Dash
                     </a>
                     {% else %}
-                    <a href="{% url 'login' %}" class="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-teal-500 border border-slate-200 dark:border-slate-800 transition-all text-xs font-mono flex items-center gap-1.5">
+                    <a href="{% url 'login' %}" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-teal-500 border border-slate-200 dark:border-slate-800 transition-all text-xs font-mono flex items-center gap-1.5">
                         <i class="ph ph-sign-in text-teal-500"></i> Auth
                     </a>
                     {% endif %}
@@ -224,13 +315,16 @@
                 </div>
 
                 <!-- Mobile Header Right -->
-                <div class="md:hidden flex items-center gap-3">
-                    <button class="theme-toggle relative w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-teal-400 border border-slate-200 dark:border-slate-800">
-                        <i class="ph ph-sun text-lg absolute transition-all duration-500 translate-y-8 opacity-0 dark:translate-y-0 dark:opacity-100"></i>
-                        <i class="ph ph-moon text-lg absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-8 dark:opacity-0"></i>
+                <div class="md:hidden flex items-center gap-2">
+                    <a href="{% url 'ai_chat' %}" class="ai-glow-border px-2.5 py-1 rounded-lg bg-slate-900 text-white font-mono text-[11px] font-bold flex items-center gap-1">
+                        <i class="ph-fill ph-sparkle text-teal-400"></i> AI
+                    </a>
+                    <button class="theme-toggle relative w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-teal-400 border border-slate-200 dark:border-slate-800">
+                        <i class="ph ph-sun text-base absolute transition-all duration-500 translate-y-8 opacity-0 dark:translate-y-0 dark:opacity-100"></i>
+                        <i class="ph ph-moon text-base absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-8 dark:opacity-0"></i>
                     </button>
                     <button id="mobile-menu-btn" class="text-teal-600 dark:text-teal-400 focus:outline-none p-1">
-                        <i class="ph ph-list text-3xl"></i>
+                        <i class="ph ph-list text-2xl"></i>
                     </button>
                 </div>
             </div>
@@ -239,12 +333,13 @@
         <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-teal-500/20 absolute w-full left-0 top-20 shadow-2xl backdrop-blur-2xl">
             <div class="px-4 pt-3 pb-6 space-y-2 flex flex-col font-mono text-sm">
-                <a href="/" data-target="home" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">01. Home</a>
-                <a href="/about" data-target="about" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">02. About</a>
-                <a href="/experience" data-target="experience" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">03. Matrix</a>
-                <a href="/projects" data-target="projects" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">04. Projects</a>
-                <a href="/skills" data-target="skills" class="spa-link block px-3 py-2 text-slate-700 dark:text-slate-300 hover:text-teal-500">05. Core</a>
+                <a href="/" data-target="home" class="spa-link block px-3 py-2 text-slate-800 dark:text-slate-300 hover:text-teal-500">01. Home</a>
+                <a href="/about" data-target="about" class="spa-link block px-3 py-2 text-slate-800 dark:text-slate-300 hover:text-teal-500">02. About</a>
+                <a href="/experience" data-target="experience" class="spa-link block px-3 py-2 text-slate-800 dark:text-slate-300 hover:text-teal-500">03. Matrix</a>
+                <a href="/projects" data-target="projects" class="spa-link block px-3 py-2 text-slate-800 dark:text-slate-300 hover:text-teal-500">04. Projects</a>
+                <a href="/skills" data-target="skills" class="spa-link block px-3 py-2 text-slate-800 dark:text-slate-300 hover:text-teal-500">05. Core</a>
                 <a href="/contact" data-target="contact" class="spa-link block px-3 py-2 text-teal-600 dark:text-teal-400 font-bold">Contact</a>
+                <a href="{% url 'ai_chat' %}" class="block px-3 py-2 text-teal-400 font-bold flex items-center gap-1.5"><i class="ph-fill ph-sparkle"></i> Launch Ash AI Assistant</a>
                 {% if user.is_staff %}
                 <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-slate-600 dark:text-slate-400">Dashboard</a>
                 {% else %}
@@ -254,54 +349,61 @@
         </div>
     </nav>
 
-    <!-- FIXED SLIDESHOW DOCK AT BOTTOM-RIGHT (SQUARE ORIGIN) -->
-    <div id="slideshow-dock" class="fixed right-4 md:right-8 bottom-6 md:bottom-8 z-40 flex flex-col-reverse items-center p-2 rounded-2xl glass-dock shadow-2xl transition-all duration-500 w-15 h-15">
+    <!-- FIXED SLIDESHOW DOCK AT BOTTOM-RIGHT -->
+    <div id="slideshow-dock-wrapper" class="fixed right-4 md:right-8 bottom-6 md:bottom-8 z-40 flex items-end gap-3">
         
-        <!-- Start / Pause Button Container -->
-        <div id="play-pause-container" class="transition-all duration-500 origin-center overflow-hidden flex items-center justify-center">
-            <button id="slideshow-toggle-btn" onclick="togglePresentationMode()" title="Start Auto-Scroll Slideshow" class="w-11 h-11 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
-                <span id="slideshow-icon" class="flex items-center justify-center">
-                    <!-- Play SVG Icon -->
-                    <svg class="w-5 h-5 fill-current transition-transform group-hover:scale-110 ml-0.5" viewBox="0 0 24 24">
-                        <path d="M5.25 4.5v15l13.5-7.5-13.5-7.5z"/>
+        <!-- Theme 3 Earth Orbit 3D Slider -->
+        <div id="planetary-slider-box" class="hidden glass-dock px-3.5 py-2.5 rounded-2xl flex-col items-center gap-1 shadow-2xl transition-all duration-500 border border-blue-400/40">
+            <div class="flex items-center justify-between w-full text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-wider mb-0.5">
+                <span class="flex items-center gap-1"><i class="ph ph-planet text-xs"></i> Orbit Cam</span>
+                <span id="slider-deg-readout">0°</span>
+            </div>
+            <input type="range" id="earth-orbit-slider" min="-100" max="100" value="0" class="orbit-slider">
+        </div>
+
+        <!-- Master Floating Dock Container -->
+        <div id="slideshow-dock" class="flex flex-col-reverse items-center p-2 rounded-2xl glass-dock shadow-2xl transition-all duration-500 w-15 h-15">
+            
+            <div id="play-pause-container" class="transition-all duration-500 origin-center overflow-hidden flex items-center justify-center">
+                <button id="slideshow-toggle-btn" onclick="togglePresentationMode()" title="Start Auto-Scroll Slideshow" class="w-11 h-11 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
+                    <span id="slideshow-icon" class="flex items-center justify-center">
+                        <svg class="w-5 h-5 fill-current transition-transform group-hover:scale-110 ml-0.5" viewBox="0 0 24 24">
+                            <path d="M5.25 4.5v15l13.5-7.5-13.5-7.5z"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
+            <div id="speed-container" class="hidden transition-all duration-500 scale-90 overflow-hidden mb-2">
+                <button id="slideshow-speed-btn" onclick="cycleScrollSpeed()" title="Cycle Scroll Speed" class="w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-xs text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 border border-teal-500/30 transition-all duration-300 shadow-sm">
+                    <span id="speed-indicator">1x</span>
+                </button>
+            </div>
+
+            <div id="dock-divider" class="hidden transition-all duration-500 overflow-hidden w-6 h-px bg-slate-300/80 dark:bg-teal-500/20 mb-2"></div>
+
+            <div id="restart-container" class="hidden transition-all duration-500 scale-90 overflow-hidden mb-2">
+                <button id="slideshow-restart-btn" onclick="restartPresentationMode()" title="Restart from Beginning (3s Hold)" class="w-11 h-11 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
+                    <svg class="w-5 h-5 fill-current transition-transform group-hover:-rotate-180 duration-500" viewBox="0 0 24 24">
+                        <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
                     </svg>
-                </span>
-            </button>
+                </button>
+            </div>
+
         </div>
-
-        <!-- Speed Selector Button -->
-        <div id="speed-container" class="hidden transition-all duration-500 scale-90 overflow-hidden mb-2">
-            <button id="slideshow-speed-btn" onclick="cycleScrollSpeed()" title="Cycle Scroll Speed" class="w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-xs text-teal-600 dark:text-teal-400 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 border border-teal-500/30 transition-all duration-300 shadow-sm">
-                <span id="speed-indicator">1x</span>
-            </button>
-        </div>
-
-        <!-- Divider Line -->
-        <div id="dock-divider" class="hidden transition-all duration-500 overflow-hidden w-6 h-px bg-slate-300/80 dark:bg-teal-500/20 mb-2"></div>
-
-        <!-- Restart Button Container -->
-        <div id="restart-container" class="hidden transition-all duration-500 scale-90 overflow-hidden mb-2">
-            <button id="slideshow-restart-btn" onclick="restartPresentationMode()" title="Restart from Beginning (3s Hold)" class="w-11 h-11 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-all duration-300 group shadow-sm">
-                <!-- Restart SVG Icon -->
-                <svg class="w-5 h-5 fill-current transition-transform group-hover:-rotate-180 duration-500" viewBox="0 0 24 24">
-                    <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                </svg>
-            </button>
-        </div>
-
     </div>
 
     <!-- SECTION 01: HOME HERO -->
     <section id="home" class="min-h-screen flex items-center justify-center pt-28 pb-12 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
             <div class="flex-1 reveal-node w-full">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 text-teal-700 dark:text-teal-400 text-xs font-mono mb-6 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span> Hi there!</span>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 text-teal-700 dark:text-teal-400 text-xs font-mono mb-6 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span> SYSTEM ONLINE // QUANTUM ARCHITECTURE
                 </div>
                 <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight font-mono">
                     {{ info.name|default:"Rohan Patil" }}<span class="text-teal-500">_</span>
                 </h1>
-                <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-600 dark:text-slate-400 mb-8 max-w-2xl font-mono">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-700 dark:text-slate-300 mb-8 max-w-2xl font-mono">
                     {{ info.tagline|default:"Full Stack & Backend Developer crafting high-performance digital architectures." }}
                 </h2>
                 
@@ -311,11 +413,11 @@
                     </a>
                     
                     {% if info.resume %}
-                    <a href="{{ info.resume.url }}" download class="px-8 py-4 rounded-xl glass-panel text-slate-800 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 transition-all font-mono text-sm flex items-center gap-2">
+                    <a href="{{ info.resume.url }}" download class="px-8 py-4 rounded-xl glass-panel text-slate-800 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 transition-all font-mono text-sm flex items-center gap-2 font-semibold">
                         <i class="ph ph-download-simple text-xl"></i> Download Resume
                     </a>
                     {% else %}
-                    <a href="/contact" data-target="contact" class="spa-link px-8 py-4 rounded-xl glass-panel text-slate-800 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 transition-all font-mono text-sm flex items-center gap-2">
+                    <a href="/contact" data-target="contact" class="spa-link px-8 py-4 rounded-xl glass-panel text-slate-800 dark:text-slate-200 hover:text-teal-600 dark:hover:text-teal-400 transition-all font-mono text-sm flex items-center gap-2 font-semibold">
                         <i class="ph ph-envelope-simple text-xl"></i> Contact Signal
                     </a>
                     {% endif %}
@@ -327,7 +429,7 @@
                     <div class="absolute inset-0 border border-teal-500/20 rounded-3xl animate-[spin_20s_linear_infinite] backdrop-blur-sm"></div>
                     <div class="absolute inset-6 border border-dashed border-blue-500/30 rounded-3xl animate-[spin_25s_linear_infinite_reverse]"></div>
                     <div class="glass-panel p-8 rounded-2xl relative z-10 shadow-2xl border-teal-500/40 transform rotate-3 hover:rotate-0 transition-transform duration-700">
-                        <pre class="text-xs text-teal-600 dark:text-teal-400 font-mono text-left leading-relaxed">
+                        <pre class="text-xs text-teal-700 dark:text-teal-400 font-mono text-left leading-relaxed">
 <span class="text-blue-600 dark:text-blue-400">class</span> <span class="text-yellow-600 dark:text-yellow-400">QuantumEngineer</span>:
     <span class="text-blue-600 dark:text-blue-400">def</span> <span class="text-green-600 dark:text-green-400">__init__</span>(self):
         self.stack = [<span class="text-orange-600 dark:text-orange-400">"Django"</span>, <span class="text-orange-600 dark:text-orange-400">"Python"</span>]
@@ -354,7 +456,7 @@
             </div>
             
             <div class="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden group">
-                <div class="prose max-w-none text-slate-600 dark:text-slate-300 space-y-6 text-base md:text-lg leading-relaxed font-light">
+                <div class="prose max-w-none text-slate-800 dark:text-slate-200 space-y-6 text-base md:text-lg leading-relaxed font-normal">
                     {% if info.about_text %}
                         <div class="whitespace-pre-line">{{ info.about_text }}</div>
                     {% else %}
@@ -364,21 +466,21 @@
                 </div>
                 
                 <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center border-t border-teal-500/20 pt-8">
-                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                    <div class="p-4 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
                         <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">2+</div>
-                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Years Exp.</div>
+                        <div class="text-xs font-mono text-teal-700 dark:text-teal-400 uppercase tracking-wider font-semibold">Years Exp.</div>
                     </div>
-                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                    <div class="p-4 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
                         <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">10+</div>
-                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Projects</div>
+                        <div class="text-xs font-mono text-teal-700 dark:text-teal-400 uppercase tracking-wider font-semibold">Projects</div>
                     </div>
-                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                    <div class="p-4 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
                         <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">High</div>
-                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Performance</div>
+                        <div class="text-xs font-mono text-teal-700 dark:text-teal-400 uppercase tracking-wider font-semibold">Performance</div>
                     </div>
-                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
+                    <div class="p-4 rounded-xl bg-white/50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
                         <div class="text-3xl font-extrabold font-mono text-slate-900 dark:text-white mb-1">Agile</div>
-                        <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider">Approach</div>
+                        <div class="text-xs font-mono text-teal-700 dark:text-teal-400 uppercase tracking-wider font-semibold">Approach</div>
                     </div>
                 </div>
             </div>
@@ -398,18 +500,17 @@
             <div class="relative border-l-2 border-teal-500/30 ml-4 md:ml-0 space-y-12">
                 {% for exp in experiences %}
                 <div class="relative pl-6 md:pl-10 reveal-node experience-step-node">
-                    <!-- Left Pulsing Indicator Ball -->
                     <div class="timeline-ball absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white dark:bg-slate-950 border-2 border-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.8)]"></div>
                     
                     <div class="glass-panel p-6 sm:p-8 rounded-2xl relative group hover:border-teal-500/50 transition-all duration-300">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                             <h3 class="text-xl font-bold font-mono text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{{ exp.role }}</h3>
-                            <span class="text-xs font-mono text-teal-700 dark:text-teal-400 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 w-max">{{ exp.duration }}</span>
+                            <span class="text-xs font-mono text-teal-700 dark:text-teal-400 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-300 dark:border-teal-500/20 w-max font-semibold">{{ exp.duration }}</span>
                         </div>
-                        <h4 class="text-sm font-mono text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                        <h4 class="text-sm font-mono text-slate-600 dark:text-slate-400 mb-4 flex items-center gap-2 font-medium">
                             <i class="ph ph-buildings text-teal-500"></i> {{ exp.company }}
                         </h4>
-                        <div class="space-y-2 text-slate-600 dark:text-slate-300 text-sm sm:text-base whitespace-pre-line leading-relaxed font-light">
+                        <div class="space-y-2 text-slate-700 dark:text-slate-300 text-sm sm:text-base whitespace-pre-line leading-relaxed font-normal">
                             {{ exp.description }}
                         </div>
                     </div>
@@ -436,11 +537,11 @@
                 <div class="glass-panel rounded-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-500 flex flex-col reveal-node">
                     <div class="p-6 sm:p-8 flex-grow">
                         <div class="flex justify-between items-start mb-6">
-                            <div class="w-14 h-14 rounded-xl bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 text-2xl group-hover:scale-110 transition-transform">
+                            <div class="w-14 h-14 rounded-xl bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 text-2xl group-hover:scale-110 transition-transform">
                                 <i class="{{ project.icon_class|default:'ph-fill ph-folder' }}"></i>
                             </div>
                             {% if project.github_link %}
-                            <a href="{{ project.github_link }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 transition-colors">
+                            <a href="{{ project.github_link }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository" class="w-10 h-10 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 transition-colors">
                                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
                                 </svg>
@@ -448,13 +549,13 @@
                             {% endif %}
                         </div>
                         <h3 class="text-xl font-bold font-mono text-slate-900 dark:text-white mb-3 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{{ project.title }}</h3>
-                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6 line-clamp-4 leading-relaxed font-light">
+                        <p class="text-slate-700 dark:text-slate-300 text-sm mb-6 line-clamp-4 leading-relaxed font-normal">
                             {{ project.description }}
                         </p>
                     </div>
-                    <div class="px-6 sm:px-8 pb-8 pt-2 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
-                        <p class="text-[10px] font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">Tech Stack:</p>
-                        <p class="text-xs font-mono text-teal-600 dark:text-teal-400 font-semibold">{{ project.tech_stack }}</p>
+                    <div class="px-6 sm:px-8 pb-8 pt-2 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/20">
+                        <p class="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 font-semibold">Tech Stack:</p>
+                        <p class="text-xs font-mono text-teal-700 dark:text-teal-400 font-bold">{{ project.tech_stack }}</p>
                     </div>
                 </div>
                 {% empty %}
@@ -469,7 +570,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-16 mb-24">
                 
-                <!-- Technical Core Skills -->
                 <div class="reveal-node">
                     <div class="flex items-center gap-4 mb-10">
                         <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
@@ -485,7 +585,7 @@
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 {% for skill in backend_skills %}
-                                <span class="px-3.5 py-1.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-teal-500/20 rounded-xl text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-teal-500 transition-colors">{{ skill.name }}</span>
+                                <span class="px-3.5 py-1.5 bg-white/80 dark:bg-slate-900/70 border border-slate-200 dark:border-teal-500/20 rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200 hover:text-teal-500 transition-colors font-medium">{{ skill.name }}</span>
                                 {% empty %}
                                 <span class="text-slate-400 text-xs font-mono">No records</span>
                                 {% endfor %}
@@ -498,7 +598,7 @@
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 {% for skill in frontend_skills %}
-                                <span class="px-3.5 py-1.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-blue-500/20 rounded-xl text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-blue-500 transition-colors">{{ skill.name }}</span>
+                                <span class="px-3.5 py-1.5 bg-white/80 dark:bg-slate-900/70 border border-slate-200 dark:border-blue-500/20 rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200 hover:text-blue-500 transition-colors font-medium">{{ skill.name }}</span>
                                 {% empty %}
                                 <span class="text-slate-400 text-xs font-mono">No records</span>
                                 {% endfor %}
@@ -511,7 +611,7 @@
                             </h3>
                             <div class="flex flex-wrap gap-2">
                                 {% for skill in tools_skills %}
-                                <span class="px-3.5 py-1.5 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-purple-500/20 rounded-xl text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-purple-500 transition-colors">{{ skill.name }}</span>
+                                <span class="px-3.5 py-1.5 bg-white/80 dark:bg-slate-900/70 border border-slate-200 dark:border-purple-500/20 rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200 hover:text-purple-500 transition-colors font-medium">{{ skill.name }}</span>
                                 {% empty %}
                                 <span class="text-slate-400 text-xs font-mono">No records</span>
                                 {% endfor %}
@@ -520,7 +620,6 @@
                     </div>
                 </div>
 
-                <!-- Education Matrix -->
                 <div class="reveal-node">
                     <div class="flex items-center gap-4 mb-10">
                         <h2 class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white flex items-center gap-3">
@@ -533,8 +632,8 @@
                         {% for edu in education %}
                         <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-teal-500">
                             <h4 class="text-lg font-bold font-mono text-slate-900 dark:text-white mb-1">{{ edu.title }}</h4>
-                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2 font-light">{{ edu.institution }}</p>
-                            <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ edu.date_completed }}</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2 font-normal">{{ edu.institution }}</p>
+                            <p class="text-xs font-mono text-teal-700 dark:text-teal-400 font-semibold">{{ edu.date_completed }}</p>
                         </div>
                         {% empty %}
                         <p class="text-slate-400 font-mono">No education data found.</p>
@@ -552,7 +651,6 @@
                         <div class="h-px bg-gradient-to-r from-teal-500/50 to-transparent w-full flex-grow hidden sm:block"></div>
                     </div>
                     
-                    <!-- Desktop Carousel Buttons (Hidden on mobile) -->
                     <div class="hidden md:flex items-center gap-2 ml-4">
                         <button id="carousel-left-btn" class="p-3 rounded-xl glass-panel hover:bg-teal-500 hover:text-white dark:hover:text-slate-950 transition-colors shadow-sm" aria-label="Scroll Left">
                             <i class="ph ph-caret-left text-xl"></i>
@@ -563,14 +661,12 @@
                     </div>
                 </div>
 
-                <!-- Touch & Click Scroll Carousel Container -->
                 <div class="carousel-container" id="cert-carousel-container">
                     <div class="carousel-track" id="cert-carousel-track">
-                        <!-- Set 1 -->
                         {% for cert in certifications %}
                         <div class="w-80 flex-shrink-0 glass-panel rounded-2xl overflow-hidden shadow-xl group transition-all duration-300 cursor-pointer" 
                              onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
-                            <div class="h-44 bg-slate-200 dark:bg-slate-900/80 flex items-center justify-center overflow-hidden relative">
+                            <div class="h-44 bg-slate-200/70 dark:bg-slate-900/60 flex items-center justify-center overflow-hidden relative">
                                 {% if cert.file %}
                                     {% if '.pdf' in cert.file.url|lower %}
                                         <div class="relative w-full h-full group/pdf">
@@ -593,17 +689,16 @@
                             </div>
                             <div class="p-6">
                                 <h3 class="text-base font-bold font-mono text-slate-900 dark:text-white line-clamp-1 mb-1" title="{{ cert.title }}">{{ cert.title }}</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-light mb-3">{{ cert.institution }}</p>
-                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ cert.date_completed }}</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 font-normal mb-3">{{ cert.institution }}</p>
+                                <p class="text-xs font-mono text-teal-700 dark:text-teal-400 font-semibold">{{ cert.date_completed }}</p>
                             </div>
                         </div>
                         {% endfor %}
                         
-                        <!-- Set 2 (Duplicate for Seamless Infinite Drift) -->
                         {% for cert in certifications %}
                         <div class="w-80 flex-shrink-0 glass-panel rounded-2xl overflow-hidden shadow-xl group transition-all duration-300 cursor-pointer" 
                              onclick="openCertModal('{{ cert.file.url }}', {% if '.pdf' in cert.file.url|lower %}true{% else %}false{% endif %});">
-                            <div class="h-44 bg-slate-200 dark:bg-slate-900/80 flex items-center justify-center overflow-hidden relative">
+                            <div class="h-44 bg-slate-200/70 dark:bg-slate-900/60 flex items-center justify-center overflow-hidden relative">
                                 {% if cert.file %}
                                     {% if '.pdf' in cert.file.url|lower %}
                                         <div class="relative w-full h-full group/pdf">
@@ -626,8 +721,8 @@
                             </div>
                             <div class="p-6">
                                 <h3 class="text-base font-bold font-mono text-slate-900 dark:text-white line-clamp-1 mb-1" title="{{ cert.title }}">{{ cert.title }}</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 font-light mb-3">{{ cert.institution }}</p>
-                                <p class="text-xs font-mono text-teal-600 dark:text-teal-400">{{ cert.date_completed }}</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 font-normal mb-3">{{ cert.institution }}</p>
+                                <p class="text-xs font-mono text-teal-700 dark:text-teal-400 font-semibold">{{ cert.date_completed }}</p>
                             </div>
                         </div>
                         {% endfor %}
@@ -644,30 +739,29 @@
             <div class="glass-panel p-8 sm:p-14 rounded-3xl relative overflow-hidden shadow-2xl">
                 <div class="text-center mb-10">
                     <h2 class="text-3xl sm:text-4xl font-extrabold font-mono text-slate-900 dark:text-white mb-3">Initiate Contact</h2>
-                    <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-base max-w-lg mx-auto font-light">
+                    <p class="text-slate-700 dark:text-slate-300 text-sm sm:text-base max-w-lg mx-auto font-normal">
                         Leave a direct message below or contact through traditional channels.
                     </p>
                 </div>
 
-                <!-- Interactive Contact Form -->
                 <form id="contact-form" method="POST" action="{% url 'home' %}" class="space-y-6 max-w-xl mx-auto text-left">
                     {% csrf_token %}
                     <input type="hidden" name="contact_submit" value="1">
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Sender Name</label>
-                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="e.g. John Doe">
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2 font-semibold">Sender Name</label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="e.g. John Doe">
                         </div>
                         <div>
-                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Email Address</label>
-                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="name@domain.com">
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2 font-semibold">Email Address</label>
+                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="name@domain.com">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">Transmission Message</label>
-                        <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="Write your message here..."></textarea>
+                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2 font-semibold">Transmission Message</label>
+                        <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-slate-900/70 border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white font-sans text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all placeholder:text-slate-400" placeholder="Write your message here..."></textarea>
                     </div>
 
                     <div id="contact-status-msg" class="hidden text-xs font-mono text-center p-3 rounded-lg"></div>
@@ -677,29 +771,28 @@
                     </button>
                 </form>
 
-                <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-center items-center gap-6 text-xs sm:text-sm font-mono text-slate-600 dark:text-slate-300">
-                    <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="flex items-center gap-2 hover:text-teal-500 transition-colors">
+                <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-center items-center gap-6 text-xs sm:text-sm font-mono text-slate-700 dark:text-slate-300">
+                    <a href="mailto:{{ info.email|default:'rohanrpatil24@gmail.com' }}" class="flex items-center gap-2 hover:text-teal-600 transition-colors font-medium">
                         <i class="ph ph-envelope-simple text-lg text-teal-500"></i> {{ info.email|default:'rohanrpatil24@gmail.com' }}
                     </a>
-                    <a href="tel:{{ info.phone|default:'+919653639991' }}" class="flex items-center gap-2 hover:text-teal-500 transition-colors">
+                    <a href="tel:{{ info.phone|default:'+919653639991' }}" class="flex items-center gap-2 hover:text-teal-600 transition-colors font-medium">
                         <i class="ph ph-phone text-lg text-teal-500"></i> {{ info.phone|default:'+91 9653639991' }}
                     </a>
-                    <span class="flex items-center gap-2 text-slate-500">
+                    <span class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                         <i class="ph ph-map-pin text-lg text-teal-500"></i> {{ info.location|default:'Mumbai, Maharashtra' }}
                     </span>
                 </div>
 
-                <!-- GitHub & LinkedIn Inline SVGs -->
                 <div class="flex justify-center space-x-6 mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
                     {% if info.github_url %}
-                    <a href="{{ info.github_url }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" class="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 hover:border-teal-500 transition-all">
+                    <a href="{{ info.github_url }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile" class="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-slate-700 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 hover:border-teal-500 transition-all">
                         <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
                             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
                         </svg>
                     </a>
                     {% endif %}
                     {% if info.linkedin_url %}
-                    <a href="{{ info.linkedin_url }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" class="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 hover:border-teal-500 transition-all">
+                    <a href="{{ info.linkedin_url }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile" class="w-12 h-12 rounded-xl glass-panel flex items-center justify-center text-slate-700 dark:text-slate-400 hover:text-teal-500 dark:hover:text-teal-400 hover:border-teal-500 transition-all">
                         <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                         </svg>
@@ -709,108 +802,232 @@
             </div>
         </div>
         
-        <!-- FOOTER & THEME ARCHITECTURE SWITCHER -->
-        <div class="mt-20 text-center font-mono text-xs text-slate-500 dark:text-slate-500">
-            <div class="inline-flex items-center gap-2 p-1.5 rounded-2xl bg-slate-200 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 mb-6 shadow-inner">
-                <button type="button" onclick="switchThemePreset(1)" id="theme-btn-1" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-teal-500">
+        <!-- FOOTER & 3-THEME ARCHITECTURE SWITCHER -->
+        <div class="mt-20 text-center font-mono text-xs text-slate-600 dark:text-slate-400">
+            <div class="inline-flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800 mb-6 shadow-inner backdrop-blur-md">
+                <button type="button" onclick="switchThemePreset(1)" id="theme-btn-1" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-700 dark:text-slate-400 hover:text-teal-600">
                     Theme 1 (Classic Glass)
                 </button>
-                <button type="button" onclick="switchThemePreset(2)" id="theme-btn-2" class="px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm">
-                    Theme 2 (Sci-Fi Quantum 3D)
+                <button type="button" onclick="switchThemePreset(2)" id="theme-btn-2" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm">
+                    Theme 2 (Kinetic Ring Orb)
+                </button>
+                <button type="button" onclick="switchThemePreset(3)" id="theme-btn-3" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-700 dark:text-slate-400 hover:text-cyan-600 flex items-center gap-1.5">
+                    <i class="ph ph-planet text-sm"></i> Theme 3 (Planetary System)
                 </button>
             </div>
-            <!-- <div class="mt-4">
-                <a href="/tech-stack/" class="inline-flex items-center gap-1.5 text-teal-600 dark:text-teal-400 hover:underline font-mono text-xs">
-                    <i class="ph ph-cpu"></i> View System Architecture & Tech Stack &rarr;
-                </a>
-            </div> -->
             <p>Designed & Engineered by {{ info.name|default:"Rohan Patil" }} &copy; <span id="year"></span></p>
-            <div class="mt-4">
-                <a href="/tech-stack/" class="inline-flex items-center gap-1.5 text-teal-600 dark:text-teal-400 hover:underline font-mono text-xs">
-                    <i class="ph ph-cpu"></i> View System Architecture & Tech Stack &rarr;
-                </a>
-            </div>
         </div>
     </section>
 
-    <!-- Secure Modal -->
+    <!-- SECURE CERTIFICATE MODAL -->
     <div id="cert-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-slate-950/90 backdrop-blur-md transition-opacity duration-300 opacity-0 no-select" oncontextmenu="return false;">
         <div class="relative w-11/12 md:w-3/4 max-w-5xl glass-panel rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] transition-all transform scale-95 border-teal-500/40" id="cert-modal-card">
-            <div class="flex justify-between items-center p-4 border-b border-teal-500/20 bg-slate-900/60">
+            
+            <div class="flex justify-between items-center p-4 border-b border-teal-500/20 bg-slate-900/70">
                 <div class="flex items-center gap-2 font-mono text-xs">
-                    <i class="ph-fill ph-lock-key text-teal-400"></i>
-                    <span class="text-white uppercase tracking-widest">Secure Quantum Previewer</span>
+                    <i class="ph-fill ph-lock-key text-teal-400 animate-pulse"></i>
+                    <span class="text-white uppercase tracking-widest">Secure Quantum Previewer // Encrypted Enclave</span>
                 </div>
                 <button onclick="closeCertModal()" class="text-slate-400 hover:text-red-400 transition-colors p-1 rounded-md">
                     <i class="ph ph-x text-2xl"></i>
                 </button>
             </div>
-            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-950/80 flex items-center justify-center min-h-[50vh] p-2 sm:p-6"></div>
+
+            <div id="cert-modal-content" class="relative flex-1 overflow-hidden bg-slate-950/85 flex items-center justify-center min-h-[50vh] p-2 sm:p-6 transition-all duration-150"></div>
+
+            <div id="snipping-shield-notice" class="hidden absolute inset-0 z-30 bg-slate-950/95 flex flex-col items-center justify-center text-center p-6 text-red-400 font-mono">
+                <i class="ph ph-shield-warning text-5xl mb-3 text-red-500 animate-bounce"></i>
+                <div class="text-base font-bold tracking-widest uppercase">ENCLAVE CAPTURE RESTRICTED</div>
+                <p class="text-xs text-slate-400 mt-2 max-w-md">Operating system screen capture, snipping tool, or capture key combination was detected. Visual telemetry temporarily obscured.</p>
+                <button onclick="dismissCaptureWarning()" class="mt-5 px-5 py-2 rounded-xl bg-teal-500/20 border border-teal-500/40 text-teal-300 hover:bg-teal-500 hover:text-slate-950 text-xs font-bold transition-all">Resume Inspection</button>
+            </div>
         </div>
     </div>
 
-    <!-- Script Engine -->
+    <!-- SCRIPT ENGINE -->
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // --- THEME SWITCHER (THEME 1 vs THEME 2 PRESETS) ---
-        function switchThemePreset(themeNum) {
-            localStorage.setItem('portfolio_theme_preset', themeNum);
-            if (themeNum === 1) {
-                document.getElementById('three-canvas-container').style.display = 'none';
-                document.getElementById('theme-btn-1').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm";
-                document.getElementById('theme-btn-2').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-teal-500";
-            } else {
-                document.getElementById('three-canvas-container').style.display = 'block';
-                document.getElementById('theme-btn-2').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm";
-                document.getElementById('theme-btn-1').className = "px-4 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-teal-500";
-            }
-        }
-        if (localStorage.getItem('portfolio_theme_preset') === '1') {
-            switchThemePreset(1);
-        }
-
-        // --- DARK/LIGHT TOGGLE ENGINE ---
-        const themeToggles = document.querySelectorAll('.theme-toggle');
-        const htmlElement = document.documentElement;
-
-        themeToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                htmlElement.classList.toggle('dark');
-                if (htmlElement.classList.contains('dark')) {
-                    localStorage.theme = 'dark';
-                } else {
-                    localStorage.theme = 'light';
-                }
-            });
-        });
-
-        // --- THREE.JS QUANTUM BACKGROUND ENGINE ---
-        const container = document.getElementById('three-canvas-container');
+        // ==========================================
+        // 1. THREE.JS MULTI-THEME 3D GRAPHICS ENGINE
+        // ==========================================
+        const canvasContainer = document.getElementById('three-canvas-container');
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        const particleCount = 700;
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        for (let i = 0; i < particleCount * 3; i++) {
-            positions[i] = (Math.random() - 0.5) * 40;
-        }
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({ size: 0.08, color: 0x14b8a6, transparent: true, opacity: 0.65 });
-        const particleSystem = new THREE.Points(geometry, material);
-        scene.add(particleSystem);
-
-        const torusGeometry = new THREE.TorusGeometry(3.5, 0.03, 16, 100);
-        const torusMaterial = new THREE.MeshBasicMaterial({ color: 0x14b8a6, wireframe: true, transparent: true, opacity: 0.18 });
-        const quantumRing = new THREE.Mesh(torusGeometry, torusMaterial);
-        scene.add(quantumRing);
+        canvasContainer.appendChild(renderer.domElement);
 
         camera.position.z = 15;
+
+        const theme2Group = new THREE.Group();
+        const theme3Group = new THREE.Group();
+        scene.add(theme2Group);
+        scene.add(theme3Group);
+
+        // --- THEME 2 SCENE ASSETS ---
+        // 1. Balanced Starfield (Count decreased to 450 to avoid clutter)
+        const t2StarCount = 450;
+        const t2StarPositions = new Float32Array(t2StarCount * 3);
+        for (let i = 0; i < t2StarCount; i++) {
+            const r = 25 + Math.random() * 85;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            
+            t2StarPositions[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);
+            t2StarPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            t2StarPositions[i * 3 + 2] = r * Math.cos(phi);
+        }
+        const t2StarGeo = new THREE.BufferGeometry();
+        t2StarGeo.setAttribute('position', new THREE.BufferAttribute(t2StarPositions, 3));
+        const t2StarMat = new THREE.PointsMaterial({
+            size: 0.22,
+            color: 0x5eead4,
+            transparent: true,
+            opacity: 0.65
+        });
+        const t2StarField = new THREE.Points(t2StarGeo, t2StarMat);
+        theme2Group.add(t2StarField);
+
+        // 2. Central Kinetic Spinning Ring Orb
+        const outerTorusGeo = new THREE.TorusGeometry(3.6, 0.035, 16, 120);
+        const outerTorusMat = new THREE.MeshBasicMaterial({ color: 0x14b8a6, wireframe: true, transparent: true, opacity: 0.35 });
+        const outerRingMesh = new THREE.Mesh(outerTorusGeo, outerTorusMat);
+        theme2Group.add(outerRingMesh);
+
+        const innerTorusGeo = new THREE.TorusGeometry(2.4, 0.04, 16, 100);
+        const innerTorusMat = new THREE.MeshBasicMaterial({ color: 0x2dd4bf, wireframe: true, transparent: true, opacity: 0.45 });
+        const innerRingMesh = new THREE.Mesh(innerTorusGeo, innerTorusMat);
+        theme2Group.add(innerRingMesh);
+
+        const gyroTorusGeo = new THREE.TorusGeometry(4.4, 0.02, 12, 120);
+        const gyroTorusMat = new THREE.MeshBasicMaterial({ color: 0x0ea5e9, wireframe: true, transparent: true, opacity: 0.2 });
+        const gyroRingMesh = new THREE.Mesh(gyroTorusGeo, gyroTorusMat);
+        theme2Group.add(gyroRingMesh);
+
+        // 3. Floating 3D Geometric Wireframe Boxes
+        const floatingBoxesGroup = new THREE.Group();
+        theme2Group.add(floatingBoxesGroup);
+
+        const boxCount = 14;
+        const boxMeshes = [];
+        const boxBaseSpeedY = [];
+        const boxRotVelocities = [];
+
+        for (let i = 0; i < boxCount; i++) {
+            const size = 0.5 + Math.random() * 0.9;
+            const bGeo = new THREE.BoxGeometry(size, size, size);
+            const bMat = new THREE.MeshBasicMaterial({
+                color: (i % 2 === 0) ? 0x14b8a6 : 0x38bdf8,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.22 + Math.random() * 0.25
+            });
+            const bMesh = new THREE.Mesh(bGeo, bMat);
+
+            bMesh.position.set(
+                (Math.random() - 0.5) * 38,
+                (Math.random() - 0.5) * 44,
+                (Math.random() - 0.5) * 26
+            );
+
+            floatingBoxesGroup.add(bMesh);
+            boxMeshes.push(bMesh);
+            boxBaseSpeedY.push((0.35 + Math.random() * 0.6) * (Math.random() > 0.5 ? 1 : -1));
+            boxRotVelocities.push({
+                x: (Math.random() - 0.5) * 0.9,
+                y: (Math.random() - 0.5) * 1.1,
+                z: (Math.random() - 0.5) * 0.8
+            });
+        }
+
+        // 4. Subtle, De-clustered Vertical Stream Particles (Reduced to 90)
+        const verticalLineCount = 90;
+        const linePosArray = new Float32Array(verticalLineCount * 3);
+        for (let i = 0; i < verticalLineCount; i++) {
+            linePosArray[i * 3 + 0] = (Math.random() - 0.5) * 45;
+            linePosArray[i * 3 + 1] = (Math.random() - 0.5) * 60;
+            linePosArray[i * 3 + 2] = (Math.random() - 0.5) * 35;
+        }
+        const lineParticlesGeo = new THREE.BufferGeometry();
+        lineParticlesGeo.setAttribute('position', new THREE.BufferAttribute(linePosArray, 3));
+        const lineParticlesMat = new THREE.PointsMaterial({
+            size: 0.12,
+            color: 0x2dd4bf,
+            transparent: true,
+            opacity: 0.45
+        });
+        const lineParticlesMesh = new THREE.Points(lineParticlesGeo, lineParticlesMat);
+        theme2Group.add(lineParticlesMesh);
+
+
+        // --- THEME 3 SCENE ASSETS (Planetary System) ---
+        const starCount = 1200;
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 400;
+        }
+        const starGeo = new THREE.BufferGeometry();
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.25, color: 0x93c5fd, transparent: true, opacity: 0.8 });
+        const starField = new THREE.Points(starGeo, starMat);
+        theme3Group.add(starField);
+
+        const sunGeo = new THREE.SphereGeometry(2.4, 32, 32);
+        const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0.6 });
+        const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+        sunMesh.position.set(-16, 4, -18);
+        theme3Group.add(sunMesh);
+
+        const sunCoronaGeo = new THREE.TorusGeometry(3.6, 0.05, 16, 80);
+        const sunCoronaMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, wireframe: true, transparent: true, opacity: 0.35 });
+        const sunCorona = new THREE.Mesh(sunCoronaGeo, sunCoronaMat);
+        sunCorona.position.copy(sunMesh.position);
+        theme3Group.add(sunCorona);
+
+        const earthOrbitRadius = 14;
+        const earthPivot = new THREE.Group();
+        theme3Group.add(earthPivot);
+
+        const earthGeo = new THREE.SphereGeometry(1.6, 32, 32);
+        const earthMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.75 });
+        const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+        earthMesh.position.set(earthOrbitRadius, 0, 0);
+        earthPivot.add(earthMesh);
+
+        const earthAtmoGeo = new THREE.TorusGeometry(2.2, 0.03, 16, 60);
+        const earthAtmoMat = new THREE.MeshBasicMaterial({ color: 0x60a5fa, wireframe: true, transparent: true, opacity: 0.4 });
+        const earthAtmoRing = new THREE.Mesh(earthAtmoGeo, earthAtmoMat);
+        earthMesh.add(earthAtmoRing);
+
+        const moonOrbitRadius = 3.4;
+        const moonPivot = new THREE.Group();
+        earthMesh.add(moonPivot);
+
+        const moonGeo = new THREE.SphereGeometry(0.45, 16, 16);
+        const moonMat = new THREE.MeshBasicMaterial({ color: 0xe2e8f0, wireframe: true, transparent: true, opacity: 0.85 });
+        const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+        moonMesh.position.set(moonOrbitRadius, 0, 0);
+        moonPivot.add(moonMesh);
+
+        const orbitPathGeo = new THREE.TorusGeometry(earthOrbitRadius, 0.015, 8, 120);
+        const orbitPathMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 });
+        const earthOrbitPath = new THREE.Mesh(orbitPathGeo, orbitPathMat);
+        earthOrbitPath.rotation.x = Math.PI / 2;
+        theme3Group.add(earthOrbitPath);
+
+        const moonPathGeo = new THREE.TorusGeometry(moonOrbitRadius, 0.01, 8, 60);
+        const moonPathMat = new THREE.MeshBasicMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.2 });
+        const moonOrbitPath = new THREE.Mesh(moonPathGeo, moonPathMat);
+        moonOrbitPath.rotation.x = Math.PI / 2.3;
+        earthMesh.add(moonOrbitPath);
+
+
+        // ==========================================
+        // 2. 3D ANIMATION LOOP (STEADY ROTATION, NO SCROLL COUPLING)
+        // ==========================================
+        let theme3HorizontalOrbitAngle = 0;
 
         let mouseX = 0, mouseY = 0;
         window.addEventListener('mousemove', (e) => {
@@ -818,19 +1035,95 @@
             mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
         });
 
-        let clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            let elapsedTime = clock.getElapsedTime();
-            particleSystem.rotation.y = elapsedTime * 0.03;
-            quantumRing.rotation.x = elapsedTime * 0.1;
-            quantumRing.rotation.y = elapsedTime * 0.15;
-            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
+        const clock = new THREE.Clock();
+        function animateThreeScene() {
+            requestAnimationFrame(animateThreeScene);
+            const delta = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
+
+            const currentPreset = localStorage.getItem('portfolio_theme_preset') || '2';
+
+            if (currentPreset === '2') {
+                theme2Group.visible = true;
+                theme3Group.visible = false;
+
+                // Constant, smooth spinning of the ring orb (independent of page scroll)
+                outerRingMesh.rotation.x += 0.45 * delta;
+                outerRingMesh.rotation.y += 0.7 * delta;
+
+                innerRingMesh.rotation.y -= 0.85 * delta;
+                innerRingMesh.rotation.z += 0.6 * delta;
+
+                gyroRingMesh.rotation.x += 0.25 * delta;
+                gyroRingMesh.rotation.z -= 0.4 * delta;
+
+                // Steady drifting boxes
+                for (let i = 0; i < boxCount; i++) {
+                    const bm = boxMeshes[i];
+                    bm.position.y += boxBaseSpeedY[i] * delta;
+
+                    if (bm.position.y > 22) bm.position.y = -22;
+                    if (bm.position.y < -22) bm.position.y = 22;
+
+                    bm.rotation.x += boxRotVelocities[i].x * delta;
+                    bm.rotation.y += boxRotVelocities[i].y * delta;
+                    bm.rotation.z += boxRotVelocities[i].z * delta;
+                }
+
+                // Steady drifting stream particles
+                const positions = lineParticlesGeo.attributes.position.array;
+                for (let i = 0; i < verticalLineCount; i++) {
+                    const yIndex = i * 3 + 1;
+                    positions[yIndex] += 0.05;
+
+                    if (positions[yIndex] > 30) positions[yIndex] = -30;
+                }
+                lineParticlesGeo.attributes.position.needsUpdate = true;
+
+                camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+                camera.position.z = 15;
+                camera.lookAt(0, 0, 0);
+
+            } else if (currentPreset === '3') {
+                theme2Group.visible = false;
+                theme3Group.visible = true;
+
+                const earthYearSpeed = 0.32;
+                earthPivot.rotation.y = elapsedTime * earthYearSpeed;
+
+                earthMesh.rotation.y = elapsedTime * 1.8;
+                earthAtmoRing.rotation.z = elapsedTime * 0.5;
+
+                const moonMonthSpeed = 1.6;
+                moonPivot.rotation.y = elapsedTime * moonMonthSpeed;
+                moonMesh.rotation.y = elapsedTime * 1.2;
+
+                sunMesh.rotation.y = elapsedTime * 0.15;
+                sunCorona.rotation.z = elapsedTime * 0.1;
+
+                const earthWorldPos = new THREE.Vector3();
+                earthMesh.getWorldPosition(earthWorldPos);
+
+                const orbitHorizontalOffset = (theme3HorizontalOrbitAngle * 0.18);
+                const targetCamX = earthWorldPos.x + Math.sin(orbitHorizontalOffset) * 10 + (mouseX * 8);
+                const targetCamZ = earthWorldPos.z + Math.cos(orbitHorizontalOffset) * 10 + 4;
+                const targetCamY = earthWorldPos.y + 2.5 + (-mouseY * 6);
+
+                camera.position.x += (targetCamX - camera.position.x) * 0.06;
+                camera.position.y += (targetCamY - camera.position.y) * 0.06;
+                camera.position.z += (targetCamZ - camera.position.z) * 0.06;
+
+                camera.lookAt(earthWorldPos.x, earthWorldPos.y, earthWorldPos.z);
+
+            } else {
+                theme2Group.visible = false;
+                theme3Group.visible = false;
+            }
+
             renderer.render(scene, camera);
         }
-        animate();
+        animateThreeScene();
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -838,110 +1131,159 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // --- CLEAN SPA NAVIGATION (NO /# HASHES) ---
-        const sections = document.querySelectorAll('section');
-        const navItems = {
-            'home': document.getElementById('nav-home'),
-            'about': document.getElementById('nav-about'),
-            'experience': document.getElementById('nav-experience'),
-            'projects': document.getElementById('nav-projects'),
-            'skills': document.getElementById('nav-skills'),
-            'contact': document.getElementById('nav-contact')
-        };
 
-        // Handle Click Interception
-        document.querySelectorAll('.spa-link').forEach(link => {
-            link.addEventListener('click', function(e) {
+        // ==========================================
+        // 3. THEME PRESETS ENGINE
+        // ==========================================
+        const planetarySliderBox = document.getElementById('planetary-slider-box');
+        const earthOrbitSlider = document.getElementById('earth-orbit-slider');
+        const sliderDegReadout = document.getElementById('slider-deg-readout');
+
+        earthOrbitSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            theme3HorizontalOrbitAngle = val;
+            sliderDegReadout.textContent = `${Math.round((val / 100) * 180)}°`;
+        });
+
+        function switchThemePreset(themeNum) {
+            localStorage.setItem('portfolio_theme_preset', themeNum);
+            document.body.setAttribute('data-theme-preset', themeNum);
+
+            const btn1 = document.getElementById('theme-btn-1');
+            const btn2 = document.getElementById('theme-btn-2');
+            const btn3 = document.getElementById('theme-btn-3');
+
+            [btn1, btn2, btn3].forEach(btn => {
+                btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-700 dark:text-slate-400 hover:text-teal-600";
+            });
+
+            if (themeNum === 1) {
+                document.getElementById('three-canvas-container').style.display = 'none';
+                planetarySliderBox.classList.add('hidden');
+                btn1.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm";
+            } else if (themeNum === 2) {
+                document.getElementById('three-canvas-container').style.display = 'block';
+                planetarySliderBox.classList.add('hidden');
+                btn2.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-teal-500 text-white dark:text-slate-950 shadow-sm";
+            } else if (themeNum === 3) {
+                document.getElementById('three-canvas-container').style.display = 'block';
+                planetarySliderBox.classList.remove('hidden');
+                btn3.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-cyan-600 dark:bg-cyan-500 text-white dark:text-slate-950 shadow-sm flex items-center gap-1.5";
+            }
+        }
+
+        const initialPreset = parseInt(localStorage.getItem('portfolio_theme_preset') || '2', 10);
+        switchThemePreset(initialPreset);
+
+        const themeToggles = document.querySelectorAll('.theme-toggle');
+        const htmlElement = document.documentElement;
+        themeToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                htmlElement.classList.toggle('dark');
+                localStorage.theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+            });
+        });
+
+
+        // ==========================================
+        // 4. CERTIFICATE SECURITY & ANTI-SNIPPING
+        // ==========================================
+        const certModal = document.getElementById('cert-modal');
+        const certModalCard = document.getElementById('cert-modal-card');
+        const certModalContent = document.getElementById('cert-modal-content');
+        const snippingShieldNotice = document.getElementById('snipping-shield-notice');
+        let isModalActive = false;
+
+        function openCertModal(url, isPdf) {
+            isModalActive = true;
+            certModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => {
+                certModal.classList.remove('opacity-0');
+                certModalCard.classList.remove('scale-95');
+                certModalCard.classList.add('scale-100');
+            }, 10);
+
+            if (isPdf) {
+                certModalContent.innerHTML = `
+                    <div class="relative w-full h-[70vh] shadow-2xl">
+                        <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full border-none rounded-xl" scrolling="no"></iframe>
+                        <div class="absolute inset-0 z-10 bg-transparent" oncontextmenu="return false;"></div>
+                    </div>
+                `;
+            } else {
+                certModalContent.innerHTML = `
+                    <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl pointer-events-none" draggable="false" oncontextmenu="return false;">
+                `;
+            }
+        }
+
+        function closeCertModal() {
+            isModalActive = false;
+            dismissCaptureWarning();
+            certModal.classList.add('opacity-0');
+            certModalCard.classList.remove('scale-100');
+            certModalCard.classList.add('scale-95');
+            setTimeout(() => {
+                certModal.classList.add('hidden');
+                certModalContent.innerHTML = '';
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
+        function triggerCaptureShield() {
+            if (!isModalActive) return;
+            certModalContent.classList.add('secure-censored');
+            snippingShieldNotice.classList.remove('hidden');
+        }
+
+        function dismissCaptureWarning() {
+            certModalContent.classList.remove('secure-censored');
+            snippingShieldNotice.classList.add('hidden');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!isModalActive) return;
+
+            if (e.key === 'PrintScreen' || e.keyCode === 44) {
                 e.preventDefault();
-                const targetId = this.getAttribute('data-target');
-                const targetElement = document.getElementById(targetId);
-
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetId === 'home' ? 0 : targetElement.offsetTop - 75,
-                        behavior: 'smooth'
-                    });
-
-                    const cleanPath = targetId === 'home' ? '/' : `/${targetId}`;
-                    if (window.location.pathname !== cleanPath) {
-                        window.history.pushState(null, null, cleanPath);
-                    }
-
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
+                triggerCaptureShield();
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText('');
                 }
-            });
-        });
+                return;
+            }
 
-        // Update URL & Glowing nav item dynamically on scroll
-        window.addEventListener('scroll', () => {
-            let currentId = '';
-            const scrollPosition = window.pageYOffset + 150;
+            const isWinOrMeta = e.metaKey || e.key === 'Meta' || e.key === 'OS';
+            const isShift = e.shiftKey;
+            const isSKey = (e.key === 's' || e.key === 'S' || e.keyCode === 83);
 
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.offsetHeight;
-                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                    currentId = section.getAttribute('id');
-                }
-            });
+            if ((isWinOrMeta && isShift && isSKey) || (e.ctrlKey && isShift && isSKey)) {
+                e.preventDefault();
+                e.stopPropagation();
+                triggerCaptureShield();
+                return;
+            }
 
-            Object.keys(navItems).forEach(key => {
-                if (navItems[key]) {
-                    if (key === currentId) {
-                        navItems[key].classList.add('active-nav');
-                    } else {
-                        navItems[key].classList.remove('active-nav');
-                    }
-                }
-            });
+            if (e.key === 'Escape') {
+                closeCertModal();
+            }
+        }, true);
 
-            if (currentId) {
-                const cleanUrl = currentId === 'home' ? '/' : `/${currentId}`;
-                if (window.location.pathname !== cleanUrl && window.location.pathname !== '/admin') {
-                    window.history.replaceState(null, null, cleanUrl);
-                }
+        window.addEventListener('blur', () => {
+            if (isModalActive) {
+                triggerCaptureShield();
             }
         });
 
-        // Direct landing via clean URL
-        window.addEventListener('DOMContentLoaded', () => {
-            const path = window.location.pathname.replace(/\//g, '');
-            if (path && path !== 'admin') {
-                const targetElement = document.getElementById(path);
-                if (targetElement) {
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 75,
-                            behavior: 'smooth'
-                        });
-                    }, 150);
-                }
-            }
+        certModal.addEventListener('click', (e) => {
+            if (e.target === certModal) closeCertModal();
         });
 
-        // --- REVEAL ANIMATIONS ON SCROLL ---
-        const revealNodes = document.querySelectorAll('.reveal-node');
-        const revealObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        revealNodes.forEach(el => revealObserver.observe(el));
 
-        // --- MOBILE MENU TOGGLE ---
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // --- CAROUSEL ENGINE (SWIPE, BUTTONS & 3-SECOND INACTIVITY AUTO-START) ---
+        // ==========================================
+        // 5. CAROUSEL ENGINE (TOUCH, SWIPE & 3S AUTO-DRIFT)
+        // ==========================================
         const carouselContainer = document.getElementById('cert-carousel-container');
         const carouselTrack = document.getElementById('cert-carousel-track');
         const btnLeft = document.getElementById('carousel-left-btn');
@@ -950,16 +1292,14 @@
         let isCarouselInteracting = false;
         let carouselAutoLoopId = null;
         let carouselIdleTimeout = null;
-        const cardWidthOffset = 352; // 320px width + 32px gap
-        const driftVelocity = 0.8; // Smooth sub-pixel drift
+        const cardWidthOffset = 352;
+        const driftVelocity = 0.8;
 
         function startCarouselAutoDrift() {
             if (carouselAutoLoopId) cancelAnimationFrame(carouselAutoLoopId);
-
             function driftStep() {
                 if (!isCarouselInteracting) {
                     carouselContainer.scrollLeft += driftVelocity;
-
                     if (carouselContainer.scrollLeft >= carouselTrack.scrollWidth / 2) {
                         carouselContainer.scrollLeft -= carouselTrack.scrollWidth / 2;
                     }
@@ -972,7 +1312,6 @@
         function registerCarouselInteraction() {
             isCarouselInteracting = true;
             if (carouselIdleTimeout) clearTimeout(carouselIdleTimeout);
-
             carouselIdleTimeout = setTimeout(() => {
                 isCarouselInteracting = false;
             }, 3000);
@@ -984,7 +1323,6 @@
                 registerCarouselInteraction();
                 carouselContainer.scrollBy({ left: -cardWidthOffset, behavior: 'smooth' });
             });
-
             btnRight.addEventListener('click', (e) => {
                 e.stopPropagation();
                 registerCarouselInteraction();
@@ -994,7 +1332,6 @@
 
         let startTouchX = 0;
         let startScrollLeft = 0;
-
         carouselContainer.addEventListener('touchstart', (e) => {
             registerCarouselInteraction();
             startTouchX = e.touches[0].pageX;
@@ -1037,10 +1374,99 @@
 
         startCarouselAutoDrift();
 
-        // --- SUB-PIXEL CONTINUOUS KINEMATIC GLIDE ENGINE ---
+
+        // ==========================================
+        // 6. SPA ROUTING & GLOWING SCROLLSPY
+        // ==========================================
+        const sections = document.querySelectorAll('section');
+        const navItems = {
+            'home': document.getElementById('nav-home'),
+            'about': document.getElementById('nav-about'),
+            'experience': document.getElementById('nav-experience'),
+            'projects': document.getElementById('nav-projects'),
+            'skills': document.getElementById('nav-skills'),
+            'contact': document.getElementById('nav-contact')
+        };
+
+        document.querySelectorAll('.spa-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetId === 'home' ? 0 : targetElement.offsetTop - 75,
+                        behavior: 'smooth'
+                    });
+
+                    const cleanPath = targetId === 'home' ? '/' : `/${targetId}`;
+                    if (window.location.pathname !== cleanPath) {
+                        window.history.pushState(null, null, cleanPath);
+                    }
+
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            let currentId = '';
+            const scrollPosition = window.pageYOffset + 150;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    currentId = section.getAttribute('id');
+                }
+            });
+
+            Object.keys(navItems).forEach(key => {
+                if (navItems[key]) {
+                    if (key === currentId) {
+                        navItems[key].classList.add('active-nav');
+                    } else {
+                        navItems[key].classList.remove('active-nav');
+                    }
+                }
+            });
+
+            if (currentId) {
+                const cleanUrl = currentId === 'home' ? '/' : `/${currentId}`;
+                if (window.location.pathname !== cleanUrl && window.location.pathname !== '/admin') {
+                    window.history.replaceState(null, null, cleanUrl);
+                }
+            }
+        });
+
+        const revealNodes = document.querySelectorAll('.reveal-node');
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        revealNodes.forEach(el => revealObserver.observe(el));
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+
+        // ==========================================
+        // 7. SUB-PIXEL SLIDESHOW ENGINE & LIVE GLOW
+        // ==========================================
         let isAutoScrolling = false;
         let scrollAnimationId = null;
-        let lastTimestamp = null;
+        let lastFrameTimestamp = null;
         let preciseScrollY = window.pageYOffset;
         let hasReachedEnd = false;
 
@@ -1071,7 +1497,6 @@
 
         function revealDockControls() {
             slideshowDock.classList.remove('w-15', 'h-15');
-            
             speedContainer.classList.remove('hidden');
             dockDivider.classList.remove('hidden');
             restartContainer.classList.remove('hidden');
@@ -1106,7 +1531,7 @@
                 const rect = stepNode.getBoundingClientRect();
                 const ball = stepNode.querySelector('.timeline-ball');
                 if (ball) {
-                    if (rect.top <= viewportCenter + 60 && rect.bottom >= viewportCenter - 60) {
+                    if (rect.top <= viewportCenter + 65 && rect.bottom >= viewportCenter - 65) {
                         ball.classList.add('active-ball');
                     } else {
                         ball.classList.remove('active-ball');
@@ -1131,8 +1556,8 @@
         function smoothGlideStep(timestamp) {
             if (!isAutoScrolling) return;
 
-            if (lastTimestamp !== null) {
-                const deltaTime = Math.min((timestamp - lastTimestamp) / 1000, 0.05);
+            if (lastFrameTimestamp !== null) {
+                const deltaTime = Math.min((timestamp - lastFrameTimestamp) / 1000, 0.05);
                 const velocity = baseVelocity * speedMultipliers[currentSpeedIndex];
 
                 preciseScrollY += velocity * deltaTime;
@@ -1149,7 +1574,7 @@
                 }
             }
 
-            lastTimestamp = timestamp;
+            lastFrameTimestamp = timestamp;
             scrollAnimationId = requestAnimationFrame(smoothGlideStep);
         }
 
@@ -1162,7 +1587,7 @@
             revealDockControls();
             isAutoScrolling = true;
             preciseScrollY = window.pageYOffset;
-            lastTimestamp = null;
+            lastFrameTimestamp = null;
 
             document.documentElement.classList.remove('scroll-smooth');
 
@@ -1179,7 +1604,7 @@
                 cancelAnimationFrame(scrollAnimationId);
                 scrollAnimationId = null;
             }
-            lastTimestamp = null;
+            lastFrameTimestamp = null;
 
             document.documentElement.classList.add('scroll-smooth');
 
@@ -1247,7 +1672,10 @@
             }
         });
 
-        // --- ASYNC CONTACT FORM SUBMISSION ---
+
+        // ==========================================
+        // 8. ASYNC CONTACT FORM SUBMISSION
+        // ==========================================
         const contactForm = document.getElementById('contact-form');
         const statusMsg = document.getElementById('contact-status-msg');
         const submitBtn = document.getElementById('contact-submit-btn');
@@ -1288,64 +1716,6 @@
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `<i class="ph ph-paper-plane-tilt text-lg"></i> Dispatch Message`;
             });
-        });
-
-        // --- SECURE MODAL ENGINE ---
-        const certModal = document.getElementById('cert-modal');
-        const certModalCard = document.getElementById('cert-modal-card');
-        const certModalContent = document.getElementById('cert-modal-content');
-
-        function openCertModal(url, isPdf) {
-            certModal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-            setTimeout(() => {
-                certModal.classList.remove('opacity-0');
-                certModalCard.classList.remove('scale-95');
-                certModalCard.classList.add('scale-100');
-            }, 10);
-
-            if (isPdf) {
-                certModalContent.innerHTML = `
-                    <div class="relative w-full h-[70vh] shadow-2xl">
-                        <iframe src="${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" class="w-full h-full border-none rounded-xl" scrolling="no"></iframe>
-                        <div class="absolute inset-0 z-10 bg-transparent" oncontextmenu="return false;"></div>
-                    </div>
-                `;
-            } else {
-                certModalContent.innerHTML = `
-                    <img src="${url}" class="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl pointer-events-none" draggable="false" oncontextmenu="return false;">
-                `;
-            }
-        }
-
-        function closeCertModal() {
-            certModal.classList.add('opacity-0');
-            certModalCard.classList.remove('scale-100');
-            certModalCard.classList.add('scale-95');
-            setTimeout(() => {
-                certModal.classList.add('hidden');
-                certModalContent.innerHTML = '';
-                document.body.classList.remove('overflow-hidden');
-            }, 300);
-        }
-
-        certModal.addEventListener('click', (e) => {
-            if (e.target === certModal) closeCertModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !certModal.classList.contains('hidden')) {
-                closeCertModal();
-            }
-        });
-
-        window.addEventListener('blur', () => {
-            if (!certModal.classList.contains('hidden')) {
-                certModalContent.style.filter = 'blur(20px)';
-            }
-        });
-        window.addEventListener('focus', () => {
-            certModalContent.style.filter = 'none';
         });
     </script>
 </body>

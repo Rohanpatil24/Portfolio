@@ -1,0 +1,539 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ash | Quantum AI Ambassador</title>
+    
+    <!-- High-Tech Quantum "R" Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b0f19'/><rect x='1' y='1' width='30' height='30' rx='7' fill='none' stroke='%2314b8a6' stroke-width='1.5' stroke-opacity='0.4'/><text x='50%25' y='65%25' font-family='monospace' font-weight='900' font-size='20' fill='%232dd4bf' text-anchor='middle' dominant-baseline='middle'>R</text><circle cx='24' cy='8' r='2' fill='%232dd4bf'/></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                        code: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        slate: { 850: '#0b0f19', 900: '#07090e', 950: '#030406' },
+                        teal: { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #14b8a6; border-radius: 9999px; }
+
+        /* Ultra-Glass Container */
+        .glass-chat-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-chat-panel {
+            background: rgba(11, 15, 25, 0.65);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(20, 184, 166, 0.25);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        }
+
+        .ai-avatar-pulse {
+            animation: pulseOrb 3.5s ease-in-out infinite alternate;
+        }
+        @keyframes pulseOrb {
+            0% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(45, 212, 191, 0.5)); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 24px rgba(14, 165, 233, 0.8)); }
+        }
+
+        /* Smooth Dot Animation for . . . . */
+        .dot-wave {
+            animation: dotWave 1.4s infinite ease-in-out both;
+        }
+        .dot-1 { animation-delay: -0.32s; }
+        .dot-2 { animation-delay: -0.16s; }
+        .dot-3 { animation-delay: 0s; }
+        .dot-4 { animation-delay: 0.16s; }
+        @keyframes dotWave {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans relative overflow-x-hidden antialiased transition-colors duration-300">
+
+    <!-- Ambient Grid & Radial Spotlights -->
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-30 dark:opacity-20 bg-[radial-gradient(#14b8a6_1px,transparent_1px)] [background-size:28px_28px]"></div>
+    <div class="fixed -top-40 -left-40 w-96 h-96 rounded-full bg-teal-500/10 blur-[130px] pointer-events-none"></div>
+    <div class="fixed -bottom-40 -right-40 w-96 h-96 rounded-full bg-cyan-500/10 blur-[130px] pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="w-full z-20 border-b border-slate-200 dark:border-teal-500/20 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl px-4 sm:px-8 py-3.5 flex items-center justify-between transition-colors">
+        <div class="flex items-center gap-3">
+            <a href="/" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors shadow-sm" title="Return to Portfolio">
+                <i class="ph ph-arrow-left text-lg"></i>
+            </a>
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-teal-600 dark:text-teal-300 ai-avatar-pulse text-xl shadow-inner">
+                    <i class="ph-fill ph-sparkle"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold font-mono tracking-wider flex items-center gap-2 text-slate-900 dark:text-white">
+                        Ash <span class="px-2 py-0.5 rounded-full text-[10px] bg-teal-500/15 border border-teal-500/40 text-teal-700 dark:text-teal-400 font-bold uppercase tracking-wider">Female AI Core</span>
+                    </h1>
+                    <p class="text-[11px] font-mono text-slate-500 dark:text-slate-400">Autonomous Portfolio Intel // Room: <span id="room-badge" class="text-teal-600 dark:text-teal-400 font-semibold">{{ room.session_id|stringformat:".8s" }}...</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Actions: Restart, Theme Toggle, Exit -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Reset Conversation Button (Triggers Glass Modal) -->
+            <button onclick="openResetModal()" id="restart-chat-btn" class="px-3 py-2 rounded-xl bg-slate-200/70 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-red-400 hover:text-red-500 transition-all font-mono text-xs flex items-center gap-1.5 shadow-sm" title="Clear room and restart conversation">
+                <i class="ph ph-arrows-counter-clockwise text-base group-hover:rotate-180 transition-transform"></i>
+                <span class="hidden sm:inline">Reset Room</span>
+            </button>
+
+            <!-- Theme Toggle -->
+            <button id="theme-toggle-btn" class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-200/70 dark:bg-slate-900 text-slate-700 dark:text-teal-400 border border-slate-300 dark:border-slate-800 hover:border-teal-500 shadow-sm transition-all overflow-hidden group" title="Toggle Dark/Light Mode">
+                <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 group-hover:rotate-45"></i>
+                <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0 group-hover:-rotate-12"></i>
+            </button>
+
+            <a href="/" class="text-xs font-mono text-slate-500 dark:text-slate-400 hover:text-teal-500 transition-colors hidden md:block">
+                Exit &rarr;
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Chat Hub Container -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-6 flex flex-col relative z-10">
+        
+        <!-- Live Speech Status Bar (Hidden until playing) -->
+        <div id="tts-status-bar" class="hidden mb-3 p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-between text-xs font-mono text-teal-700 dark:text-teal-300">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+                <span>Voice Playback: <strong id="speaking-voice-name">Natural Female Voice</strong></span>
+            </div>
+            <button onclick="stopTTS()" class="text-xs font-bold text-red-500 hover:underline flex items-center gap-1">
+                <i class="ph ph-stop text-sm"></i> Stop Voice
+            </button>
+        </div>
+
+        <!-- Messages Container Panel -->
+        <div id="messages-container" class="glass-chat-panel flex-1 rounded-3xl p-4 sm:p-6 overflow-y-auto space-y-4 min-h-[60vh] max-h-[66vh] transition-all">
+            
+            <!-- Default Welcome Card from Ash -->
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-600 dark:text-teal-300 flex-shrink-0 text-sm mt-0.5 shadow-sm">
+                    <i class="ph-fill ph-robot"></i>
+                </div>
+                <div class="p-4 rounded-2xl rounded-tl-sm bg-white/70 dark:bg-slate-900/80 border border-slate-200 dark:border-teal-500/20 max-w-[85%] text-sm text-slate-800 dark:text-slate-200 leading-relaxed shadow-md">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="font-mono text-xs text-teal-600 dark:text-teal-400 font-bold tracking-wider">Ash (AI Ambassador)</span>
+                        <button onclick="readAloud(this)" class="tts-btn text-slate-400 hover:text-teal-500 transition-colors p-1" title="Read message aloud with female AI voice">
+                            <i class="ph ph-speaker-high text-base"></i>
+                        </button>
+                    </div>
+                    <p>Greetings! I am <strong class="text-teal-600 dark:text-teal-300 font-semibold">Ash</strong>, Rohan Patil's autonomous portfolio ambassador. I am equipped with his full career matrix, technology stack, education records, and projects.</p>
+                    <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Feel free to ask me anything about his technical background or how to get in touch!</p>
+                </div>
+            </div>
+
+            <!-- Persistent Database History -->
+            {% for msg in chat_history %}
+            <div class="flex items-start gap-3 {% if msg.role == 'user' %}justify-end{% endif %}">
+                {% if msg.role != 'user' %}
+                <div class="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-600 dark:text-teal-300 flex-shrink-0 text-sm mt-0.5 shadow-sm">
+                    <i class="ph-fill ph-robot"></i>
+                </div>
+                {% endif %}
+                
+                <div class="p-4 rounded-2xl {% if msg.role == 'user' %}rounded-tr-sm bg-teal-600 text-white shadow-[0_0_20px_rgba(20,184,166,0.25)]{% else %}rounded-tl-sm bg-white/70 dark:bg-slate-900/80 border border-slate-200 dark:border-teal-500/20 text-slate-800 dark:text-slate-200 shadow-md{% endif %} max-w-[85%] text-sm leading-relaxed">
+                    <div class="flex items-center justify-between mb-1.5 gap-4">
+                        <span class="font-mono text-[10px] {% if msg.role == 'user' %}text-teal-100{% else %}text-teal-600 dark:text-teal-400{% endif %} font-bold uppercase tracking-wider">
+                            {% if msg.role == 'user' %}You{% else %}Ash{% endif %}
+                        </span>
+                        {% if msg.role != 'user' %}
+                        <button onclick="readAloud(this)" class="tts-btn text-slate-400 hover:text-teal-500 transition-colors p-1" title="Read aloud with female AI voice">
+                            <i class="ph ph-speaker-high text-base"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="whitespace-pre-line text-sm">{{ msg.content }}</div>
+                </div>
+
+                {% if msg.role == 'user' %}
+                <div class="w-8 h-8 rounded-xl bg-slate-300 dark:bg-slate-800 border border-slate-400/40 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 flex-shrink-0 text-sm mt-0.5">
+                    <i class="ph ph-user"></i>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <!-- 1.5s CLEAN THINKING ANIMATION (SHOWS ONLY . . . .) -->
+            <div id="thinking-placeholder" class="hidden flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-600 dark:text-teal-300 flex-shrink-0 text-sm mt-0.5 ai-avatar-pulse shadow-sm">
+                    <i class="ph-fill ph-brain"></i>
+                </div>
+                <div class="px-5 py-3 rounded-2xl rounded-tl-sm bg-white/80 dark:bg-slate-900/90 border border-slate-200 dark:border-teal-500/30 flex items-center gap-1.5 shadow-md">
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-1"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-2"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-3"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-4"></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Interaction Suggestions -->
+        <div class="flex flex-wrap gap-2 my-3">
+            <button onclick="sendQuickPrompt('What is Rohan\'s core technical stack?')" class="px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-900/80 hover:bg-teal-500/10 border border-slate-300 dark:border-slate-800 hover:border-teal-500 text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-300 transition-all shadow-sm">
+                💡 Core Stack?
+            </button>
+            <button onclick="sendQuickPrompt('Can you summarize Rohan\'s career experience?')" class="px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-900/80 hover:bg-teal-500/10 border border-slate-300 dark:border-slate-800 hover:border-teal-500 text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-300 transition-all shadow-sm">
+                💼 Experience?
+            </button>
+            <button onclick="sendQuickPrompt('Tell me about his recent projects')" class="px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-900/80 hover:bg-teal-500/10 border border-slate-300 dark:border-slate-800 hover:border-teal-500 text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-300 transition-all shadow-sm">
+                🚀 Featured Projects?
+            </button>
+            <button onclick="sendQuickPrompt('How can I contact or hire Rohan?')" class="px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-900/80 hover:bg-teal-500/10 border border-slate-300 dark:border-slate-800 hover:border-teal-500 text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-300 transition-all shadow-sm">
+                📬 Contact Info?
+            </button>
+        </div>
+
+        <!-- Chat Transmission Bar -->
+        <form id="chat-form" class="flex gap-2">
+            <input type="text" id="user-input" autocomplete="off" placeholder="Ask Ash anything about Rohan's skills, experience, or projects..." class="flex-1 px-5 py-3.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-300 dark:border-teal-500/30 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all shadow-sm">
+            
+            <button type="submit" id="send-btn" class="px-6 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold font-mono text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(20,184,166,0.35)] flex items-center gap-2">
+                <span>Dispatch</span>
+                <i class="ph ph-paper-plane-right text-base"></i>
+            </button>
+        </form>
+    </main>
+
+    <!-- THEME-MATCHED RESET CONFIRMATION POP-UP MODAL -->
+    <div id="reset-confirm-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/70 backdrop-blur-md transition-opacity duration-300 opacity-0 p-4">
+        <div id="reset-modal-card" class="relative w-full max-w-md glass-chat-panel rounded-3xl p-6 sm:p-8 text-center shadow-2xl transform scale-95 transition-all duration-300 border border-slate-200 dark:border-teal-500/40">
+            
+            <!-- Warning Emblem -->
+            <div class="w-16 h-16 rounded-2xl bg-red-500/10 dark:bg-red-500/20 border border-red-400/40 mx-auto flex items-center justify-center text-red-500 text-3xl mb-5 shadow-inner">
+                <i class="ph ph-arrows-counter-clockwise animate-spin [animation-duration:8s]"></i>
+            </div>
+
+            <h3 class="text-lg sm:text-xl font-bold font-mono text-slate-900 dark:text-white mb-2">Reboot AI Session?</h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal mb-6">
+                This will purge all previous conversation vectors in this room and initialize Ash to her primary standby state.
+            </p>
+
+            <div class="flex items-center justify-center gap-3">
+                <button type="button" onclick="closeResetModal()" class="w-1/2 py-3 px-4 rounded-xl bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-mono text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-800 transition-all">
+                    Cancel
+                </button>
+                <button type="button" onclick="confirmResetExecution()" id="confirm-reset-btn" class="w-1/2 py-3 px-4 rounded-xl bg-red-500 hover:bg-red-600 text-white font-mono text-xs font-bold shadow-[0_0_20px_rgba(239,68,68,0.35)] transition-all flex items-center justify-center gap-1.5">
+                    <i class="ph ph-trash text-sm"></i>
+                    <span>Confirm Reset</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENT LOGIC ENGINE -->
+    <script>
+        let roomId = "{{ room.session_id }}";
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const container = document.getElementById('messages-container');
+        const thinkingPlaceholder = document.getElementById('thinking-placeholder');
+        const ttsStatusBar = document.getElementById('tts-status-bar');
+        const speakingVoiceName = document.getElementById('speaking-voice-name');
+
+        const resetModal = document.getElementById('reset-confirm-modal');
+        const resetModalCard = document.getElementById('reset-modal-card');
+        const confirmResetBtn = document.getElementById('confirm-reset-btn');
+
+        function scrollToBottom() {
+            container.scrollTop = container.scrollHeight;
+        }
+        scrollToBottom();
+
+        // 1. THEME SWITCHER
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            localStorage.theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // 2. TEXT-TO-SPEECH (TTS) FEMALE AI VOICE ENGINE
+        let synth = window.speechSynthesis;
+        let femaleVoice = null;
+
+        function loadVoices() {
+            if (!synth) return;
+            const voices = synth.getVoices();
+            femaleVoice = voices.find(v => 
+                v.lang.startsWith('en') && 
+                (v.name.includes('Female') || v.name.includes('Google UK English Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Karen') || v.name.includes('Natural'))
+            ) || voices.find(v => v.lang.startsWith('en'));
+        }
+
+        if (synth) {
+            loadVoices();
+            if (synth.onvoiceschanged !== undefined) {
+                synth.onvoiceschanged = loadVoices;
+            }
+        }
+
+        function stopTTS() {
+            if (synth) synth.cancel();
+            ttsStatusBar.classList.add('hidden');
+        }
+
+        function readAloud(btnElement) {
+            if (!synth) {
+                alert("Text-to-speech is not supported on this browser.");
+                return;
+            }
+
+            stopTTS();
+
+            const card = btnElement.closest('.rounded-2xl');
+            const paragraphs = card.querySelectorAll('p, div.whitespace-pre-line');
+            let textToRead = "";
+            paragraphs.forEach(p => textToRead += p.innerText + " ");
+
+            if (!textToRead.trim()) return;
+
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            if (femaleVoice) {
+                utterance.voice = femaleVoice;
+                speakingVoiceName.textContent = femaleVoice.name;
+            } else {
+                speakingVoiceName.textContent = "Default English Female Voice";
+            }
+
+            utterance.pitch = 1.15;
+            utterance.rate = 1.0;
+
+            utterance.onstart = () => {
+                ttsStatusBar.classList.remove('hidden');
+                btnElement.classList.add('text-teal-400');
+            };
+            utterance.onend = () => {
+                ttsStatusBar.classList.add('hidden');
+                btnElement.classList.remove('text-teal-400');
+            };
+            utterance.onerror = () => {
+                ttsStatusBar.classList.add('hidden');
+                btnElement.classList.remove('text-teal-400');
+            };
+
+            synth.speak(utterance);
+        }
+
+        // 3. THEMED RESET CONFIRMATION MODAL
+        function openResetModal() {
+            resetModal.classList.remove('hidden');
+            setTimeout(() => {
+                resetModal.classList.remove('opacity-0');
+                resetModalCard.classList.remove('scale-95');
+                resetModalCard.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeResetModal() {
+            resetModal.classList.add('opacity-0');
+            resetModalCard.classList.remove('scale-100');
+            resetModalCard.classList.add('scale-95');
+            setTimeout(() => {
+                resetModal.classList.add('hidden');
+            }, 250);
+        }
+
+        async function confirmResetExecution() {
+            stopTTS();
+            confirmResetBtn.disabled = true;
+            confirmResetBtn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Rebuilding...`;
+
+            try {
+                const res = await fetch("{% url 'ai_chat_reset' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    roomId = data.new_room_id;
+                    document.getElementById('room-badge').textContent = roomId.substring(0, 8) + '...';
+                    
+                    // Reset UI to clean standby greeting
+                    container.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-600 dark:text-teal-300 flex-shrink-0 text-sm mt-0.5 shadow-sm">
+                                <i class="ph-fill ph-robot"></i>
+                            </div>
+                            <div class="p-4 rounded-2xl rounded-tl-sm bg-white/70 dark:bg-slate-900/80 border border-slate-200 dark:border-teal-500/20 max-w-[85%] text-sm text-slate-800 dark:text-slate-200 leading-relaxed shadow-md">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="font-mono text-xs text-teal-600 dark:text-teal-400 font-bold tracking-wider">Ash (AI Ambassador)</span>
+                                    <button onclick="readAloud(this)" class="tts-btn text-slate-400 hover:text-teal-500 transition-colors p-1" title="Read message aloud with female AI voice">
+                                        <i class="ph ph-speaker-high text-base"></i>
+                                    </button>
+                                </div>
+                                <p>Conversation rebooted. I am <strong class="text-teal-600 dark:text-teal-300 font-semibold">Ash</strong>. How can I assist you with Rohan's portfolio?</p>
+                            </div>
+                        </div>
+                        <div id="thinking-placeholder" class="hidden flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-600 dark:text-teal-300 flex-shrink-0 text-sm mt-0.5 ai-avatar-pulse shadow-sm">
+                                <i class="ph-fill ph-brain"></i>
+                            </div>
+                            <div class="px-5 py-3 rounded-2xl rounded-tl-sm bg-white/80 dark:bg-slate-900/90 border border-slate-200 dark:border-teal-500/30 flex items-center gap-1.5 shadow-md">
+                                <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-1"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-2"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-3"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-teal-500 dark:bg-teal-400 dot-wave dot-4"></span>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                alert("Failed to reset session room.");
+            } finally {
+                confirmResetBtn.disabled = false;
+                confirmResetBtn.innerHTML = `<i class="ph ph-trash text-sm"></i> <span>Confirm Reset</span>`;
+                closeResetModal();
+            }
+        }
+
+        // Close on ESC key or clicking modal backdrop
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !resetModal.classList.contains('hidden')) {
+                closeResetModal();
+            }
+        });
+        resetModal.addEventListener('click', (e) => {
+            if (e.target === resetModal) closeResetModal();
+        });
+
+        // 4. APPEND CHAT BUBBLE
+        function appendMessage(role, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start gap-3 ${role === 'user' ? 'justify-end' : ''}`;
+
+            if (role !== 'user') {
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-600 dark:text-teal-300 flex-shrink-0 text-sm mt-0.5 shadow-sm">
+                        <i class="ph-fill ph-robot"></i>
+                    </div>
+                    <div class="p-4 rounded-2xl rounded-tl-sm bg-white/70 dark:bg-slate-900/80 border border-slate-200 dark:border-teal-500/20 max-w-[85%] text-sm text-slate-800 dark:text-slate-200 leading-relaxed shadow-md">
+                        <div class="flex items-center justify-between mb-1.5 gap-4">
+                            <span class="font-mono text-[10px] text-teal-600 dark:text-teal-400 font-bold uppercase tracking-wider">Ash</span>
+                            <button onclick="readAloud(this)" class="tts-btn text-slate-400 hover:text-teal-500 transition-colors p-1" title="Read message aloud with female AI voice">
+                                <i class="ph ph-speaker-high text-base"></i>
+                            </button>
+                        </div>
+                        <div class="whitespace-pre-line text-sm">${text}</div>
+                    </div>
+                `;
+            } else {
+                wrapper.innerHTML = `
+                    <div class="p-4 rounded-2xl rounded-tr-sm bg-teal-600 text-white max-w-[85%] text-sm leading-relaxed shadow-[0_0_20px_rgba(20,184,166,0.25)]">
+                        <p class="font-mono text-[10px] text-teal-100 mb-1 font-bold uppercase tracking-wider">You</p>
+                        <p class="whitespace-pre-line">${text}</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-slate-300 dark:bg-slate-800 border border-slate-400/40 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 flex-shrink-0 text-sm mt-0.5">
+                        <i class="ph ph-user"></i>
+                    </div>
+                `;
+            }
+
+            const currentPlaceholder = document.getElementById('thinking-placeholder');
+            container.insertBefore(wrapper, currentPlaceholder);
+            scrollToBottom();
+        }
+
+        // 5. ASYNC TRANSMISSION WITH 1.5S CLEAN . . . . ANIMATION
+        async function handleSend(text) {
+            if (!text.trim()) return;
+            appendMessage('user', text);
+            input.value = '';
+            input.disabled = true;
+            sendBtn.disabled = true;
+
+            const currentPlaceholder = document.getElementById('thinking-placeholder');
+            currentPlaceholder.classList.remove('hidden');
+            scrollToBottom();
+
+            // Run backend fetch in parallel with 1.5-second minimum thinking duration
+            const minThinkingDelay = new Promise(resolve => setTimeout(resolve, 1500));
+            const apiCall = fetch("{% url 'ai_chat_message' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ message: text, room_id: roomId })
+            }).then(r => r.json());
+
+            try {
+                const [_, data] = await Promise.all([minThinkingDelay, apiCall]);
+
+                currentPlaceholder.classList.add('hidden');
+
+                if (data.status === 'success') {
+                    appendMessage('assistant', data.reply);
+                } else {
+                    appendMessage('assistant', "I encountered a neural synchronization lapse. Please re-state your question.");
+                }
+            } catch (err) {
+                currentPlaceholder.classList.add('hidden');
+                appendMessage('assistant', "Connection interrupted. Please verify your network telemetry.");
+            } finally {
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleSend(input.value);
+        });
+
+        function sendQuickPrompt(promptText) {
+            handleSend(promptText);
+        }
+    </script>
+</body>
+</html>
