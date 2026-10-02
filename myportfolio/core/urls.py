@@ -6,7 +6,6 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('dashboard/resume/download/<str:format_type>/', views.export_resume, name='export_resume'),
     path('login/', views.custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('accounts/profile/', RedirectView.as_view(url='/dashboard/', permanent=True)),

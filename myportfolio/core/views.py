@@ -54,7 +54,6 @@ def home(request):
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from .models import PersonalInfo, Experience, Project, Skill, Education, Certification, ContactMessage, SiteTraffic
-from .resume_builder import generate_resume_docx, generate_resume_pdf
 
 @login_required
 def dashboard(request):
@@ -126,31 +125,6 @@ def dashboard(request):
         'score_breakdown': score_breakdown,
     }
     return render(request, 'core/dashboard.html', context)
-
-@login_required
-def export_resume(request, format_type):
-    """ATS Resume Download in Word (.docx) or PDF format."""
-    safe_name = "Rohan_Patil_Resume"
-    info = PersonalInfo.objects.first()
-    if info and info.name:
-        safe_name = f"{info.name.replace(' ', '_')}_Resume"
-
-    if format_type == 'docx':
-        buffer = generate_resume_docx()
-        response = HttpResponse(
-            buffer.getvalue(),
-            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        )
-        response['Content-Disposition'] = f'attachment; filename="{safe_name}.docx"'
-        return response
-
-    elif format_type == 'pdf':
-        buffer = generate_resume_pdf()
-        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{safe_name}.pdf"'
-        return response
-
-    raise Http404("Unsupported export format.")
 
 def custom_login(request):
     if request.user.is_authenticated and request.user.is_staff:
