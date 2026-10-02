@@ -1,16 +1,19 @@
 from django.shortcuts import render, redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.http import JsonResponse, FileResponse
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from django.db.models import Sum
 import json
+import logging
 from .models import (
     PersonalInfo, Experience, Project, Skill,
     Education, Certification, SiteTraffic, ContactMessage
 )
+from .pipeline import generate_portfolio_dataset
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     # Track page hits
@@ -38,7 +41,7 @@ def home(request):
     context = {
         'info': PersonalInfo.objects.first(),
         'experiences': Experience.objects.all(),
-        'projects': Project.objects.all(),
+        'projects': Project.objects.prefetch_related('images').all(),
         'backend_skills': Skill.objects.filter(category='backend'),
         'frontend_skills': Skill.objects.filter(category='frontend'),
         'tools_skills': Skill.objects.filter(category='tools'),
@@ -47,89 +50,107 @@ def home(request):
     }
     return render(request, 'core/index.html', context)
 
-@staff_member_required(login_url='login')
+# core/views.py
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, Http404
+from .models import PersonalInfo, Experience, Project, Skill, Education, Certification, ContactMessage, SiteTraffic
+from .resume_builder import generate_resume_docx, generate_resume_pdf
+
+@login_required
 def dashboard(request):
-    # 1. Traffic Metrics
-    total_hits = SiteTraffic.objects.aggregate(Sum('hits'))['hits__sum'] or 0
-    recent_traffic = SiteTraffic.objects.all().order_by('-date')[:7]
-    
-    # Chronological order for linear graph
-    traffic_history = list(reversed(recent_traffic))
-    traffic_labels = [entry.date.strftime('%b %d') for entry in traffic_history]
-    traffic_data = [entry.hits for entry in traffic_history]
-
-    # 2. Skill Category Distribution for Doughnut / Pie Chart
-    backend_count = Skill.objects.filter(category='backend').count()
-    frontend_count = Skill.objects.filter(category='frontend').count()
-    tools_count = Skill.objects.filter(category='tools').count()
-    
-    skill_chart_labels = ['Backend & DB', 'Frontend UI', 'Cloud & Tools']
-    skill_chart_data = [backend_count, frontend_count, tools_count]
-
-    # 3. Dynamic Profile Health Score Calculation (Max: 100)
     info = PersonalInfo.objects.first()
-    experiences = Experience.objects.all()
-    projects = Project.objects.all()
-    certifications = Certification.objects.all()
+    experiences = Experience.objects.all().order_by('order', '-id')
+    projects = Project.objects.prefetch_related('images').all().order_by('order', '-id')
     skills = Skill.objects.all()
     education = Education.objects.all()
-    contact_messages = ContactMessage.objects.all()[:15]
+    certifications = Certification.objects.all()
+    messages = ContactMessage.objects.all().order_by('-created_at')
+    traffic = SiteTraffic.objects.all().order_by('-date')
 
+    # REDESIGNED SCORE LOGIC (100% Deterministic; NO verification needed)
     score = 0
     score_breakdown = []
 
-    # Bio & Personal Info (20 pts)
-    if info and info.about_text and len(info.about_text) > 80:
-        score += 10
-        score_breakdown.append(("Personal Bio", 10, 10))
+    # 1. Identity & Contact Profiles (20 pts max)
+    if info:
+        info_pts = 0
+        if info.name and info.tagline: info_pts += 5
+        if info.email and info.phone: info_pts += 5
+        if info.about_text and len(info.about_text) > 80: info_pts += 5
+        if info.github_url or info.linkedin_url: info_pts += 5
+        score += info_pts
+        score_breakdown.append({'label': 'Identity & Contacts', 'points': info_pts, 'max': 20})
     else:
-        score_breakdown.append(("Personal Bio", 0, 10))
+        score_breakdown.append({'label': 'Identity & Contacts', 'points': 0, 'max': 20})
 
-    if info and info.resume:
-        score += 10
-        score_breakdown.append(("Resume Attached", 10, 10))
-    else:
-        score_breakdown.append(("Resume Attached", 0, 10))
-
-    # Experience (20 pts)
-    exp_pts = min(experiences.count() * 10, 20)
+    # 2. Work Experiences (25 pts max)
+    exp_count = experiences.count()
+    exp_pts = min(25, exp_count * 12) if exp_count > 0 else 0
     score += exp_pts
-    score_breakdown.append(("Experience Entries", exp_pts, 20))
+    score_breakdown.append({'label': 'Career Experience', 'points': exp_pts, 'max': 25})
 
-    # Projects (25 pts)
-    proj_pts = min(projects.count() * 5, 25)
+    # 3. Project Portfolio (25 pts max)
+    proj_count = projects.count()
+    proj_pts = min(25, proj_count * 8) if proj_count > 0 else 0
     score += proj_pts
-    score_breakdown.append(("Project Artifacts", proj_pts, 25))
+    score_breakdown.append({'label': 'Featured Projects', 'points': proj_pts, 'max': 25})
 
-    # Certifications & Files (15 pts)
-    certs_with_files = sum(1 for c in certifications if c.file)
-    cert_pts = min(certs_with_files * 5, 15)
+    # 4. Technical Skills (15 pts max)
+    has_backend = skills.filter(category='backend').exists()
+    has_frontend = skills.filter(category='frontend').exists()
+    has_tools = skills.filter(category='tools').exists()
+    skill_pts = sum([5 for condition in [has_backend, has_frontend, has_tools] if condition])
+    score += skill_pts
+    score_breakdown.append({'label': 'Categorized Skills', 'points': skill_pts, 'max': 15})
+
+    # 5. Education Credentials (10 pts max)
+    edu_pts = 10 if education.exists() else 0
+    score += edu_pts
+    score_breakdown.append({'label': 'Education Records', 'points': edu_pts, 'max': 10})
+
+    # 6. Uploaded Certifications (5 pts max)
+    cert_pts = 5 if certifications.exists() else 0
     score += cert_pts
-    score_breakdown.append(("Verified Certifications", cert_pts, 15))
-
-    # Skills Matrix (10 pts)
-    skill_pts = 10 if skills.count() >= 6 else (skills.count() * 1.5)
-    score += int(skill_pts)
-    score_breakdown.append(("Technical Skills Depth", int(skill_pts), 10))
+    score_breakdown.append({'label': 'Certificates Uploaded', 'points': cert_pts, 'max': 5})
 
     context = {
-        'total_hits': total_hits,
-        'recent_traffic': recent_traffic,
-        'traffic_labels_json': json.dumps(traffic_labels),
-        'traffic_data_json': json.dumps(traffic_data),
-        'skill_labels_json': json.dumps(skill_chart_labels),
-        'skill_data_json': json.dumps(skill_chart_data),
-        'profile_score': int(score),
-        'score_breakdown': score_breakdown,
         'info': info,
         'experiences': experiences,
         'projects': projects,
         'skills': skills,
         'education': education,
         'certifications': certifications,
-        'contact_messages': contact_messages,
+        'messages': messages,
+        'traffic': traffic,
+        'profile_score': min(100, score),
+        'score_breakdown': score_breakdown,
     }
     return render(request, 'core/dashboard.html', context)
+
+@login_required
+def export_resume(request, format_type):
+    """ATS Resume Download in Word (.docx) or PDF format."""
+    safe_name = "Rohan_Patil_Resume"
+    info = PersonalInfo.objects.first()
+    if info and info.name:
+        safe_name = f"{info.name.replace(' ', '_')}_Resume"
+
+    if format_type == 'docx':
+        buffer = generate_resume_docx()
+        response = HttpResponse(
+            buffer.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+        response['Content-Disposition'] = f'attachment; filename="{safe_name}.docx"'
+        return response
+
+    elif format_type == 'pdf':
+        buffer = generate_resume_pdf()
+        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{safe_name}.pdf"'
+        return response
+
+    raise Http404("Unsupported export format.")
 
 def custom_login(request):
     if request.user.is_authenticated and request.user.is_staff:
@@ -164,18 +185,12 @@ def tech_stack(request):
     return render(request, 'core/tech_stack.html')
 
 
-import json
-import json
 import uuid
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
-from .models import (
-    PersonalInfo, Experience, Project, Skill,
-    Education, Certification, ChatRoom, ChatMessage
-)
+from django.shortcuts import get_object_or_404
+from .models import ChatRoom, ChatMessage
 
 try:
-    import llm
+    import llm # type: ignore
 except ImportError:
     llm = None
 
@@ -255,23 +270,7 @@ def ai_chat_page(request):
         'chat_history': chat_history
     })
 
-import json
-import logging
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, FileResponse, Http404
 from django.db import connection
-from .models import (
-    PersonalInfo, Experience, Project, Skill,
-    Education, Certification, ChatRoom, ChatMessage
-)
-from .pipeline import generate_portfolio_dataset
-
-logger = logging.getLogger(__name__)
-
-try:
-    import llm
-except ImportError:
-    llm = None
 
 def execute_readonly_sql(query: str):
     """
@@ -369,138 +368,7 @@ RULES:
     bot_reply = ""
     try:
         if llm:
-            model = llm.get_model()
-            recent_turns = room.messages.all().order_by('-timestamp')[:6]
-            history_text = "\n".join([f"{m.role.capitalize()}: {m.content}" for m in reversed(list(recent_turns))])
-            
-            prompt_str = f"{system_prompt}\n\nRecent Memory:\n{history_text}\n\nUser: {user_message}\nAsh:"
-            response = model.prompt(prompt_str)
-            bot_reply = response.text().strip()
-        else:
-            bot_reply = "Ash neural engine is standing by."
-    except Exception as e:
-        logger.error(f"LLM Error: {e}")
-        # Fallback keyword matching
-        q = user_message.lower()
-        if any(w in q for w in ['hi', 'hello', 'hey', 'who are you']):
-            bot_reply = "Hello! I am Ash, Rohan Patil's AI ambassador. I can walk you through his projects, technical stack, or background. What would you like to know?"
-        elif any(w in q for w in ['skill', 'stack', 'tech', 'python']):
-            bot_reply = "Rohan specializes in Python, Django REST Framework, MySQL, Redis, JavaScript, React, Three.js, and PyTorch."
-        elif any(w in q for w in ['project', 'work']):
-            bot_reply = "Rohan has engineered scalable web architectures including this Quantum 3D Portfolio, Django REST APIs, and algorithmic trading simulators."
-        elif any(w in q for w in ['contact', 'email', 'phone', 'hire']):
-            bot_reply = "You can contact Rohan directly at rohanrpatil24@gmail.com or by calling +91 9653639991."
-        else:
-            bot_reply = "I am Ash, Rohan Patil's portfolio AI ambassador. I can only answer questions related to Rohan's engineering background, projects, technical skills, and experience. Please feel free to ask about his work!"
-
-    ChatMessage.objects.create(room=room, role='assistant', content=bot_reply)
-
-    return JsonResponse({'status': 'success', 'reply': bot_reply})
-
-def download_dataset(request):
-    """Allows staff/admin to download the auto-generated JSONL training dataset."""
-    if not request.user.is_staff:
-        raise Http404()
-    count, path = generate_portfolio_dataset()
-    return FileResponse(open(path, 'rb'), as_attachment=True, filename='portfolio_dataset.jsonl')
-
-def execute_readonly_sql(query: str):
-    """
-    Safely executes an arbitrary read-only query against the active database.
-    Rejects any destructive or modifying keyword.
-    """
-    forbidden = ["INSERT", "UPDATE", "DELETE", "DROP", "ALTER", "TRUNCATE", "REPLACE", "CREATE"]
-    clean_q = query.strip()
-    if any(word in clean_q.upper() for word in forbidden):
-        return {"error": "Write and destructive operations are forbidden."}
-
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(clean_q)
-            columns = [col[0] for col in cursor.description]
-            rows = cursor.fetchall()
-            return [dict(zip(columns, row)) for row in rows[:15]]
-    except Exception as e:
-        return {"error": str(e)}
-
-def get_live_database_grounding():
-    """Generates a compressed, high-density factual context of the entire database."""
-    info = PersonalInfo.objects.first()
-    experiences = Experience.objects.all().order_by('order', '-id')
-    projects = Project.objects.all().order_by('order', '-id')
-    skills = Skill.objects.all()
-    education = Education.objects.all()
-    certifications = Certification.objects.all()
-
-    payload = []
-    if info:
-        payload.append(f"CANDIDATE: {info.name} | HEADLINE: {info.tagline} | LOCATION: {info.location}")
-        payload.append(f"EMAIL: {info.email} | PHONE: {info.phone} | GITHUB: {info.github_url} | LINKEDIN: {info.linkedin_url}")
-        payload.append(f"BIOGRAPHY: {info.about_text}")
-
-    if experiences.exists():
-        payload.append("\nEXPERIENCE RECORDS:")
-        for exp in experiences:
-            payload.append(f"- {exp.role} @ {exp.company} ({exp.duration}): {exp.description}")
-
-    if projects.exists():
-        payload.append("\nPROJECT PORTFOLIO:")
-        for p in projects:
-            payload.append(f"- {p.title} [Stack: {p.tech_stack}]: {p.description}")
-
-    if skills.exists():
-        payload.append("\nTECHNICAL SKILLS MATRIX:")
-        for s in skills:
-            payload.append(f"- {s.name} ({s.category})")
-
-    if education.exists():
-        payload.append("\nEDUCATION CREDENTIALS:")
-        for edu in education:
-            payload.append(f"- {edu.title} from {edu.institution} ({edu.date_completed})")
-
-    if certifications.exists():
-        payload.append("\nLICENSES & CERTIFICATIONS:")
-        for cert in certifications:
-            payload.append(f"- {cert.title} issued by {cert.institution} ({cert.date_completed})")
-
-    return "\n".join(payload)
-
-def ai_chat_message(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'POST required'}, status=400)
-
-    try:
-        data = json.loads(request.body)
-        user_message = data.get('message', '').strip()
-        room_id = data.get('room_id')
-    except Exception:
-        return JsonResponse({'error': 'Invalid payload'}, status=400)
-
-    if not user_message:
-        return JsonResponse({'error': 'Empty prompt'}, status=400)
-
-    room = get_object_or_404(ChatRoom, session_id=room_id)
-    ChatMessage.objects.create(room=room, role='user', content=user_message)
-
-    live_context = get_live_database_grounding()
-
-    system_prompt = f"""You are Ash, the intelligent and articulate female AI ambassador for Rohan Patil's quantum software engineering portfolio.
-
-ACTIVE DATABASE GROUNDING:
-{live_context}
-
-RULES:
-1. Ground all answers strictly on the facts, projects, roles, and contacts above.
-2. If asked who you are or greeted, warmly introduce yourself as Ash.
-3. If asked questions outside Rohan's background, respond:
-"I am Ash, dedicated specifically to Rohan Patil's portfolio. I can only assist with questions regarding Rohan's engineering background, projects, technical skills, and experience."
-4. Be concise, professional, and friendly.
-"""
-
-    bot_reply = ""
-    try:
-        if llm:
-            model = llm.get_model()
+            model = llm.get_model("llama3.2:latest")
             recent_turns = room.messages.all().order_by('-timestamp')[:6]
             history_text = "\n".join([f"{m.role.capitalize()}: {m.content}" for m in reversed(list(recent_turns))])
             
@@ -553,3 +421,7 @@ def ai_chat_reset(request):
     request.session['ai_chat_session_id'] = str(new_room.session_id)
 
     return JsonResponse({'status': 'success', 'new_room_id': str(new_room.session_id)})
+
+@login_required
+def apps_page(request):
+    return render(request, 'core/apps_page.html')

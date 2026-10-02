@@ -80,6 +80,14 @@ def generate_portfolio_dataset():
             f"The '{p.title}' project was implemented using {p.tech_stack}."
         ))
 
+    for p in Project.objects.prefetch_related('images').all():
+        image_count = p.images.count()
+        records.append(make_entry(
+            sys_prompt,
+            f"What was Rohan's role in the '{p.title}' project?",
+            f"In '{p.title}', Rohan worked as a {p.get_role_display()} developer. Built with {p.tech_stack}. Summary: {p.description}"
+        ))
+
     # 4. Skills by Category
     backend_skills = [s.name for s in Skill.objects.filter(category='backend')]
     frontend_skills = [s.name for s in Skill.objects.filter(category='frontend')]

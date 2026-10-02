@@ -51,6 +51,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Allow the site to be framed by itself (the Browser app on /apps/ embeds the portfolio)
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 ROOT_URLCONF = 'myportfolio.urls'
 
 TEMPLATES = [

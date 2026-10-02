@@ -13,7 +13,7 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Tailwind CSS -->
@@ -24,9 +24,9 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['Space Grotesk', 'monospace'],
-                        code: ['Fira Code', 'monospace'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"Space Grotesk"', 'monospace'],
+                        code: ['"Fira Code"', 'monospace'],
                     },
                     colors: {
                         slate: {
@@ -54,49 +54,130 @@
 
     <style>
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { @apply bg-slate-100 dark:bg-slate-950; }
-        ::-webkit-scrollbar-thumb { @apply bg-teal-500 rounded; }
+        ::-webkit-scrollbar-track { @apply bg-transparent; }
+        ::-webkit-scrollbar-thumb { @apply bg-teal-500/40 rounded-full hover:bg-teal-500/80; }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(20, 184, 166, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        /* Elegant Ambient Background Gradients */
+        .ambient-mesh {
+            background: 
+                radial-gradient(at 10% 15%, rgba(20, 184, 166, 0.08) 0px, transparent 50%),
+                radial-gradient(at 90% 25%, rgba(56, 189, 248, 0.07) 0px, transparent 50%),
+                radial-gradient(at 50% 85%, rgba(139, 92, 246, 0.06) 0px, transparent 60%);
         }
-        .dark .glass-panel {
-            background: rgba(11, 15, 25, 0.65);
-            border: 1px solid rgba(20, 184, 166, 0.18);
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        .dark .ambient-mesh {
+            background: 
+                radial-gradient(at 15% 10%, rgba(20, 184, 166, 0.12) 0px, transparent 50%),
+                radial-gradient(at 85% 20%, rgba(14, 165, 233, 0.10) 0px, transparent 50%),
+                radial-gradient(at 50% 80%, rgba(99, 102, 241, 0.08) 0px, transparent 60%);
         }
-        .code-box {
-            background: rgba(7, 9, 14, 0.9);
+
+        /* Subtle Geometric Grid Matrix */
+        .dot-matrix {
+            background-image: radial-gradient(rgba(20, 184, 166, 0.15) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* Pure Glassmorphic Cards with 3D Tilt & Magnetic Border Glow */
+        .tech-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+            transform-style: preserve-3d;
+        }
+        .dark .tech-card {
+            background: rgba(11, 15, 25, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+        }
+        .tech-card:hover {
+            box-shadow: 0 25px 50px -12px rgba(20, 184, 166, 0.15);
+            border-color: rgba(20, 184, 166, 0.45);
+        }
+
+        /* Code Block Styling */
+        .code-enclave {
+            background: rgba(8, 12, 20, 0.95);
             border: 1px solid rgba(20, 184, 166, 0.25);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* AI Glowing Button */
+        .ai-glow-border {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .ai-glow-border::before {
+            content: '';
+            position: absolute;
+            z-index: -2;
+            left: -50%;
+            top: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, #2dd4bf, #06b6d4, #3b82f6, #2dd4bf);
+            animation: rotateConic 3s linear infinite;
+        }
+        .ai-glow-border::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            inset: 2px;
+            background: inherit;
+            border-radius: inherit;
+        }
+        @keyframes rotateConic {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Staggered Fade In */
+        .animate-card-in {
+            animation: cardRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes cardRise {
+            from {
+                opacity: 0;
+                transform: translateY(35px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans antialiased overflow-x-hidden selection:bg-teal-500/30 selection:text-teal-900 dark:selection:text-teal-200 transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-sans antialiased overflow-x-hidden transition-colors duration-300 min-h-screen relative ambient-mesh">
 
-    <!-- Ambient Grid Backdrop -->
-    <div class="fixed inset-0 pointer-events-none z-0 opacity-40 dark:opacity-20 bg-[radial-gradient(#14b8a6_1px,transparent_1px)] [background-size:24px_24px]"></div>
+    <!-- Ambient Grid Canvas -->
+    <div class="fixed inset-0 pointer-events-none dot-matrix opacity-40 dark:opacity-20 z-0"></div>
 
     <!-- Navigation Header -->
-    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-teal-500/20">
+    <nav class="fixed w-full z-50 top-0 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl border-b border-slate-200/60 dark:border-teal-500/15">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
-                <a href="/" class="text-2xl font-bold font-mono tracking-tighter text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-ping"></span>
+                <a href="/" class="text-2xl font-bold font-mono tracking-tight text-slate-900 dark:text-white flex items-center gap-2 group">
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 group-hover:scale-125 transition-transform duration-300"></span>
                     Rohan<span class="text-teal-500">.</span>sys
                 </a>
 
-                <div class="flex items-center gap-4">
-                    <a href="/" class="px-4 py-2 rounded-xl glass-panel text-xs font-mono uppercase tracking-wider text-slate-700 dark:text-slate-200 hover:text-teal-500 dark:hover:text-teal-400 transition-all flex items-center gap-2">
-                        <i class="ph ph-arrow-left text-base"></i> Live Portfolio
+                <div class="flex items-center gap-3">
+                    <a href="{% url 'ai_chat' %}" class="ai-glow-border px-3.5 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-950 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(45,212,191,0.35)] hover:scale-105 transition-transform">
+                        <i class="ph-fill ph-sparkle text-teal-400"></i>
+                        <span>AI Ash</span>
+                    </a>
+
+                    <a href="/" class="px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 text-xs font-mono uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 hover:border-teal-500/40 transition-all flex items-center gap-2 shadow-sm">
+                        <i class="ph ph-arrow-left text-sm"></i> Return
                     </a>
                     
-                    <button id="theme-toggle" class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-teal-400 border border-slate-200 dark:border-slate-800 hover:border-teal-500 transition-all shadow-sm">
-                        <i class="ph ph-sun text-xl absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100"></i>
-                        <i class="ph ph-moon text-xl absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0"></i>
+                    <button id="theme-toggle" class="relative w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 dark:bg-slate-900 text-slate-700 dark:text-teal-400 border border-slate-200/80 dark:border-slate-800 hover:border-teal-500/40 transition-all shadow-sm">
+                        <i class="ph ph-sun text-lg absolute transition-all duration-500 translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100"></i>
+                        <i class="ph ph-moon text-lg absolute transition-all duration-500 translate-y-0 opacity-100 dark:-translate-y-10 dark:opacity-0"></i>
                     </button>
                 </div>
             </div>
@@ -107,223 +188,248 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10">
         
         <!-- Header Banner -->
-        <header class="mb-16">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/30 text-teal-700 dark:text-teal-400 text-xs font-mono mb-4 shadow-sm">
-                <i class="ph ph-cpu"></i> CORE TELEMETRY // SYSTEM SPECIFICATION
+        <header class="mb-16 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 text-xs font-mono mb-4 tracking-wide font-medium">
+                <i class="ph ph-cpu text-sm"></i> SYSTEM TOPOLOGY // ARCHITECTURAL DOSSIER
             </div>
-            <h1 class="text-4xl sm:text-5xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tight mb-4">
-                Architecture & Engineering Matrix
+            <h1 class="text-4xl sm:text-6xl font-bold font-mono tracking-tight text-slate-900 dark:text-white mb-5">
+                Technical Stack & Infrastructure
             </h1>
-            <p class="text-slate-600 dark:text-slate-400 max-w-3xl text-base sm:text-lg font-light leading-relaxed">
-                A technical breakdown of the full-stack protocols, 3D WebGL render engines, asynchronous API layers, and design primitives powering this portfolio environment.
+            <p class="text-slate-600 dark:text-slate-400 max-w-3xl text-base sm:text-lg font-light leading-relaxed mx-auto md:mx-0">
+                A structured blueprint of the scalable frameworks, asynchronous pipelines, autonomous AI models, and real-time client systems powering the portfolio.
             </p>
         </header>
 
-        <!-- High-Level Topology Grid -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-            <div class="glass-panel p-5 rounded-2xl">
-                <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-1">Architecture</div>
-                <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">Django MVT</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1">Python 3.10+ / ORM</div>
+        <!-- KPI Metrics Grid -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-16">
+            <div class="tech-card p-6 tilt-card animate-card-in" style="animation-delay: 0.1s;">
+                <div class="w-10 h-10 rounded-xl bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center text-xl mb-3">
+                    <i class="ph ph-brackets-curly"></i>
+                </div>
+                <div class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">Backend Framework</div>
+                <div class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">Django 5.x</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Python 3.10+ & MVT</div>
             </div>
-            <div class="glass-panel p-5 rounded-2xl">
-                <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-1">3D Graphics</div>
-                <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">Three.js</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1">WebGL / Particle Matrix</div>
+
+            <div class="tech-card p-6 tilt-card animate-card-in" style="animation-delay: 0.18s;">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xl mb-3">
+                    <i class="ph ph-cube"></i>
+                </div>
+                <div class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">Client 3D Space</div>
+                <div class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">Three.js</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">WebGL Multi-Theme</div>
             </div>
-            <div class="glass-panel p-5 rounded-2xl">
-                <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-1">Styling System</div>
-                <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">Tailwind CSS</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1">Glassmorphic Dark / Light</div>
+
+            <div class="tech-card p-6 tilt-card animate-card-in" style="animation-delay: 0.26s;">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl mb-3">
+                    <i class="ph ph-sparkle"></i>
+                </div>
+                <div class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">AI Intelligence</div>
+                <div class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">Ash (LLM)</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Signals & Live Grounding</div>
             </div>
-            <div class="glass-panel p-5 rounded-2xl">
-                <div class="text-xs font-mono text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-1">Runtime Host</div>
-                <div class="text-xl font-bold font-mono text-slate-900 dark:text-white">WSGI Linux</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1">PythonAnywhere Enclave</div>
+
+            <div class="tech-card p-6 tilt-card animate-card-in" style="animation-delay: 0.34s;">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-3">
+                    <i class="ph ph-shield-check"></i>
+                </div>
+                <div class="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">Security Enclave</div>
+                <div class="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">Anti-Snipping</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Key Intercept & Privacy</div>
             </div>
         </section>
 
-        <!-- Deep Dive Sections -->
-        <div class="space-y-12">
+        <!-- Detailed Architectural Pillars -->
+        <div class="space-y-10">
             
-            <!-- 1. Backend Architecture (Django) -->
-            <section class="glass-panel p-8 sm:p-10 rounded-3xl">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-500 text-2xl">
-                        <i class="ph ph-terminal-window"></i>
+            <!-- Pillar 1: Autonomous AI & Live Dataset Pipeline -->
+            <section class="tech-card p-8 sm:p-10 tilt-card animate-card-in group" style="animation-delay: 0.4s;">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-teal-500/15 text-teal-600 dark:text-teal-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="ph-fill ph-robot"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">Ash AI Ambassador & Signal Pipeline</h2>
+                            <p class="text-xs font-mono text-slate-500 dark:text-slate-400">Autonomous LLM Engine // Dynamic DB Grounding // Automated Q&A Generation</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">1. Server-Side Framework & ORM Models</h2>
-                        <p class="text-xs font-mono text-slate-500 dark:text-slate-400">Python // Django // Relational Schema</p>
-                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20 self-start sm:self-auto font-medium">
+                        Pipeline Active
+                    </span>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-8 text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-light">
-                    <div>
-                        <p class="mb-4">
-                            The backbone of the application runs on <strong>Django</strong>, leveraging its robust Model-View-Template (MVT) architecture for deterministic routing, CSRF protection, and media pipeline segregation.
+                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                    <div class="lg:col-span-7 space-y-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">
+                        <p>
+                            Ash acts as the direct conversational liaison to the portfolio. Built on the extensible Python <code class="font-code text-teal-600 dark:text-teal-400">llm</code> library, Ash combines conversational flexibility with deterministic database anchoring.
                         </p>
-                        <p class="mb-4">
-                            Relational schema design via Django ORM decouples static view code from persistent data:
-                        </p>
-                        <ul class="space-y-2 font-mono text-xs text-slate-700 dark:text-slate-300">
-                            <li class="flex items-center gap-2"><i class="ph ph-check text-teal-500"></i> <strong class="text-teal-600 dark:text-teal-400">PersonalInfo:</strong> Core identity, biography, and CV assets.</li>
-                            <li class="flex items-center gap-2"><i class="ph ph-check text-teal-500"></i> <strong class="text-teal-600 dark:text-teal-400">Experience & Project:</strong> Chronologies sorted by explicit ordering keys.</li>
-                            <li class="flex items-center gap-2"><i class="ph ph-check text-teal-500"></i> <strong class="text-teal-600 dark:text-teal-400">Certification:</strong> Secure credential records with <code class="font-code text-teal-500">@property is_pdf</code> document inspection.</li>
-                            <li class="flex items-center gap-2"><i class="ph ph-check text-teal-500"></i> <strong class="text-teal-600 dark:text-teal-400">SiteTraffic & ContactMessage:</strong> Analytics tracking daily page encounters and encrypted contact queries.</li>
-                        </ul>
+                        <div class="grid sm:grid-cols-2 gap-4 pt-2">
+                            <div class="p-4 rounded-xl bg-slate-100/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
+                                <h4 class="font-mono text-xs uppercase tracking-wider text-slate-900 dark:text-white font-bold mb-1 flex items-center gap-1.5">
+                                    <i class="ph ph-lightning text-teal-500"></i> Signal-Driven Pipeline
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-light">
+                                    Django <code class="font-code text-teal-600 dark:text-teal-400">post_save</code> signals watch database updates and auto-export instruction-tuning pairs directly to <code class="font-code text-teal-600 dark:text-teal-400">dataset/portfolio_dataset.jsonl</code>.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-100/60 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800">
+                                <h4 class="font-mono text-xs uppercase tracking-wider text-slate-900 dark:text-white font-bold mb-1 flex items-center gap-1.5">
+                                    <i class="ph ph-speaker-high text-cyan-500"></i> Female TTS Synthesis
+                                </h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 font-light">
+                                    Integrated browser Web Speech API calibrated for natural female pitch and cadence, coupled with a 1.5s thinking wave animation.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="code-box p-5 rounded-2xl font-code text-xs text-slate-300 overflow-x-auto shadow-inner">
-                        <div class="text-slate-500 mb-2">// core/models.py snippet</div>
-<pre><span class="text-blue-400">class</span> <span class="text-yellow-400">Certification</span>(models.Model):
-    title = models.CharField(max_length=<span class="text-teal-400">150</span>)
-    institution = models.CharField(max_length=<span class="text-teal-400">150</span>)
-    date_completed = models.CharField(max_length=<span class="text-teal-400">50</span>)
-    file = models.FileField(upload_to=<span class="text-orange-400">'certificates/'</span>)
-
-    <span class="text-purple-400">@property</span>
-    <span class="text-blue-400">def</span> <span class="text-green-400">is_pdf</span>(self):
-        <span class="text-blue-400">return</span> bool(self.file <span class="text-blue-400">and</span> self.file.name.lower().endswith(<span class="text-orange-400">'.pdf'</span>))
+                    <div class="lg:col-span-5 code-enclave p-5 rounded-2xl font-code text-xs text-slate-300 overflow-x-auto">
+                        <div class="text-slate-500 mb-2">// core/pipeline.py</div>
+<pre><span class="text-purple-400">@receiver</span>([post_save, post_delete])
+<span class="text-blue-400">def</span> <span class="text-yellow-400">sync_training_dataset</span>(sender, **kwargs):
+    <span class="text-slate-500"># Compiles live models into JSONL dataset</span>
+    count, path = generate_portfolio_dataset()
+    logger.info(<span class="text-orange-400">f"[Ash] Regenerated {count} pairs"</span>)
 </pre>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. WebGL & Three.js 3D Engine -->
-            <section class="glass-panel p-8 sm:p-10 rounded-3xl">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-500 text-2xl">
-                        <i class="ph ph-cube"></i>
+            <!-- Pillar 2: Django Architecture & Scalability -->
+            <section class="tech-card p-8 sm:p-10 tilt-card animate-card-in group" style="animation-delay: 0.48s;">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="ph-fill ph-database"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">Django Core & Relational Database</h2>
+                            <p class="text-xs font-mono text-slate-500 dark:text-slate-400">Model-View-Template // Django ORM // Read-Only SQL Inspections</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">2. WebGL 3D Render Engine</h2>
-                        <p class="text-xs font-mono text-slate-500 dark:text-slate-400">Three.js // Shaders // Real-time Parallax</p>
-                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 self-start sm:self-auto font-medium">
+                        Production WSGI
+                    </span>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-8 text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-light">
-                    <div>
-                        <p class="mb-4">
-                            Interactive visual computing is realized using <strong>Three.js</strong> running over HTML5 WebGL context without relying on heavy external asset bundles:
-                        </p>
-                        <ul class="space-y-2.5">
-                            <li class="flex items-start gap-2">
-                                <i class="ph ph-dot-outline text-teal-500 mt-1"></i>
-                                <span><strong>Volumetric Particle Matrix:</strong> A <code class="font-code text-xs text-teal-500">THREE.Points</code> system containing 700 custom spatial coordinates floating across an unbounded field, rotated on continuous delta loops.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="ph ph-dot-outline text-teal-500 mt-1"></i>
-                                <span><strong>Quantum Orbitals:</strong> Parametric <code class="font-code text-xs text-teal-500">THREE.TorusGeometry</code> rings with wireframe alpha materials rotating asynchronously across the X and Y axes.</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="ph ph-dot-outline text-teal-500 mt-1"></i>
-                                <span><strong>Cursor Parallax Tracking:</strong> Normalized mouse vectors continuously interpolate the camera orientation via lerping algorithms to create depth without jarring transitions.</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="code-box p-5 rounded-2xl font-code text-xs text-slate-300 overflow-x-auto shadow-inner">
-                        <div class="text-slate-500 mb-2">// Three.js render loop</div>
-<pre><span class="text-blue-400">function</span> <span class="text-yellow-400">animate</span>() {
-    requestAnimationFrame(animate);
-    <span class="text-blue-400">const</span> delta = clock.getElapsedTime();
-
-    particleSystem.rotation.y = delta * <span class="text-teal-400">0.03</span>;
-    quantumRing.rotation.x = delta * <span class="text-teal-400">0.1</span>;
-    
-    <span class="text-slate-500">// Smooth camera mouse-damping</span>
-    camera.position.x += (targetX * <span class="text-teal-400">5</span> - camera.position.x) * <span class="text-teal-400">0.05</span>;
-    camera.position.y += (-targetY * <span class="text-teal-400">5</span> - camera.position.y) * <span class="text-teal-400">0.05</span>;
-    renderer.render(scene, camera);
-}
-</pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3. Client-Side Systems & Kinematics -->
-            <section class="glass-panel p-8 sm:p-10 rounded-3xl">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-500 text-2xl">
-                        <i class="ph ph-arrows-clockwise"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">3. Kinematic Systems & SPA Navigation</h2>
-                        <p class="text-xs font-mono text-slate-500 dark:text-slate-400">Vanilla ES6+ // HTML5 History API // Sub-Pixel Engine</p>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-6 text-sm">
-                    <div class="p-5 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
-                        <h3 class="font-mono font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                            <i class="ph ph-play-circle text-teal-500 text-base"></i> Sub-Pixel Auto-Glide
-                        </h3>
+                <div class="grid lg:grid-cols-3 gap-6 text-sm">
+                    <div class="p-5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800">
+                        <div class="text-teal-500 text-lg mb-2"><i class="ph ph-tree-structure"></i></div>
+                        <h3 class="font-mono font-bold text-slate-900 dark:text-white mb-1.5">Normalized Schema</h3>
                         <p class="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
-                            A delta-time requestAnimationFrame engine eliminating frame-by-frame rounding jitter. Features 1x/2x/3x velocity scaling, a 3-second restart buffer, and instant lockout upon manual wheel detection.
+                            Database entities maintain strict relationships for Experiences, Categorized Skills, Projects, Education, and Digital Credentials with automated PDF type inspection.
                         </p>
                     </div>
 
-                    <div class="p-5 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
-                        <h3 class="font-mono font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                            <i class="ph ph-link-simple text-teal-500 text-base"></i> Clean SPA Routing
-                        </h3>
+                    <div class="p-5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800">
+                        <div class="text-cyan-500 text-lg mb-2"><i class="ph ph-shield-check"></i></div>
+                        <h3 class="font-mono font-bold text-slate-900 dark:text-white mb-1.5">Safe Read-Only SQL</h3>
                         <p class="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
-                            Integrates <code class="font-code text-teal-500">History.pushState</code> and <code class="font-code text-teal-500">replaceState</code> to banish unsightly hash fragments (<code class="font-code">#projects</code>) while keeping active scrollspy navbar states synchronized.
+                            Enforces strict write-neutralization keyword blocking (rejecting <code class="font-code text-teal-600 dark:text-teal-400">DROP</code>, <code class="font-code text-teal-600 dark:text-teal-400">INSERT</code>, <code class="font-code text-teal-600 dark:text-teal-400">UPDATE</code>) during arbitrary contextual inspections.
                         </p>
                     </div>
 
-                    <div class="p-5 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800">
-                        <h3 class="font-mono font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                            <i class="ph ph-shield-check text-teal-500 text-base"></i> Security Enclave Viewers
-                        </h3>
+                    <div class="p-5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800">
+                        <div class="text-purple-500 text-lg mb-2"><i class="ph ph-chart-line-up"></i></div>
+                        <h3 class="font-mono font-bold text-slate-900 dark:text-white mb-1.5">Telemetry & Analytics</h3>
                         <p class="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
-                            Modal dialogs preventing right-click extraction on certificates, dynamic sandbox iframes for PDF streams, and anti-leak focus-loss privacy filters.
+                            Custom session tracking models record unique visitor timestamps, transmission success rates, and live system completeness scores.
                         </p>
                     </div>
                 </div>
             </section>
 
-            <!-- 4. UI/UX & Glassmorphic Styling -->
-            <section class="glass-panel p-8 sm:p-10 rounded-3xl">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-500 text-2xl">
-                        <i class="ph ph-paint-brush-broad"></i>
+            <!-- Pillar 3: Client Systems & Kinematics -->
+            <section class="tech-card p-8 sm:p-10 tilt-card animate-card-in group" style="animation-delay: 0.56s;">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                            <i class="ph-fill ph-speedometer"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">Sub-Pixel Kinematics & SPA Routing</h2>
+                            <p class="text-xs font-mono text-slate-500 dark:text-slate-400">HTML5 History API // Delta-Time Frame Engine // Anti-Snipping Shields</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-2xl font-bold font-mono text-slate-900 dark:text-white">4. Design Tokens & Glassmorphism</h2>
-                        <p class="text-xs font-mono text-slate-500 dark:text-slate-400">Tailwind CSS // Specular Highlighting // Phosphor Icons</p>
-                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-mono bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 self-start sm:self-auto font-medium">
+                        Zero Hash Links
+                    </span>
                 </div>
 
-                <div class="space-y-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300 font-light">
-                    <p>
-                        The interface employs modern <strong>glassmorphism</strong> characterized by high-radius backdrop blur filters (<code class="font-code text-xs text-teal-500">backdrop-filter: blur(28px)</code>), semi-transparent RGBA color blends, and interior specular borders simulating glass edges.
-                    </p>
-                    <p>
-                        Both Dark and Light themes are engineered as first-class citizens. Theme states are bound to local storage and hydrated before DOM render to prevent theme flashing during navigation.
-                    </p>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
+                    <div class="p-5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800">
+                        <h4 class="font-mono font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="ph ph-arrows-down-up text-teal-500"></i> Kinematic Auto-Glide
+                        </h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                            A delta-time requestAnimationFrame engine eliminating rounding jitter. Features 1x/2x/3x speed states, a 3-second hold buffer upon restart, and instant lockout on manual wheel activity.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800">
+                        <h4 class="font-mono font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="ph ph-hand-swipe text-cyan-500"></i> Dual-State Carousel
+                        </h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                            Touch-swipe ergonomics with automatic pause-on-drag and 3-second inactivity auto-resumption for seamless certificate and license browsing.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800 sm:col-span-2 lg:col-span-1">
+                        <h4 class="font-mono font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="ph ph-lock text-purple-500"></i> Anti-Capture Shield
+                        </h4>
+                        <p class="text-xs text-slate-600 dark:text-slate-400 font-light leading-relaxed">
+                            Intercepts Windows Snipping (Win+Shift+S) and PrintScreen combinations, immediately triggering a high-density blur filter over protected credentials.
+                        </p>
+                    </div>
                 </div>
             </section>
 
         </div>
 
         <!-- Footer -->
-        <footer class="mt-20 text-center font-mono text-xs text-slate-500 border-t border-slate-200 dark:border-slate-800 pt-8">
+        <footer class="mt-20 text-center font-mono text-xs text-slate-500 dark:text-slate-500 border-t border-slate-200/80 dark:border-slate-800/80 pt-8">
             <p>Quantum Architecture Core &copy; <span id="year"></span> | Engineered by Rohan Patil</p>
         </footer>
     </main>
 
+    <!-- Interactive Card Tilt & Micro-Interaction Script -->
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Theme Toggle Logic
+        // Theme Switcher Engine
         const themeToggleBtn = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
 
         themeToggleBtn.addEventListener('click', () => {
             htmlElement.classList.toggle('dark');
             localStorage.theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // 3D Magnetic Card Hover Physics
+        const tiltCards = document.querySelectorAll('.tilt-card');
+
+        tiltCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                // Subtle, elegant degree tilt
+                const rotateX = ((y - centerY) / centerY) * -3.5;
+                const rotateY = ((x - centerX) / centerX) * 3.5;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+            });
         });
     </script>
 </body>

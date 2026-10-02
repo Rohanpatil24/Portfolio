@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Windows 10 Desktop - Apps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    input, textarea { user-select: text; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+    }
+
+    /* Desktop Icon Grid */
+    .desktop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 48px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 1.5rem;
+    }
+
+    .desktop-icon {
+      width: 82px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      padding: 0.5rem;
+      border-radius: 4px;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .desktop-icon:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .desktop-icon .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    .desktop-icon span {
+      font-size: 0.78rem;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    /* Windows 10 Window Containers */
+    .win-window {
+      position: absolute;
+      background: #1f1f1f;
+      color: #fff;
+      border: 1px solid #333;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      display: none;
+      flex-direction: column;
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 100vw;
+    }
+
+    .win-window.active {
+      display: flex;
+    }
+
+    .win-titlebar {
+      height: 32px;
+      background: #2b2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0 0 10px;
+      cursor: move;
+      font-size: 0.8rem;
+      touch-action: none;
+    }
+
+    .win-controls {
+      display: flex;
+      height: 100%;
+    }
+
+    .win-btn {
+      width: 46px;
+      height: 100%;
+      border: none;
+      background: transparent;
+      color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .win-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .win-btn.close:hover {
+      background: #e81123;
+      color: #fff;
+    }
+
+    .win-content {
+      flex: 1;
+      overflow: auto;
+      background: #191919;
+      position: relative;
+    }
+
+    /* Windows 10 Taskbar */
+    .taskbar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: rgba(16, 16, 16, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 9999;
+    }
+
+    .taskbar-left {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .start-btn {
+      height: 100%;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: #0078d7;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .start-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .taskbar-apps {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      gap: 2px;
+      padding-left: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .taskbar-left { min-width: 0; }
+
+    .taskbar-item {
+      height: 100%;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.82rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: background 0.15s;
+    }
+
+    .taskbar-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .taskbar-item.active {
+      border-bottom: 2px solid #0078d7;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .taskbar-right {
+      display: flex;
+      align-items: center;
+      padding-right: 12px;
+      gap: 12px;
+      color: #fff;
+      font-size: 0.75rem;
+      text-align: right;
+    }
+
+    /* Start Menu */
+    .start-menu {
+      position: absolute;
+      bottom: 48px;
+      left: 0;
+      width: min(320px, 100vw);
+      background: rgba(24, 24, 24, 0.95);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: none;
+      flex-direction: column;
+      z-index: 9998;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .start-menu.open {
+      display: flex;
+    }
+
+    .start-header {
+      padding: 1.25rem 1rem 0.5rem 1rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+    }
+
+    .start-list {
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem;
+    }
+
+    .start-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 4px;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+
+    .start-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* APP 1: CALCULATOR */
+    .calc-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: #202020;
+    }
+    .calc-screen {
+      height: 70px;
+      background: #171717;
+      color: #fff;
+      font-size: 2rem;
+      text-align: right;
+      padding: 1rem;
+      font-family: 'Segoe UI', monospace;
+      overflow: hidden;
+    }
+    .calc-keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: #111;
+      padding: 2px;
+      flex: 1;
+    }
+    .calc-btn {
+      background: #2d2d2d;
+      border: none;
+      color: #fff;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .calc-btn:hover { background: #3d3d3d; }
+    .calc-btn.op { background: #1e1e1e; color: #60a5fa; }
+    .calc-btn.op:hover { background: #282828; }
+    .calc-btn.equals { background: #0078d7; }
+    .calc-btn.equals:hover { background: #1084e3; }
+
+    /* APP 2: STICKY NOTES */
+    .sticky-wrap {
+      height: 100%;
+      background: #fff7b2;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+    }
+    .sticky-textarea {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 1rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      font-family: 'Segoe UI', sans-serif;
+      resize: none;
+      color: #222;
+    }
+
+    /* GAMES: CANVAS CONTAINERS */
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      background: #0f172a;
+      padding: 10px;
+      gap: 8px;
+    }
+    .game-stage {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
+    .game-toolbar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    canvas.game-canvas {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      max-width: 100%;
+      max-height: 100%;
+      background: #020617;
+      border: 2px solid #334155;
+      border-radius: 4px;
+      touch-action: none;
+    }
+
+    /* On-screen controls (touch devices / small screens) */
+    .dpad {
+      display: none;
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+    }
+    .dpad button {
+      flex: 1;
+      max-width: 72px;
+      height: 44px;
+      background: #334155;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .dpad button:active { background: #475569; }
+    @media (hover: none), (max-width: 640px) {
+      .dpad { display: flex; }
+    }
+
+    /* APP: BROWSER */
+    .browser-wrap { display: flex; flex-direction: column; height: 100%; background: #fff; }
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px;
+      background: #2b2b2b;
+    }
+    .browser-bar button {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      color: #ddd;
+      cursor: pointer;
+    }
+    .browser-bar button:hover { background: rgba(255, 255, 255, 0.12); }
+    .browser-bar button svg { width: 16px; height: 16px; }
+    .browser-url {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid #444;
+      border-radius: 15px;
+      background: #191919;
+      color: #e2e8f0;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .browser-url:focus { border-color: #0078d7; }
+    .browser-frame { flex: 1; width: 100%; border: none; background: #fff; }
+
+    /* Custom dialog (replaces browser alert) */
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      bottom: 48px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 9990;
+    }
+    .dialog-overlay.open { display: flex; animation: dialogFade 0.15s ease-out; }
+    .dialog-box {
+      width: min(360px, 100%);
+      background: #1f1f1f;
+      border: 1px solid #333;
+      border-top: 3px solid var(--dialog-accent, #0078d7);
+      border-radius: 6px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+      color: #fff;
+      overflow: hidden;
+      animation: dialogPop 0.18s ease-out;
+    }
+    .dialog-head {
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #2b2b2b;
+    }
+    .dialog-body {
+      padding: 1.25rem 1rem;
+      display: flex;
+      gap: 0.9rem;
+      align-items: center;
+      font-size: 0.92rem;
+      line-height: 1.4;
+      color: #e2e8f0;
+    }
+    .dialog-body svg { flex-shrink: 0; width: 32px; height: 32px; color: var(--dialog-accent, #0078d7); }
+    .dialog-score { color: #94a3b8; font-size: 0.8rem; margin-top: 0.25rem; }
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.75rem 1rem;
+      background: #191919;
+    }
+    .dialog-btn {
+      min-width: 110px;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      background: var(--dialog-accent, #0078d7);
+      color: #fff;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .dialog-btn:hover { filter: brightness(1.15); }
+    @keyframes dialogFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes dialogPop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* Small screens: windows fill the desktop, icons wrap in rows */
+    @media (max-width: 640px) {
+      .desktop {
+        flex-direction: row;
+        padding: 0.75rem;
+        gap: 0.75rem;
+        overflow-y: auto;
+      }
+      .win-window {
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: calc(100vh - 48px) !important;
+        height: calc(100dvh - 48px) !important;
+        border-radius: 0;
+        border: none;
+      }
+      .win-titlebar { cursor: default; }
+      .win-btn { width: 52px; }
+      .taskbar-item { padding: 0 10px; }
+      .taskbar-right .hide-sm { display: none; }
+      .taskbar-right { padding-right: 8px; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Desktop Apps Icons -->
+  <div class="desktop">
+    <div class="desktop-icon" onclick="openWindow('calculator')">
+      <div class="icon-box" style="background: #0078d7;"><i data-lucide="calculator"></i></div>
+      <span>Calculator</span>
+    </div>
+
+    <div class="desktop-icon" onclick="openWindow('sticky')">
+      <div class="icon-box" style="background: #eab308;"><i data-lucide="sticky-note"></i></div>
+      <span>Sticky Notes</span>
+    </div>
+
+    <div class="desktop-icon" onclick="openWindow('snake')">
+      <div class="icon-box" style="background: #10b981;"><i data-lucide="gamepad-2"></i></div>
+      <span>Snake 2D</span>
+    </div>
+
+    <div class="desktop-icon" onclick="openWindow('tetris')">
+      <div class="icon-box" style="background: #8b5cf6;"><i data-lucide="boxes"></i></div>
+      <span>Tetris</span>
+    </div>
+
+    <div class="desktop-icon" onclick="openWindow('browser')">
+      <div class="icon-box" style="background: #0ea5e9;"><i data-lucide="globe"></i></div>
+      <span>Browser</span>
+    </div>
+
+    <a href="{% url 'home' %}" class="desktop-icon" style="text-decoration: none;">
+      <div class="icon-box" style="background: #475569;"><i data-lucide="undo-2"></i></div>
+      <span>Back to Site</span>
+    </a>
+  </div>
+
+  <!-- WINDOW 1: CALCULATOR -->
+  <div class="win-window" id="window-calculator" style="width: min(320px, 100vw); height: min(420px, calc(100dvh - 48px)); top: 100px; left: 120px;">
+    <div class="win-titlebar" onpointerdown="dragWindow(event, 'window-calculator')">
+      <span>Calculator</span>
+      <div class="win-controls">
+        <button class="win-btn" onclick="minimizeWindow('calculator')">−</button>
+        <button class="win-btn close" onclick="closeWindow('calculator')">✕</button>
+      </div>
+    </div>
+    <div class="win-content">
+      <div class="calc-wrap">
+        <div class="calc-screen" id="calc-screen">0</div>
+        <div class="calc-keys">
+          <button class="calc-btn op" onclick="calcAction('clear')">C</button>
+          <button class="calc-btn op" onclick="calcAction('del')">⌫</button>
+          <button class="calc-btn op" onclick="calcAction('/')">/</button>
+          <button class="calc-btn op" onclick="calcAction('*')">×</button>
+          <button class="calc-btn" onclick="calcInput('7')">7</button>
+          <button class="calc-btn" onclick="calcInput('8')">8</button>
+          <button class="calc-btn" onclick="calcInput('9')">9</button>
+          <button class="calc-btn op" onclick="calcAction('-')">-</button>
+          <button class="calc-btn" onclick="calcInput('4')">4</button>
+          <button class="calc-btn" onclick="calcInput('5')">5</button>
+          <button class="calc-btn" onclick="calcInput('6')">6</button>
+          <button class="calc-btn op" onclick="calcAction('+')">+</button>
+          <button class="calc-btn" onclick="calcInput('1')">1</button>
+          <button class="calc-btn" onclick="calcInput('2')">2</button>
+          <button class="calc-btn" onclick="calcInput('3')">3</button>
+          <button class="calc-btn equals" onclick="calcEvaluate()">=</button>
+          <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+          <button class="calc-btn" onclick="calcInput('.')">.</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW 2: STICKY NOTES -->
+  <div class="win-window" id="window-sticky" style="width: min(320px, 100vw); height: min(340px, calc(100dvh - 48px)); top: 120px; left: 470px;">
+    <div class="win-titlebar" style="background: #e2d788; color: #333;" onpointerdown="dragWindow(event, 'window-sticky')">
+      <span>Sticky Note</span>
+      <div class="win-controls">
+        <button class="win-btn" style="color: #333;" onclick="minimizeWindow('sticky')">−</button>
+        <button class="win-btn close" style="color: #333;" onclick="closeWindow('sticky')">✕</button>
+      </div>
+    </div>
+    <div class="win-content">
+      <div class="sticky-wrap">
+        <textarea id="sticky-text" class="sticky-textarea" placeholder="Take a quick note (autosaves)..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW 3: SNAKE GAME -->
+  <div class="win-window" id="window-snake" style="width: min(380px, 100vw); height: min(520px, calc(100dvh - 48px)); top: 80px; left: 240px;">
+    <div class="win-titlebar" onpointerdown="dragWindow(event, 'window-snake')">
+      <span>Snake 2D Arcade</span>
+      <div class="win-controls">
+        <button class="win-btn" onclick="minimizeWindow('snake')">−</button>
+        <button class="win-btn close" onclick="closeWindow('snake')">✕</button>
+      </div>
+    </div>
+    <div class="win-content">
+      <div class="game-container">
+        <div class="game-toolbar">
+          <span>Score: <b id="snake-score" style="color: #10b981;">0</b></span>
+          <button onclick="startSnake()" style="background:#334155; color:#fff; border:none; padding:3px 8px; border-radius:3px; cursor:pointer;">Restart</button>
+        </div>
+        <div class="game-stage">
+          <canvas id="snakeCanvas" class="game-canvas" width="300" height="300"></canvas>
+        </div>
+        <div class="dpad">
+          <button onclick="setSnakeDir('LEFT')" aria-label="Left">◀</button>
+          <button onclick="setSnakeDir('UP')" aria-label="Up">▲</button>
+          <button onclick="setSnakeDir('DOWN')" aria-label="Down">▼</button>
+          <button onclick="setSnakeDir('RIGHT')" aria-label="Right">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW 4: TETRIS GAME -->
+  <div class="win-window" id="window-tetris" style="width: min(360px, 100vw); height: min(580px, calc(100dvh - 48px)); top: 60px; left: 630px;">
+    <div class="win-titlebar" onpointerdown="dragWindow(event, 'window-tetris')">
+      <span>Tetris Classic</span>
+      <div class="win-controls">
+        <button class="win-btn" onclick="minimizeWindow('tetris')">−</button>
+        <button class="win-btn close" onclick="closeWindow('tetris')">✕</button>
+      </div>
+    </div>
+    <div class="win-content">
+      <div class="game-container">
+        <div class="game-toolbar">
+          <span>Score: <b id="tetris-score" style="color:#a855f7;">0</b></span>
+          <button onclick="startTetris()" style="background:#334155; color:#fff; border:none; padding:3px 8px; border-radius:3px; cursor:pointer;">New Game</button>
+        </div>
+        <div class="game-stage">
+          <canvas id="tetrisCanvas" class="game-canvas" width="240" height="400"></canvas>
+        </div>
+        <div class="dpad">
+          <button onclick="tetrisMove(-1, 0)" aria-label="Left">◀</button>
+          <button onclick="tetrisRotate()" aria-label="Rotate">⟳</button>
+          <button onclick="tetrisMove(0, 1)" aria-label="Down">▼</button>
+          <button onclick="tetrisMove(1, 0)" aria-label="Right">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW 5: BROWSER -->
+  <div class="win-window" id="window-browser" style="width: min(900px, 100vw); height: min(600px, calc(100dvh - 48px)); top: 30px; left: 60px;">
+    <div class="win-titlebar" onpointerdown="dragWindow(event, 'window-browser')">
+      <span>Browser</span>
+      <div class="win-controls">
+        <button class="win-btn" onclick="minimizeWindow('browser')">−</button>
+        <button class="win-btn close" onclick="closeWindow('browser')">✕</button>
+      </div>
+    </div>
+    <div class="win-content" style="overflow: hidden;">
+      <div class="browser-wrap">
+        <div class="browser-bar">
+          <button onclick="browserBack()" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+          <button onclick="browserForward()" aria-label="Forward"><i data-lucide="arrow-right"></i></button>
+          <button onclick="browserReload()" aria-label="Reload"><i data-lucide="rotate-cw"></i></button>
+          <button onclick="browserGo(HOME_URL)" aria-label="Home"><i data-lucide="home"></i></button>
+          <input type="text" id="browser-url" class="browser-url" spellcheck="false" autocomplete="off"
+                 onkeydown="if (event.key === 'Enter') browserGo(this.value)">
+        </div>
+        <iframe id="browser-frame" class="browser-frame" title="Portfolio browser" onload="browserSync()"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game dialog -->
+  <div class="dialog-overlay" id="dialog-overlay" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title">
+    <div class="dialog-box">
+      <div class="dialog-head" id="dialog-title"></div>
+      <div class="dialog-body">
+        <i data-lucide="trophy" id="dialog-icon"></i>
+        <div>
+          <div id="dialog-message"></div>
+          <div class="dialog-score" id="dialog-score"></div>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="dialog-btn" id="dialog-btn" onclick="closeDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Windows 10 Start Menu -->
+  <div class="start-menu" id="start-menu">
+    <div class="start-header">PINNED APPLICATIONS</div>
+    <div class="start-list">
+      <div class="start-item" onclick="openWindow('calculator'); toggleStartMenu();">
+        <i data-lucide="calculator" style="color:#0078d7;"></i> Calculator
+      </div>
+      <div class="start-item" onclick="openWindow('sticky'); toggleStartMenu();">
+        <i data-lucide="sticky-note" style="color:#eab308;"></i> Sticky Notes
+      </div>
+      <div class="start-item" onclick="openWindow('snake'); toggleStartMenu();">
+        <i data-lucide="gamepad-2" style="color:#10b981;"></i> Snake
+      </div>
+      <div class="start-item" onclick="openWindow('tetris'); toggleStartMenu();">
+        <i data-lucide="boxes" style="color:#8b5cf6;"></i> Tetris
+      </div>
+      <div class="start-item" onclick="openWindow('browser'); toggleStartMenu();">
+        <i data-lucide="globe" style="color:#0ea5e9;"></i> Browser
+      </div>
+      <a href="{% url 'home' %}" class="start-item">
+        <i data-lucide="arrow-left-circle" style="color:#ef4444;"></i> Return to Portfolio
+      </a>
+    </div>
+  </div>
+
+  <!-- Windows 10 Taskbar -->
+  <footer class="taskbar">
+    <div class="taskbar-left">
+      <button class="start-btn" onclick="toggleStartMenu()">
+        <i data-lucide="layout-grid" style="width: 20px; height: 20px;"></i>
+      </button>
+
+      <div class="taskbar-apps" id="taskbar-apps">
+        <!-- Running application buttons populated dynamically -->
+      </div>
+    </div>
+
+    <div class="taskbar-right">
+      <i data-lucide="wifi" class="hide-sm" style="width: 15px; height: 15px;"></i>
+      <i data-lucide="volume-2" class="hide-sm" style="width: 15px; height: 15px;"></i>
+      <div id="system-time">12:00 PM<br><span style="font-size:0.7rem; color:#94a3b8;">10/02/2026</span></div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    /* Clock updater */
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateStr = now.toLocaleDateString();
+      document.getElementById('system-time').innerHTML = `${timeStr}<br><span style="font-size:0.7rem; color:#94a3b8;">${dateStr}</span>`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* Start Menu Toggle */
+    function toggleStartMenu() {
+      const menu = document.getElementById('start-menu');
+      menu.classList.toggle('open');
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#start-menu') && !e.target.closest('.start-btn')) {
+        document.getElementById('start-menu').classList.remove('open');
+      }
+    });
+
+    /* Window Manager */
+    let zIndexCounter = 100;
+    const runningApps = new Set();
+
+    function bringToFront(win) {
+      zIndexCounter++;
+      win.style.zIndex = zIndexCounter;
+    }
+
+    function openWindow(id) {
+      const win = document.getElementById(`window-${id}`);
+      win.classList.add('active');
+      clampWindow(win);
+      bringToFront(win);
+      runningApps.add(id);
+      renderTaskbar();
+
+      if (id === 'browser' && !browserFrame.getAttribute('src')) browserGo(HOME_URL);
+      if (id === 'snake' && !snakeInterval) startSnake();
+      if (id === 'tetris' && !tetrisInterval) startTetris();
+    }
+
+    function closeWindow(id) {
+      const win = document.getElementById(`window-${id}`);
+      win.classList.remove('active');
+      runningApps.delete(id);
+      if (id === 'snake') { clearInterval(snakeInterval); snakeInterval = null; }
+      if (id === 'tetris') { clearInterval(tetrisInterval); tetrisInterval = null; }
+      renderTaskbar();
+    }
+
+    function minimizeWindow(id) {
+      const win = document.getElementById(`window-${id}`);
+      win.classList.remove('active');
+      renderTaskbar();
+    }
+
+    function renderTaskbar() {
+      const container = document.getElementById('taskbar-apps');
+      container.innerHTML = '';
+      runningApps.forEach(id => {
+        const btn = document.createElement('button');
+        const win = document.getElementById(`window-${id}`);
+        btn.className = `taskbar-item ${win.classList.contains('active') ? 'active' : ''}`;
+        btn.innerHTML = `<span>${id.charAt(0).toUpperCase() + id.slice(1)}</span>`;
+        btn.onclick = () => {
+          if (win.classList.contains('active')) {
+            win.classList.remove('active');
+          } else {
+            win.classList.add('active');
+            bringToFront(win);
+          }
+          renderTaskbar();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    /* Browser app (embeds the portfolio, same-origin only) */
+    const HOME_URL = "{% url 'home' %}";
+    const browserFrame = document.getElementById('browser-frame');
+    const browserUrl = document.getElementById('browser-url');
+
+    function browserGo(target) {
+      target = (target || '').trim();
+      if (!target) return;
+      try {
+        // Resolve relative paths; refuse anything that leaves this site
+        const url = new URL(target, window.location.origin);
+        if (url.origin !== window.location.origin) {
+          showDialog({
+            title: 'Browser',
+            message: 'This browser can only open pages from this portfolio.',
+            accent: '#0ea5e9'
+          });
+          browserSync();
+          return;
+        }
+        browserFrame.src = url.pathname + url.search + url.hash;
+      } catch {
+        browserSync();
+      }
+    }
+    function browserBack() { try { browserFrame.contentWindow.history.back(); } catch {} }
+    function browserForward() { try { browserFrame.contentWindow.history.forward(); } catch {} }
+    function browserReload() { try { browserFrame.contentWindow.location.reload(); } catch {} }
+    function browserSync() {
+      try {
+        const loc = browserFrame.contentWindow.location;
+        if (loc.href === 'about:blank') return;
+        browserUrl.value = loc.pathname + loc.search + loc.hash;
+        const title = browserFrame.contentDocument.title;
+        document.querySelector('#window-browser .win-titlebar span').textContent = title ? `${title} - Browser` : 'Browser';
+      } catch {}
+    }
+
+    /* Styled dialog */
+    let dialogCallback = null;
+
+    function showDialog({ title, message, score = '', button = 'OK', accent = '#0078d7', onClose = null }) {
+      const overlay = document.getElementById('dialog-overlay');
+      overlay.style.setProperty('--dialog-accent', accent);
+      document.getElementById('dialog-title').textContent = title;
+      document.getElementById('dialog-message').textContent = message;
+      document.getElementById('dialog-score').textContent = score;
+      const btn = document.getElementById('dialog-btn');
+      btn.textContent = button;
+      dialogCallback = onClose;
+      overlay.classList.add('open');
+      btn.focus();
+    }
+
+    function closeDialog() {
+      document.getElementById('dialog-overlay').classList.remove('open');
+      const cb = dialogCallback;
+      dialogCallback = null;
+      if (cb) cb();
+    }
+
+    /* Keep windows inside the viewport (above the taskbar) */
+    const isMobileLayout = () => window.matchMedia('(max-width: 640px)').matches;
+
+    function clampWindow(el) {
+      if (isMobileLayout()) return;
+      const maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
+      const maxTop = Math.max(0, window.innerHeight - 48 - el.offsetHeight);
+      el.style.left = Math.min(Math.max(0, el.offsetLeft), maxLeft) + 'px';
+      el.style.top = Math.min(Math.max(0, el.offsetTop), maxTop) + 'px';
+    }
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.win-window.active').forEach(clampWindow);
+    });
+
+    /* Draggable Windows (mouse + touch + pen) */
+    function dragWindow(e, elementId) {
+      const el = document.getElementById(elementId);
+      bringToFront(el);
+      if (isMobileLayout() || e.target.closest('.win-btn')) return;
+      const shiftX = e.clientX - el.getBoundingClientRect().left;
+      const shiftY = e.clientY - el.getBoundingClientRect().top;
+
+      function onMove(ev) {
+        el.style.left = (ev.clientX - shiftX) + 'px';
+        el.style.top = (ev.clientY - shiftY) + 'px';
+        clampWindow(el);
+      }
+      function onUp() {
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+        document.removeEventListener('pointercancel', onUp);
+      }
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+      document.addEventListener('pointercancel', onUp);
+    }
+
+    /* Calculator Logic */
+    let calcExpr = '';
+    const screen = document.getElementById('calc-screen');
+
+    function calcInput(char) {
+      if (calcExpr === '0' && char !== '.') calcExpr = '';
+      calcExpr += char;
+      screen.innerText = calcExpr;
+    }
+    function calcAction(op) {
+      if (op === 'clear') { calcExpr = '0'; }
+      else if (op === 'del') { calcExpr = calcExpr.slice(0, -1) || '0'; }
+      else { calcExpr += op; }
+      screen.innerText = calcExpr;
+    }
+    function calcEvaluate() {
+      try {
+        calcExpr = String(Function(`'use strict'; return (${calcExpr})`)());
+        screen.innerText = calcExpr;
+      } catch {
+        screen.innerText = 'Error';
+        calcExpr = '0';
+      }
+    }
+
+    /* Sticky Note Auto-Save */
+    const noteArea = document.getElementById('sticky-text');
+    noteArea.value = localStorage.getItem('portfolio_sticky_note') || '';
+    noteArea.addEventListener('input', (e) => {
+      localStorage.setItem('portfolio_sticky_note', e.target.value);
+    });
+
+    /* GAME 1: SNAKE 2D */
+    let snakeCanvas = document.getElementById('snakeCanvas');
+    let snakeCtx = snakeCanvas.getContext('2d');
+    let snakeInterval = null;
+    let snake = [];
+    let food = {};
+    let dir = 'RIGHT';
+
+    function startSnake() {
+      snake = [{x: 8, y: 8}, {x: 7, y: 8}, {x: 6, y: 8}];
+      dir = 'RIGHT';
+      document.getElementById('snake-score').innerText = '0';
+      placeSnakeFood();
+      if (snakeInterval) clearInterval(snakeInterval);
+      snakeInterval = setInterval(gameLoopSnake, 120);
+    }
+
+    function placeSnakeFood() {
+      food = {
+        x: Math.floor(Math.random() * 15),
+        y: Math.floor(Math.random() * 15)
+      };
+    }
+
+    function gameLoopSnake() {
+      let head = {...snake[0]};
+      if (dir === 'RIGHT') head.x++;
+      if (dir === 'LEFT') head.x--;
+      if (dir === 'UP') head.y--;
+      if (dir === 'DOWN') head.y++;
+
+      if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || snake.some(s => s.x === head.x && s.y === head.y)) {
+        clearInterval(snakeInterval);
+        snakeInterval = null;
+        showDialog({
+          title: 'Snake 2D Arcade',
+          message: 'Game over! You crashed.',
+          score: `Final score: ${(snake.length - 3) * 10}`,
+          button: 'Play Again',
+          accent: '#10b981',
+          onClose: () => { if (document.getElementById('window-snake').classList.contains('active')) startSnake(); }
+        });
+        return;
+      }
+
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        document.getElementById('snake-score').innerText = (snake.length - 3) * 10;
+        placeSnakeFood();
+      } else {
+        snake.pop();
+      }
+
+      snakeCtx.fillStyle = '#020617';
+      snakeCtx.fillRect(0, 0, 300, 300);
+
+      // Draw Food
+      snakeCtx.fillStyle = '#ef4444';
+      snakeCtx.fillRect(food.x * 20, food.y * 20, 18, 18);
+
+      // Draw Snake
+      snakeCtx.fillStyle = '#10b981';
+      snake.forEach(part => {
+        snakeCtx.fillRect(part.x * 20, part.y * 20, 18, 18);
+      });
+    }
+
+    function setSnakeDir(d) {
+      if (d === 'UP' && dir !== 'DOWN') dir = 'UP';
+      if (d === 'DOWN' && dir !== 'UP') dir = 'DOWN';
+      if (d === 'LEFT' && dir !== 'RIGHT') dir = 'LEFT';
+      if (d === 'RIGHT' && dir !== 'LEFT') dir = 'RIGHT';
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('window-snake').classList.contains('active')) return;
+      const map = { ArrowUp: 'UP', ArrowDown: 'DOWN', ArrowLeft: 'LEFT', ArrowRight: 'RIGHT' };
+      if (map[e.key]) {
+        e.preventDefault();
+        setSnakeDir(map[e.key]);
+      }
+    });
+
+    /* GAME 2: TETRIS CLASSIC */
+    const tetrisCanvas = document.getElementById('tetrisCanvas');
+    const tetrisCtx = tetrisCanvas.getContext('2d');
+    const ROWS = 20, COLS = 12, BLOCK = 20;
+    let tetrisBoard = [];
+    let tetrisInterval = null;
+    let tetrisPiece = null;
+    let tetrisScore = 0;
+
+    const SHAPES = [
+      [[1,1,1,1]], // I
+      [[1,1],[1,1]], // O
+      [[1,1,1],[0,1,0]], // T
+      [[1,1,0],[0,1,1]], // Z
+      [[0,1,1],[1,1,0]]  // S
+    ];
+
+    function startTetris() {
+      tetrisBoard = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+      tetrisScore = 0;
+      document.getElementById('tetris-score').innerText = '0';
+      spawnPiece();
+      if (tetrisInterval) clearInterval(tetrisInterval);
+      tetrisInterval = setInterval(gameLoopTetris, 400);
+    }
+
+    function spawnPiece() {
+      const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+      tetrisPiece = { shape, x: 4, y: 0 };
+      if (checkCollide(tetrisPiece.shape, tetrisPiece.x, tetrisPiece.y)) {
+        clearInterval(tetrisInterval);
+        tetrisInterval = null;
+        showDialog({
+          title: 'Tetris Classic',
+          message: 'Game over! The stack reached the top.',
+          score: `Final score: ${tetrisScore}`,
+          button: 'New Game',
+          accent: '#8b5cf6',
+          onClose: () => { if (document.getElementById('window-tetris').classList.contains('active')) startTetris(); }
+        });
+      }
+    }
+
+    function checkCollide(shape, px, py) {
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          if (shape[r][c]) {
+            let nx = px + c;
+            let ny = py + r;
+            if (nx < 0 || nx >= COLS || ny >= ROWS || (ny >= 0 && tetrisBoard[ny][nx])) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    function rotatePiece() {
+      const rotated = tetrisPiece.shape[0].map((_, idx) => tetrisPiece.shape.map(row => row[idx]).reverse());
+      if (!checkCollide(rotated, tetrisPiece.x, tetrisPiece.y)) {
+        tetrisPiece.shape = rotated;
+      }
+    }
+
+    function gameLoopTetris() {
+      if (!checkCollide(tetrisPiece.shape, tetrisPiece.x, tetrisPiece.y + 1)) {
+        tetrisPiece.y++;
+      } else {
+        // Lock
+        tetrisPiece.shape.forEach((row, r) => {
+          row.forEach((v, c) => {
+            if (v && tetrisPiece.y + r >= 0) tetrisBoard[tetrisPiece.y + r][tetrisPiece.x + c] = 1;
+          });
+        });
+        // Clear full lines
+        for (let r = ROWS - 1; r >= 0; r--) {
+          if (tetrisBoard[r].every(v => v === 1)) {
+            tetrisBoard.splice(r, 1);
+            tetrisBoard.unshift(Array(COLS).fill(0));
+            tetrisScore += 100;
+            document.getElementById('tetris-score').innerText = tetrisScore;
+            r++;
+          }
+        }
+        spawnPiece();
+      }
+      drawTetris();
+    }
+
+    function drawTetris() {
+      tetrisCtx.fillStyle = '#020617';
+      tetrisCtx.fillRect(0, 0, 240, 400);
+
+      // Draw Grid blocks
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (tetrisBoard[r][c]) {
+            tetrisCtx.fillStyle = '#8b5cf6';
+            tetrisCtx.fillRect(c * BLOCK, r * BLOCK, BLOCK - 1, BLOCK - 1);
+          }
+        }
+      }
+
+      // Draw active piece
+      if (tetrisPiece) {
+        tetrisCtx.fillStyle = '#06b6d4';
+        tetrisPiece.shape.forEach((row, r) => {
+          row.forEach((v, c) => {
+            if (v) {
+              tetrisCtx.fillRect((tetrisPiece.x + c) * BLOCK, (tetrisPiece.y + r) * BLOCK, BLOCK - 1, BLOCK - 1);
+            }
+          });
+        });
+      }
+    }
+
+    function tetrisMove(dx, dy) {
+      if (!tetrisPiece || !tetrisInterval) return;
+      if (!checkCollide(tetrisPiece.shape, tetrisPiece.x + dx, tetrisPiece.y + dy)) {
+        tetrisPiece.x += dx;
+        tetrisPiece.y += dy;
+      }
+      drawTetris();
+    }
+
+    function tetrisRotate() {
+      if (!tetrisPiece || !tetrisInterval) return;
+      rotatePiece();
+      drawTetris();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('window-tetris').classList.contains('active')) return;
+      const k = e.key.toLowerCase();
+      if (k === 'a') tetrisMove(-1, 0);
+      if (k === 'd') tetrisMove(1, 0);
+      if (k === 's') tetrisMove(0, 1);
+      if (k === 'w') tetrisRotate();
+    });
+  </script>
+</body>
+</html>

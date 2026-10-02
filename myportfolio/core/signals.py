@@ -2,12 +2,12 @@
 import logging
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import PersonalInfo, Experience, Project, Skill, Education, Certification
+from .models import PersonalInfo, Experience, Project,  ProjectImage, Skill, Education, Certification
 from .pipeline import generate_portfolio_dataset
 
 logger = logging.getLogger(__name__)
 
-TRACKED_MODELS = [PersonalInfo, Experience, Project, Skill, Education, Certification]
+TRACKED_MODELS = [PersonalInfo, Experience, Project, ProjectImage, Skill, Education, Certification]
 
 def trigger_dataset_rebuild(sender, **kwargs):
     try:
